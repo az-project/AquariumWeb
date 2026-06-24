@@ -1,0 +1,246 @@
+﻿<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>리프로그 - 해수어항 관리</title>
+  <link rel="stylesheet" href="styles.css?v=coral-shadow-fix" />
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" aria-label="주 메뉴">
+      <div class="brand">
+        <span class="brand-mark">R</span>
+        <div>
+          <strong>리프로그</strong>
+          <small>Marine Tank Care</small>
+        </div>
+      </div>
+      <nav class="nav-tabs" aria-label="화면 이동">
+        <button class="nav-button active" data-view="dashboard">대시보드</button>
+        <button class="nav-button" data-view="water">수질/환수</button>
+        <button class="nav-button" data-view="livestock">생물/장비</button>
+        <button class="nav-button" data-view="library">도감/합사</button>
+      </nav>
+      <div class="sidebar-note">
+        <span>다음 알림</span>
+        <strong id="nextReminder">계산 중</strong>
+      </div>
+    </aside>
+
+    <main class="main-area">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">My Saltwater Aquarium</p>
+          <h1>오늘의 어항 상태</h1>
+        </div>
+        <div class="topbar-actions">
+          <button class="icon-button" id="resetDemo" title="샘플 데이터 초기화" aria-label="샘플 데이터 초기화">↻</button>
+          <button class="primary-button" data-open-modal="taskModal">관리 일정 추가</button>
+        </div>
+      </header>
+
+      <section class="view active" id="dashboard">
+        <div class="dashboard-hero">
+          <div class="aquarium-stage" aria-label="어항 시각화">
+            <img src="assets/reef-bg-no-fish-v2.png" alt="물고기 없는 트렌디한 3D 해수어항 배경" />
+            <div class="tank-inhabitants" id="tankInhabitants" aria-label="투입된 생물 표시"></div>
+          </div>
+          <aside class="status-rail" aria-label="어항 주요 상태">
+            <div class="rail-heading">
+              <p class="eyebrow">Live Reef Monitor</p>
+              <h2>내 어항 생물 지도</h2>
+            </div>
+            <div class="tank-stat">
+              <span class="stat-icon">°C</span>
+              <div>
+                <span>수온</span>
+                <strong id="heroTemp">-</strong>
+              </div>
+            </div>
+            <div class="tank-stat">
+              <span class="stat-icon">ppt</span>
+              <div>
+                <span>염도</span>
+                <strong id="heroSalinity">-</strong>
+              </div>
+            </div>
+            <div class="tank-stat">
+              <span class="stat-icon">D</span>
+              <div>
+                <span>환수 D-day</span>
+                <strong id="heroWaterChange">-</strong>
+              </div>
+            </div>
+            <div class="tank-inspector" aria-label="선택한 생물 정보">
+              <span>선택 생물</span>
+              <strong id="selectedCreatureName">전체 보기</strong>
+              <small id="selectedCreatureMeta">어항 안 생물을 눌러 상세 상태를 확인하세요.</small>
+            </div>
+            <button class="primary-button wide" data-open-modal="creatureModal">생물 추가</button>
+          </aside>
+        </div>
+
+        <div class="metric-grid">
+          <article class="metric-card good">
+            <span>수질 안정도</span>
+            <strong id="stabilityScore">-</strong>
+            <small id="stabilityText">최근 입력 기준</small>
+          </article>
+          <article class="metric-card">
+            <span>등록 생물</span>
+            <strong id="livestockCount">-</strong>
+            <small>물고기/산호/무척추</small>
+          </article>
+          <article class="metric-card warn">
+            <span>예정 작업</span>
+            <strong id="taskCount">-</strong>
+            <small>7일 이내</small>
+          </article>
+          <article class="metric-card">
+            <span>운영 일수</span>
+            <strong id="tankDays">-</strong>
+            <small>세팅일 기준</small>
+          </article>
+        </div>
+
+        <div class="content-grid two">
+          <section class="panel">
+            <div class="panel-heading">
+              <h2>오늘 할 일</h2>
+              <button class="text-button" data-view-jump="water">관리하기</button>
+            </div>
+            <div class="task-list" id="todayTasks"></div>
+          </section>
+          <section class="panel">
+            <div class="panel-heading">
+              <h2>최근 수질 추이</h2>
+              <button class="text-button" data-view-jump="water">기록 추가</button>
+            </div>
+            <canvas id="waterChart" width="640" height="280" aria-label="최근 수질 그래프"></canvas>
+          </section>
+        </div>
+      </section>
+
+      <section class="view" id="water">
+        <div class="content-grid two">
+          <section class="panel">
+            <div class="panel-heading">
+              <h2>수질 기록</h2>
+            </div>
+            <form class="form-grid" id="waterForm">
+              <label>날짜<input type="date" name="date" required /></label>
+              <label>수온 °C<input type="number" step="0.1" name="temp" required /></label>
+              <label>염도 ppt<input type="number" step="0.1" name="salinity" required /></label>
+              <label>pH<input type="number" step="0.1" name="ph" required /></label>
+              <label>KH dKH<input type="number" step="0.1" name="kh" required /></label>
+              <label>NO3 ppm<input type="number" step="0.1" name="no3" required /></label>
+              <label>PO4 ppm<input type="number" step="0.01" name="po4" required /></label>
+              <button class="primary-button wide" type="submit">수질 저장</button>
+            </form>
+          </section>
+          <section class="panel">
+            <div class="panel-heading">
+              <h2>환수/관리 일정</h2>
+              <button class="text-button" data-open-modal="taskModal">추가</button>
+            </div>
+            <div class="timeline" id="taskTimeline"></div>
+          </section>
+        </div>
+        <section class="panel table-panel">
+          <div class="panel-heading">
+            <h2>수질 로그</h2>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>날짜</th><th>수온</th><th>염도</th><th>pH</th><th>KH</th><th>NO3</th><th>PO4</th></tr></thead>
+              <tbody id="waterRows"></tbody>
+            </table>
+          </div>
+        </section>
+      </section>
+
+      <section class="view" id="livestock">
+        <div class="content-grid two">
+          <section class="panel">
+            <div class="panel-heading">
+              <h2>생물 등록</h2>
+            </div>
+            <form class="form-grid" id="livestockForm">
+              <label>이름<input name="name" placeholder="예: 퍼큘라 클라운" required /></label>
+              <label>분류<select name="type"><option>물고기</option><option>산호</option><option>무척추</option></select></label>
+              <label>투입일<input type="date" name="added" required /></label>
+              <label>상태<select name="status"><option>건강</option><option>관찰</option><option>격리</option></select></label>
+              <label class="wide">메모<input name="memo" placeholder="먹이 반응, 성격, 위치 등" /></label>
+              <button class="primary-button wide" type="submit">생물 저장</button>
+            </form>
+          </section>
+          <section class="panel">
+            <div class="panel-heading">
+              <h2>장비 상태</h2>
+            </div>
+            <div class="equipment-grid" id="equipmentGrid"></div>
+          </section>
+        </div>
+        <section class="creature-grid" id="livestockGrid"></section>
+      </section>
+
+      <section class="view" id="library">
+        <div class="content-grid two">
+          <section class="panel">
+            <div class="panel-heading">
+              <h2>해수어 도감</h2>
+            </div>
+            <div class="search-row">
+              <input id="librarySearch" placeholder="이름, 난이도, 성격 검색" />
+            </div>
+            <div class="library-list" id="libraryList"></div>
+          </section>
+          <section class="panel">
+            <div class="panel-heading">
+              <h2>합사 체크</h2>
+            </div>
+            <div class="compat-box">
+              <select id="compatA"></select>
+              <select id="compatB"></select>
+              <button class="primary-button" id="checkCompat">확인</button>
+            </div>
+            <div class="compat-result" id="compatResult">두 생물을 선택하면 합사 의견을 보여줍니다.</div>
+          </section>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <dialog class="modal" id="taskModal">
+    <form method="dialog" class="modal-card" id="taskForm">
+      <div class="panel-heading">
+        <h2>관리 일정 추가</h2>
+        <button class="icon-button" value="cancel" aria-label="닫기">×</button>
+      </div>
+      <label>작업명<input name="title" placeholder="예: 20% 환수" required /></label>
+      <label>분류<select name="category"><option>환수</option><option>먹이</option><option>첨가제</option><option>장비</option><option>검역</option></select></label>
+      <label>예정일<input type="date" name="due" required /></label>
+      <label>메모<input name="memo" placeholder="소금량, 교체 부품 등" /></label>
+      <button class="primary-button wide" value="default" type="submit">저장</button>
+    </form>
+  </dialog>
+
+  <dialog class="modal" id="creatureModal">
+    <form method="dialog" class="modal-card" id="quickLivestockForm">
+      <div class="panel-heading">
+        <h2>생물 빠른 추가</h2>
+        <button class="icon-button" value="cancel" aria-label="닫기">×</button>
+      </div>
+      <label>이름<input name="name" placeholder="예: 옐로우탱" required /></label>
+      <label>분류<select name="type"><option>물고기</option><option>산호</option><option>무척추</option></select></label>
+      <label>투입일<input type="date" name="added" required /></label>
+      <label>상태<select name="status"><option>건강</option><option>관찰</option><option>격리</option></select></label>
+      <label>메모<input name="memo" placeholder="먹이 반응, 위치, 성격 등" /></label>
+      <button class="primary-button wide" value="default" type="submit">어항에 추가</button>
+    </form>
+  </dialog>
+
+  <script src="app.js?v=cursor-idle-fix"></script>
+</body>
+</html>
