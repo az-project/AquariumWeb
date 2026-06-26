@@ -1,5 +1,11 @@
 ﻿const storageKey = "reef-log-demo-v1";
+const notificationStorageKey = "reef-log-notifications-v1";
 const todayIso = new Date().toISOString().slice(0, 10);
+const defaultNotificationSettings = {
+  enabled: false,
+  time: "09:00",
+  leadDays: 1
+};
 
 const species = [
   { name: "퍼큘라 클라운", type: "물고기", level: "초급", nature: "온순", note: "말미잘 없이도 적응이 빠르고 먹이 반응이 좋음", image: "assets/livestock/clownfish.png" },
@@ -36,9 +42,9 @@ const livestockAssetMap = [
 const seedData = {
   tankStart: "2026-05-20",
   waterLogs: [
-    { date: "2026-06-01", temp: 25.4, salinity: 34.5, ph: 8.1, kh: 8.0, no3: 8, po4: 0.05 },
-    { date: "2026-06-06", temp: 25.7, salinity: 35.0, ph: 8.2, kh: 8.3, no3: 6, po4: 0.04 },
-    { date: "2026-06-12", temp: 25.6, salinity: 34.8, ph: 8.1, kh: 8.1, no3: 5, po4: 0.03 }
+    { date: "2026-06-01", temp: 25.4, salinity: 34.500, ph: 8.1, kh: 8.0, no3: 8.0, nh3: 0.0, po4: 0.05 },
+    { date: "2026-06-06", temp: 25.7, salinity: 35.000, ph: 8.2, kh: 8.3, no3: 6.0, nh3: 0.0, po4: 0.04 },
+    { date: "2026-06-12", temp: 25.6, salinity: 34.800, ph: 8.1, kh: 8.1, no3: 5.0, nh3: 0.0, po4: 0.03 }
   ],
   tasks: [
     { title: "20% 환수", category: "환수", due: "2026-06-18", memo: "염도 35ppt 맞추기" },
@@ -60,6 +66,9 @@ const seedData = {
 
 let state = loadState();
 let selectedLivestockIndex = null;
+let notificationSettings = loadNotificationSettings();
+let notificationTimer = null;
+let serviceWorkerRegistration = null;
 
 function loadState() {
   const saved = localStorage.getItem(storageKey);
@@ -68,6 +77,15 @@ function loadState() {
 }
 
 function saveState() { localStorage.setItem(storageKey, JSON.stringify(state)); }
+function loadNotificationSettings() {
+  const saved = localStorage.getItem(notificationStorageKey);
+  if (!saved) return { ...defaultNotificationSettings };
+  try { return { ...defaultNotificationSettings, ...JSON.parse(saved) }; } catch { return { ...defaultNotificationSettings }; }
+}
+
+function saveNotificationSettings() {
+  localStorage.setItem(notificationStorageKey, JSON.stringify(notificationSettings));
+}
 const $ = (selector) => document.querySelector(selector);
 const $$ = (selector) => [...document.querySelectorAll(selector)];
 const daysBetween = (a, b) => Math.ceil((new Date(a) - new Date(b)) / 86400000);
@@ -79,6 +97,8 @@ function renderAll() {
   renderWater();
   renderLivestock();
   renderLibrary();
+  updateNotificationUi();
+  scheduleReminderNotification();
   saveState();
 }
 
@@ -223,6 +243,7 @@ function stabilityScore(log) {
   if (log.ph < 8.0 || log.ph > 8.4) score -= 10;
   if (log.kh < 7.5 || log.kh > 9.5) score -= 10;
   if (log.no3 > 15) score -= 15;
+  if ((log.nh3 || 0) > 0) score -= 20;
   if (log.po4 > 0.1) score -= 15;
   return Math.max(0, score);
 }
@@ -234,6 +255,124 @@ function nextDueText() {
   return `${task.title} · ${d === 0 ? "오늘" : d > 0 ? `${d}일 후` : `${Math.abs(d)}일 지남`}`;
 }
 
+function upcomingTasksForNotification() {
+  return [...state.tasks]
+    .map(task => ({ ...task, distance: daysBetween(task.due, todayIso) }))
+    .filter(task => task.distance >= 0 && task.distance <= Number(notificationSettings.leadDays))
+    .sort((a, b) => a.due.localeCompare(b.due));
+}
+
+function notificationPermissionLabel() {
+  if (!("Notification" in window)) return "이 브라우저는 알림을 지원하지 않습니다.";
+  if (Notification.permission === "granted") return "브라우저 알림 권한이 허용되어 있습니다.";
+  if (Notification.permission === "denied") return "브라우저에서 알림 권한이 차단되어 있습니다.";
+  return "알림을 켜면 브라우저 권한 요청이 표시됩니다.";
+}
+
+function updateNotificationUi() {
+  const enabledInput = $("#notifyEnabled");
+  const timeInput = $("#notifyTime");
+  const leadInput = $("#notifyLeadDays");
+  const status = $("#notificationStatus");
+  const summary = $("#notificationSummary");
+
+  if (enabledInput) enabledInput.checked = Boolean(notificationSettings.enabled);
+  if (timeInput) timeInput.value = notificationSettings.time;
+  if (leadInput) leadInput.value = String(notificationSettings.leadDays);
+  if (status) {
+    const stateText = notificationSettings.enabled ? "알림 켜짐" : "알림 꺼짐";
+    status.textContent = `${stateText} · ${notificationPermissionLabel()}`;
+  }
+  if (summary) {
+    summary.textContent = notificationSettings.enabled
+      ? `${notificationSettings.time} · ${notificationSettings.leadDays}일 전 알림`
+      : "알림 설정 꺼짐";
+  }
+}
+
+async function registerServiceWorker() {
+  if (!("serviceWorker" in navigator)) return null;
+  try {
+    serviceWorkerRegistration = await navigator.serviceWorker.register("service-worker.js");
+    return serviceWorkerRegistration;
+  } catch (error) {
+    console.warn("Service worker registration failed", error);
+    return null;
+  }
+}
+
+async function ensureNotificationPermission() {
+  if (!("Notification" in window)) return false;
+  if (Notification.permission === "granted") return true;
+  if (Notification.permission === "denied") return false;
+  const permission = await Notification.requestPermission();
+  updateNotificationUi();
+  return permission === "granted";
+}
+
+function buildNotificationPayload(isTest = false) {
+  if (isTest) {
+    return {
+      title: "리프로그 테스트 알림",
+      body: "푸시 알림 설정이 정상적으로 연결되었습니다."
+    };
+  }
+  const tasks = upcomingTasksForNotification();
+  if (!tasks.length) {
+    return {
+      title: "리프로그 관리 알림",
+      body: "가까운 관리 일정은 없지만 오늘의 수질 상태를 확인해 보세요."
+    };
+  }
+  const first = tasks[0];
+  const when = first.distance === 0 ? "오늘" : `${first.distance}일 후`;
+  return {
+    title: "리프로그 관리 알림",
+    body: `${first.title} 일정이 ${when} 예정되어 있습니다.${tasks.length > 1 ? ` 외 ${tasks.length - 1}건` : ""}`
+  };
+}
+
+async function showReminderNotification(isTest = false) {
+  const allowed = await ensureNotificationPermission();
+  if (!allowed) {
+    updateNotificationUi();
+    return false;
+  }
+  const payload = buildNotificationPayload(isTest);
+  const options = {
+    body: payload.body,
+    icon: "assets/icons/icon-192.png",
+    badge: "assets/icons/icon-192.png",
+    tag: isTest ? "reef-log-test" : "reef-log-reminder",
+    renotify: true
+  };
+  const registration = serviceWorkerRegistration || await navigator.serviceWorker?.ready;
+  if (registration?.showNotification) {
+    await registration.showNotification(payload.title, options);
+  } else {
+    new Notification(payload.title, options);
+  }
+  return true;
+}
+
+function scheduleReminderNotification() {
+  if (notificationTimer) window.clearTimeout(notificationTimer);
+  notificationTimer = null;
+  if (!notificationSettings.enabled || !("Notification" in window)) return;
+
+  const [hour, minute] = notificationSettings.time.split(":").map(Number);
+  const next = new Date();
+  next.setHours(hour || 9, minute || 0, 0, 0);
+  if (next <= new Date()) next.setDate(next.getDate() + 1);
+
+  notificationTimer = window.setTimeout(async () => {
+    if (notificationSettings.enabled && Notification.permission === "granted") {
+      await showReminderNotification();
+    }
+    scheduleReminderNotification();
+  }, Math.min(next.getTime() - Date.now(), 2147483647));
+}
+
 function renderTasks(selector, tasks) {
   const target = $(selector);
   target.innerHTML = tasks.length ? tasks.map(t => `<article class="task-item"><strong>${escapeHtml(t.title)}</strong><small>${t.category} · ${t.due} · ${escapeHtml(t.memo || "메모 없음")}</small></article>`).join("") : `<article class="task-item"><strong>밀린 작업 없음</strong><small>어항이 편안한 하루입니다.</small></article>`;
@@ -241,7 +380,7 @@ function renderTasks(selector, tasks) {
 
 function renderWater() {
   renderTasks("#taskTimeline", [...state.tasks].sort((a,b) => a.due.localeCompare(b.due)));
-  $("#waterRows").innerHTML = sortedLogs().reverse().map(log => `<tr><td>${log.date}</td><td>${log.temp}</td><td>${log.salinity}</td><td>${log.ph}</td><td>${log.kh}</td><td>${log.no3}</td><td>${log.po4}</td></tr>`).join("");
+  $("#waterRows").innerHTML = sortedLogs().reverse().map(log => `<tr><td>${log.date}</td><td>${formatNumber(log.temp, 1)}</td><td>${formatNumber(log.salinity, 3)}</td><td>${formatNumber(log.ph, 1)}</td><td>${formatNumber(log.kh, 1)}</td><td>${formatNumber(log.no3, 1)}</td><td>${formatNumber(log.nh3 || 0, 1)}</td><td>${formatNumber(log.po4, 2)}</td></tr>`).join("");
 }
 
 function renderLivestock() {
@@ -296,6 +435,11 @@ function escapeHtml(value) {
   return String(value).replace(/[&<>"]/g, ch => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[ch]));
 }
 
+function formatNumber(value, digits) {
+  const number = Number(value);
+  return Number.isFinite(number) ? number.toFixed(digits) : "-";
+}
+
 function setupAquariumCursorIdle() {
   const stage = $(".aquarium-stage");
   if (!stage) return;
@@ -334,7 +478,7 @@ $$("[data-open-modal]").forEach(btn => btn.addEventListener("click", () => $("#"
 $("#waterForm").addEventListener("submit", event => {
   event.preventDefault();
   const data = Object.fromEntries(new FormData(event.currentTarget));
-  state.waterLogs.push({ date: data.date, temp:+data.temp, salinity:+data.salinity, ph:+data.ph, kh:+data.kh, no3:+data.no3, po4:+data.po4 });
+  state.waterLogs.push({ date: data.date, temp:+data.temp, salinity:+data.salinity, ph:+data.ph, kh:+data.kh, no3:+data.no3, nh3:+data.nh3, po4:+data.po4 });
   event.currentTarget.reset(); renderAll();
 });
 $("#livestockForm").addEventListener("submit", event => {
@@ -369,7 +513,33 @@ $("#checkCompat").addEventListener("click", () => {
   $("#compatResult").textContent = a === b ? "같은 생물은 개체 수와 수조 크기를 먼저 확인하세요." : risky ? "주의: 영역성이 강할 수 있어 충분한 수조 크기와 은신처가 필요합니다." : "대체로 가능: 체급 차이, 먹이 경쟁, 공격성만 관찰하세요.";
 });
 $("#resetDemo").addEventListener("click", () => { state = structuredClone(seedData); selectedLivestockIndex = null; renderAll(); });
+$$("[data-notification-settings]").forEach(btn => btn.addEventListener("click", () => {
+  updateNotificationUi();
+  $("#notificationModal")?.showModal();
+}));
+$("#notificationForm")?.addEventListener("submit", async event => {
+  event.preventDefault();
+  const data = Object.fromEntries(new FormData(event.currentTarget));
+  notificationSettings = {
+    enabled: data.enabled === "on",
+    time: data.time || defaultNotificationSettings.time,
+    leadDays: Number(data.leadDays ?? defaultNotificationSettings.leadDays)
+  };
+  if (notificationSettings.enabled) {
+    const allowed = await ensureNotificationPermission();
+    notificationSettings.enabled = allowed;
+  }
+  saveNotificationSettings();
+  updateNotificationUi();
+  scheduleReminderNotification();
+  $("#notificationModal")?.close();
+});
+$("#testNotification")?.addEventListener("click", async () => {
+  await showReminderNotification(true);
+  updateNotificationUi();
+});
 
 $$('input[type="date"]').forEach(input => { if (!input.value) input.value = todayIso; });
+registerServiceWorker().then(() => scheduleReminderNotification());
 setupAquariumCursorIdle();
 renderAll();

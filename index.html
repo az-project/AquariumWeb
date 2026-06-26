@@ -3,8 +3,12 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="해수어항 수질, 생물, 장비, 관리 알림을 기록하는 리프로그 PWA 앱" />
+  <meta name="theme-color" content="#159fb7" />
   <title>리프로그 - 해수어항 관리</title>
-  <link rel="stylesheet" href="styles.css?v=coral-shadow-fix" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="assets/icons/icon-192.png" />
+  <link rel="stylesheet" href="styles.css?v=pwa-notifications" />
 </head>
 <body>
   <div class="app-shell">
@@ -25,6 +29,8 @@
       <div class="sidebar-note">
         <span>다음 알림</span>
         <strong id="nextReminder">계산 중</strong>
+        <small id="notificationSummary">알림 설정 꺼짐</small>
+        <button class="text-button notification-button" data-notification-settings type="button">알림 설정</button>
       </div>
     </aside>
 
@@ -36,6 +42,7 @@
         </div>
         <div class="topbar-actions">
           <button class="icon-button" id="resetDemo" title="샘플 데이터 초기화" aria-label="샘플 데이터 초기화">↻</button>
+          <button class="text-button" data-notification-settings type="button">알림 설정</button>
           <button class="primary-button" data-open-modal="taskModal">관리 일정 추가</button>
         </div>
       </header>
@@ -131,10 +138,11 @@
             <form class="form-grid" id="waterForm">
               <label>날짜<input type="date" name="date" required /></label>
               <label>수온 °C<input type="number" step="0.1" name="temp" required /></label>
-              <label>염도 ppt<input type="number" step="0.1" name="salinity" required /></label>
+              <label>염도 ppt<input type="number" step="0.001" name="salinity" required /></label>
               <label>pH<input type="number" step="0.1" name="ph" required /></label>
               <label>KH dKH<input type="number" step="0.1" name="kh" required /></label>
               <label>NO3 ppm<input type="number" step="0.1" name="no3" required /></label>
+              <label>NH3 ppm<input type="number" step="0.1" name="nh3" required /></label>
               <label>PO4 ppm<input type="number" step="0.01" name="po4" required /></label>
               <button class="primary-button wide" type="submit">수질 저장</button>
             </form>
@@ -153,7 +161,7 @@
           </div>
           <div class="table-wrap">
             <table>
-              <thead><tr><th>날짜</th><th>수온</th><th>염도</th><th>pH</th><th>KH</th><th>NO3</th><th>PO4</th></tr></thead>
+              <thead><tr><th>날짜</th><th>수온</th><th>염도</th><th>pH</th><th>KH</th><th>NO3</th><th>NH3</th><th>PO4</th></tr></thead>
               <tbody id="waterRows"></tbody>
             </table>
           </div>
@@ -241,6 +249,40 @@
     </form>
   </dialog>
 
-  <script src="app.js?v=cursor-idle-fix"></script>
+  <dialog class="modal" id="notificationModal">
+    <form method="dialog" class="modal-card notification-card" id="notificationForm">
+      <div class="panel-heading">
+        <h2>푸시 알림 설정</h2>
+        <button class="icon-button" value="cancel" aria-label="닫기">×</button>
+      </div>
+      <div class="notification-status" id="notificationStatus">
+        브라우저 알림 권한을 확인 중입니다.
+      </div>
+      <label class="switch-row">
+        <input type="checkbox" id="notifyEnabled" name="enabled" />
+        <span>
+          <strong>관리 일정 알림</strong>
+          <small>예정된 환수, 먹이, 장비 점검을 지정 시간에 알려줍니다.</small>
+        </span>
+      </label>
+      <div class="form-grid">
+        <label>알림 시간<input type="time" id="notifyTime" name="time" value="09:00" /></label>
+        <label>사전 알림
+          <select id="notifyLeadDays" name="leadDays">
+            <option value="0">당일</option>
+            <option value="1">1일 전</option>
+            <option value="3">3일 전</option>
+            <option value="7">7일 전</option>
+          </select>
+        </label>
+      </div>
+      <div class="modal-actions">
+        <button class="text-button" id="testNotification" type="button">테스트 알림</button>
+        <button class="primary-button" value="default" type="submit">설정 저장</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="app.js?v=pwa-notifications"></script>
 </body>
 </html>

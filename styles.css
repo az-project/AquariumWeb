@@ -52,6 +52,17 @@ button { cursor: pointer; }
 .sidebar-note { margin-top: auto; padding: 16px; border: 1px solid rgba(255,255,255,.16); border-radius: 8px; }
 .sidebar-note span { display:block; color:#a8c3cb; font-size: 13px; }
 .sidebar-note strong { display:block; margin-top: 6px; }
+.sidebar-note small {
+  display: block;
+  margin-top: 8px;
+  color: #a8c3cb;
+  line-height: 1.45;
+}
+.notification-button {
+  width: 100%;
+  margin-top: 12px;
+  justify-content: center;
+}
 .main-area { padding: 28px; min-width: 0; }
 .topbar { display:flex; justify-content:space-between; align-items:center; gap:16px; margin-bottom:22px; }
 .eyebrow { margin: 0 0 5px; color: var(--blue); font-weight: 700; font-size: 13px; text-transform: uppercase; letter-spacing: .08em; }
@@ -609,6 +620,48 @@ th { color:var(--muted); font-size:13px; }
 .modal { border:0; border-radius:8px; padding:0; box-shadow:var(--shadow); }
 .modal::backdrop { background:rgba(9,34,43,.42); }
 .modal-card { width:min(460px, calc(100vw - 30px)); padding:18px; display:grid; gap:12px; }
+.notification-card {
+  width: min(520px, calc(100vw - 30px));
+}
+.notification-status {
+  padding: 13px 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(233, 243, 241, .92);
+  color: var(--deep);
+  font-weight: 800;
+  line-height: 1.45;
+}
+.switch-row {
+  display: flex;
+  grid-template-columns: none;
+  align-items: center;
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(255,255,255,.82);
+  color: var(--ink);
+}
+.switch-row input {
+  width: 20px;
+  height: 20px;
+  min-height: 20px;
+  flex: 0 0 auto;
+}
+.switch-row span {
+  display: grid;
+  gap: 4px;
+}
+.switch-row small {
+  color: var(--muted);
+  line-height: 1.45;
+}
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
 @media (max-width: 980px) {
   .app-shell { grid-template-columns:1fr; }
   .sidebar { position:static; padding:16px; }
@@ -1077,7 +1130,7 @@ th {
 
   .topbar-actions {
     display: grid;
-    grid-template-columns: 44px 1fr;
+    grid-template-columns: 44px minmax(92px, auto) 1fr;
     gap: 12px;
   }
 
