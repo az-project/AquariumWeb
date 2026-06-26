@@ -8,7 +8,7 @@
   <title>리프로그 - 해수어항 관리</title>
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="apple-touch-icon" href="assets/icons/icon-192.png" />
-  <link rel="stylesheet" href="styles.css?v=pwa-notifications" />
+  <link rel="stylesheet" href="styles.css?v=livestock-film-clean" />
 </head>
 <body>
   <div class="app-shell">
@@ -137,14 +137,14 @@
             </div>
             <form class="form-grid" id="waterForm">
               <label>날짜<input type="date" name="date" required /></label>
-              <label>수온 °C<input type="number" step="0.1" name="temp" required /></label>
+              <label>수온<input type="number" step="0.1" name="temp" required /></label>
               <label>염도 ppt<input type="number" step="0.001" name="salinity" required /></label>
-              <label>pH<input type="number" step="0.1" name="ph" required /></label>
-              <label>KH dKH<input type="number" step="0.1" name="kh" required /></label>
-              <label>NO3 ppm<input type="number" step="0.1" name="no3" required /></label>
-              <label>NH3 ppm<input type="number" step="0.1" name="nh3" required /></label>
-              <label>PO4 ppm<input type="number" step="0.01" name="po4" required /></label>
-              <button class="primary-button wide" type="submit">수질 저장</button>
+              <label>알칼리티 dKH<input type="number" step="0.1" name="kh" required /></label>
+              <label>질산염 ppm<input type="number" step="0.1" name="no3" required /></label>
+              <label>암모니아 ppm<input type="number" step="0.1" name="nh3" required /></label>
+              <label>인산염 ppm<input type="number" step="0.01" name="po4" required /></label>
+              <button class="primary-button wide" id="waterSubmitLabel" type="submit">수질 저장</button>
+              <button class="text-button wide" id="cancelWaterEdit" type="button" hidden>수정 취소</button>
             </form>
           </section>
           <section class="panel">
@@ -161,7 +161,7 @@
           </div>
           <div class="table-wrap">
             <table>
-              <thead><tr><th>날짜</th><th>수온</th><th>염도</th><th>pH</th><th>KH</th><th>NO3</th><th>NH3</th><th>PO4</th></tr></thead>
+              <thead><tr><th>날짜</th><th>수온</th><th>염도</th><th>알칼리티</th><th>질산염</th><th>암모니아</th><th>인산염</th><th>관리</th></tr></thead>
               <tbody id="waterRows"></tbody>
             </table>
           </div>
@@ -175,18 +175,29 @@
               <h2>생물 등록</h2>
             </div>
             <form class="form-grid" id="livestockForm">
-              <label>이름<input name="name" placeholder="예: 퍼큘라 클라운" required /></label>
-              <label>분류<select name="type"><option>물고기</option><option>산호</option><option>무척추</option></select></label>
+              <label>생물 선택<select name="name" data-species-select required></select></label>
+              <div class="species-level-card" data-species-level-card>
+                <span class="level-badge beginner" data-species-level>초급</span>
+                <small data-species-level-note>안정적인 수질에서 적응이 쉬운 생물입니다.</small>
+              </div>
               <label>투입일<input type="date" name="added" required /></label>
               <label>상태<select name="status"><option>건강</option><option>관찰</option><option>격리</option></select></label>
               <label class="wide">메모<input name="memo" placeholder="먹이 반응, 성격, 위치 등" /></label>
-              <button class="primary-button wide" type="submit">생물 저장</button>
+              <button class="primary-button wide" id="livestockSubmitLabel" type="submit">생물 저장</button>
+              <button class="text-button wide" id="cancelLivestockEdit" type="button" hidden>수정 취소</button>
             </form>
           </section>
           <section class="panel">
             <div class="panel-heading">
               <h2>장비 상태</h2>
             </div>
+            <form class="form-grid equipment-form" id="equipmentForm">
+              <label>장비명<input name="name" placeholder="예: 조명" required /></label>
+              <label>상태<input name="status" placeholder="예: 정상" required /></label>
+              <label class="wide">관리 주기<input name="cycle" placeholder="예: 10:00-20:00, 주 2회" required /></label>
+              <button class="primary-button wide" id="equipmentSubmitLabel" type="submit">장비 저장</button>
+              <button class="text-button wide" id="cancelEquipmentEdit" type="button" hidden>수정 취소</button>
+            </form>
             <div class="equipment-grid" id="equipmentGrid"></div>
           </section>
         </div>
@@ -201,6 +212,11 @@
             </div>
             <div class="search-row">
               <input id="librarySearch" placeholder="이름, 난이도, 성격 검색" />
+            </div>
+            <div class="level-guide" aria-label="난이도 기준">
+              <span><strong class="level-dot beginner">초급</strong> 안정적인 수질에서 적응이 쉬움</span>
+              <span><strong class="level-dot intermediate">중급</strong> 수조 크기, 합사, 먹이 또는 위치 관리 필요</span>
+              <span><strong class="level-dot advanced">상급</strong> 장기 안정화, 전용 먹이, 세밀한 관찰 필요</span>
             </div>
             <div class="library-list" id="libraryList"></div>
           </section>
@@ -224,7 +240,7 @@
     <form method="dialog" class="modal-card" id="taskForm">
       <div class="panel-heading">
         <h2>관리 일정 추가</h2>
-        <button class="icon-button" value="cancel" aria-label="닫기">×</button>
+        <button class="icon-button" data-close-dialog type="button" aria-label="닫기">×</button>
       </div>
       <label>작업명<input name="title" placeholder="예: 20% 환수" required /></label>
       <label>분류<select name="category"><option>환수</option><option>먹이</option><option>첨가제</option><option>장비</option><option>검역</option></select></label>
@@ -238,10 +254,13 @@
     <form method="dialog" class="modal-card" id="quickLivestockForm">
       <div class="panel-heading">
         <h2>생물 빠른 추가</h2>
-        <button class="icon-button" value="cancel" aria-label="닫기">×</button>
+        <button class="icon-button" data-close-dialog type="button" aria-label="닫기">×</button>
       </div>
-      <label>이름<input name="name" placeholder="예: 옐로우탱" required /></label>
-      <label>분류<select name="type"><option>물고기</option><option>산호</option><option>무척추</option></select></label>
+      <label>생물 선택<select name="name" data-species-select required></select></label>
+      <div class="species-level-card" data-species-level-card>
+        <span class="level-badge beginner" data-species-level>초급</span>
+        <small data-species-level-note>안정적인 수질에서 적응이 쉬운 생물입니다.</small>
+      </div>
       <label>투입일<input type="date" name="added" required /></label>
       <label>상태<select name="status"><option>건강</option><option>관찰</option><option>격리</option></select></label>
       <label>메모<input name="memo" placeholder="먹이 반응, 위치, 성격 등" /></label>
@@ -253,7 +272,7 @@
     <form method="dialog" class="modal-card notification-card" id="notificationForm">
       <div class="panel-heading">
         <h2>푸시 알림 설정</h2>
-        <button class="icon-button" value="cancel" aria-label="닫기">×</button>
+        <button class="icon-button" data-close-dialog type="button" aria-label="닫기">×</button>
       </div>
       <div class="notification-status" id="notificationStatus">
         브라우저 알림 권한을 확인 중입니다.
@@ -283,6 +302,6 @@
     </form>
   </dialog>
 
-  <script src="app.js?v=pwa-notifications"></script>
+  <script src="app.js?v=livestock-film-clean"></script>
 </body>
 </html>
