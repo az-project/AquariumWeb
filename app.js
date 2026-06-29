@@ -6,7 +6,8 @@ const defaultNotificationSettings = {
   time: "09:00",
   leadDays: 1
 };
-const assetVersion = "livestock-film-clean";
+const assetVersion = "invert-pseudo-fix";
+const sharedStateEndpoint = "/api/state";
 const memoryStorage = new Map();
 
 const species = [
@@ -15,7 +16,7 @@ const species = [
   { name: "옐로우탱", type: "물고기", level: "중급", nature: "영역성", note: "비슷한 체형의 탱류와 합사 시 주의", image: "assets/livestock/yellow-tang.png" },
   { name: "식스라인 래스", type: "물고기", level: "중급", nature: "재빠름", note: "작은 해충 제어에 도움, 소형어 괴롭힘 주의", image: "assets/livestock/firefish-goby.png" },
   { name: "버블 코랄", type: "산호", level: "중급", nature: "야간 촉수", note: "주변 산호와 간격 필요", image: "assets/livestock/bubble-coral.png" },
-  { name: "클리너 쉬림프", type: "무척추", level: "초급", nature: "온순", note: "물고기 청소 행동을 보이며 구리 약품에 취약", image: "assets/livestock/cleaner-shrimp.png" },
+  { name: "클리너 쉬림프", type: "무척추", level: "초급", nature: "온순", note: "물고기 청소 행동을 보이며 구리 약품에 취약", image: "assets/livestock/cleaner-shrimp-v2.png" },
   { name: "로열 그라마", type: "물고기", level: "초급", nature: "은신 선호", note: "보라색과 노란색 대비가 예쁜 소형어", image: "assets/livestock/royal-gramma.png" },
   { name: "파이어피시 고비", type: "물고기", level: "초급", nature: "겁이 많음", note: "점프 방지 뚜껑과 조용한 합사 환경 권장", image: "assets/livestock/firefish-goby.png" },
   { name: "만다린 드래고넷", type: "물고기", level: "상급", nature: "평화로움", note: "먹이 적응과 충분한 미소생물이 중요", image: "assets/livestock/mandarin-dragonet.png" },
@@ -28,7 +29,7 @@ const species = [
 const livestockAssetMap = [
   { test: /니모|클라운|퍼큘라|clown/i, src: "assets/livestock/clownfish.png" },
   { test: /옐로우|yellow/i, src: "assets/livestock/yellow-tang.png" },
-  { test: /쉬림프|shrimp/i, src: "assets/livestock/cleaner-shrimp.png" },
+  { test: /쉬림프|shrimp/i, src: "assets/livestock/cleaner-shrimp-v2.png" },
   { test: /로열|그라마|gramma/i, src: "assets/livestock/royal-gramma.png" },
   { test: /파이어|firefish|고비|goby|래스|wrasse/i, src: "assets/livestock/firefish-goby.png" },
   { test: /만다린|mandarin|드래고넷/i, src: "assets/livestock/mandarin-dragonet.png" },
@@ -73,6 +74,9 @@ let editingLivestockIndex = null;
 let editingEquipmentIndex = null;
 let tankDragState = null;
 let suppressTankClickUntil = 0;
+let sharedStateEnabled = false;
+let sharedStateSaveTimer = null;
+let applyingSharedState = false;
 let notificationSettings = loadNotificationSettings();
 let notificationTimer = null;
 let serviceWorkerRegistration = null;
@@ -80,10 +84,13 @@ let serviceWorkerRegistration = null;
 function loadState() {
   const saved = getStorageItem(storageKey);
   if (!saved) return cloneData(seedData);
-  try { return JSON.parse(saved); } catch { return cloneData(seedData); }
+  try { return migrateState(JSON.parse(saved)); } catch { return cloneData(seedData); }
 }
 
-function saveState() { setStorageItem(storageKey, JSON.stringify(state)); }
+function saveState() {
+  setStorageItem(storageKey, JSON.stringify(state));
+  if (sharedStateEnabled && !applyingSharedState) queueSharedStateSave();
+}
 function loadNotificationSettings() {
   const saved = getStorageItem(notificationStorageKey);
   if (!saved) return { ...defaultNotificationSettings };
@@ -104,6 +111,58 @@ function setStorageItem(key, value) {
 function cloneData(value) {
   if (typeof structuredClone === "function") return structuredClone(value);
   return JSON.parse(JSON.stringify(value));
+}
+
+function migrateState(data) {
+  if (!data?.livestock) return data;
+  data.livestock = data.livestock.map(item => {
+    if (item.image === "assets/livestock/cleaner-shrimp.png") {
+      return { ...item, image: "assets/livestock/cleaner-shrimp-v2.png" };
+    }
+    return item;
+  });
+  return data;
+}
+
+async function initializeSharedState() {
+  try {
+    const response = await fetch(sharedStateEndpoint, { cache: "no-store" });
+    if (!response.ok) return;
+    const sharedState = await response.json();
+    sharedStateEnabled = true;
+    if (sharedState && Object.keys(sharedState).length) {
+      applyingSharedState = true;
+      state = migrateState(sharedState);
+      selectedLivestockIndex = null;
+      setStorageItem(storageKey, JSON.stringify(state));
+      renderAll();
+      applyingSharedState = false;
+    } else {
+      queueSharedStateSave();
+    }
+  } catch {
+    sharedStateEnabled = false;
+    applyingSharedState = false;
+  }
+}
+
+function queueSharedStateSave() {
+  if (sharedStateSaveTimer) window.clearTimeout(sharedStateSaveTimer);
+  sharedStateSaveTimer = window.setTimeout(saveSharedState, 350);
+}
+
+async function saveSharedState() {
+  sharedStateSaveTimer = null;
+  try {
+    const response = await fetch(sharedStateEndpoint, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(state)
+    });
+    sharedStateEnabled = response.ok;
+  } catch {
+    sharedStateEnabled = false;
+  }
 }
 const $ = (selector) => document.querySelector(selector);
 const $$ = (selector) => [...document.querySelectorAll(selector)];
@@ -195,7 +254,7 @@ function livestockImage(item, index = 0) {
   const name = item.name || "";
   const match = livestockAssetMap.find(entry => entry.test.test(name));
   if (match) return match.src;
-  if (item.type === "무척추") return "assets/livestock/cleaner-shrimp.png";
+  if (item.type === "무척추") return "assets/livestock/cleaner-shrimp-v2.png";
   if (item.type === "산호") {
     const coralFallbacks = [
       "assets/livestock/anemone.png",
@@ -860,3 +919,4 @@ registerServiceWorker().then(() => scheduleReminderNotification());
 setupAquariumCursorIdle();
 setupTankDrag();
 renderAll();
+initializeSharedState();

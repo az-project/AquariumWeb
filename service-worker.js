@@ -1,9 +1,9 @@
-const CACHE_NAME = "reef-log-pwa-v13";
+const CACHE_NAME = "reef-log-pwa-v20";
 const APP_SHELL = [
   "./",
   "index.html",
-  "styles.css?v=livestock-film-clean",
-  "app.js?v=livestock-film-clean",
+  "styles.css?v=shared-docker-state",
+  "app.js?v=shared-docker-state",
   "manifest.webmanifest",
   "assets/reef-bg-no-fish-v2.png",
   "assets/icons/icon-192.png",
@@ -30,6 +30,7 @@ self.addEventListener("fetch", (event) => {
   if (event.request.method !== "GET") return;
   const requestUrl = new URL(event.request.url);
   if (requestUrl.origin !== self.location.origin) return;
+  if (requestUrl.pathname.startsWith("/api/")) return;
 
   event.respondWith(
     caches.match(event.request)

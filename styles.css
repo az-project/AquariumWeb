@@ -1290,3 +1290,30 @@ th {
   box-shadow: none !important;
   filter: none !important;
 }
+
+.inhabitant.has-image.invert,
+.inhabitant.has-image.invert:hover,
+.inhabitant.has-image.invert:focus,
+.inhabitant.has-image.invert:active,
+.inhabitant.has-image.invert.selected {
+  background: transparent !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  filter: none !important;
+  outline: 0 !important;
+}
+
+.inhabitant.has-image.invert::before,
+.inhabitant.has-image.invert::after,
+.inhabitant.has-image.invert:hover::before,
+.inhabitant.has-image.invert:hover::after,
+.inhabitant.has-image.invert:focus::before,
+.inhabitant.has-image.invert:focus::after,
+.inhabitant.has-image.invert.selected::before,
+.inhabitant.has-image.invert.selected::after {
+  content: none !important;
+  display: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  filter: none !important;
+}
