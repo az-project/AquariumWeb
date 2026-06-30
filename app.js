@@ -1,4 +1,5 @@
-﻿const storageKey = "reef-log-demo-v1";
+﻿const storageKey = "reef-log-empty-v2";
+const legacyStorageKeys = ["reef-log-demo-v1"];
 const notificationStorageKey = "reef-log-notifications-v1";
 const todayIso = new Date().toISOString().slice(0, 10);
 const defaultNotificationSettings = {
@@ -46,28 +47,11 @@ const livestockAssetMap = [
 ];
 
 const seedData = {
-  tankStart: "2026-05-20",
-  waterLogs: [
-    { date: "2026-06-01", temp: 25.4, salinity: 34.500, kh: 8.0, no3: 8.0, nh3: 0.0, po4: 0.05 },
-    { date: "2026-06-06", temp: 25.7, salinity: 35.000, kh: 8.3, no3: 6.0, nh3: 0.0, po4: 0.04 },
-    { date: "2026-06-12", temp: 25.6, salinity: 34.800, kh: 8.1, no3: 5.0, nh3: 0.0, po4: 0.03 }
-  ],
-  tasks: [
-    { title: "20% 환수", category: "환수", due: "2026-06-18", memo: "염도 35ppt 맞추기" },
-    { title: "스키머 컵 청소", category: "장비", due: todayIso, memo: "목 부분까지 세척" },
-    { title: "냉동 브라인 급여", category: "먹이", due: todayIso, memo: "소량만" }
-  ],
-  livestock: [
-    { name: "니모 1호", type: "물고기", added: "2026-05-25", status: "건강", memo: "먹이 반응 좋음" },
-    { name: "블루탱", type: "물고기", added: "2026-06-02", status: "관찰", memo: "백점 여부 확인" },
-    { name: "그린 스타폴립", type: "산호", added: "2026-06-05", status: "건강", memo: "폴립 잘 열림" }
-  ],
-  equipment: [
-    { name: "조명", status: "정상", cycle: "10:00-20:00" },
-    { name: "스키머", status: "청소 필요", cycle: "주 2회" },
-    { name: "히터", status: "정상", cycle: "25.5°C" },
-    { name: "리턴펌프", status: "정상", cycle: "상시" }
-  ]
+  tankStart: todayIso,
+  waterLogs: [],
+  tasks: [],
+  livestock: [],
+  equipment: []
 };
 
 let state = loadState();
@@ -87,6 +71,7 @@ let notificationTimer = null;
 let serviceWorkerRegistration = null;
 
 function loadState() {
+  legacyStorageKeys.forEach(removeStorageItem);
   const saved = getStorageItem(storageKey);
   if (!saved) return cloneData(seedData);
   try { return migrateState(JSON.parse(saved)); } catch { return cloneData(seedData); }
@@ -113,12 +98,17 @@ function setStorageItem(key, value) {
   try { globalThis.localStorage?.setItem(key, value); } catch { memoryStorage.set(key, value); }
 }
 
+function removeStorageItem(key) {
+  try { globalThis.localStorage?.removeItem(key); } catch { memoryStorage.delete(key); }
+}
+
 function cloneData(value) {
   if (typeof structuredClone === "function") return structuredClone(value);
   return JSON.parse(JSON.stringify(value));
 }
 
 function migrateState(data) {
+  if (isDefaultSampleState(data)) return cloneData(seedData);
   if (!data?.livestock) return data;
   data.livestock = data.livestock.map(item => {
     if (item.image === "assets/livestock/cleaner-shrimp.png") {
@@ -127,6 +117,14 @@ function migrateState(data) {
     return item;
   });
   return data;
+}
+
+function isDefaultSampleState(data) {
+  if (!data || data.tankStart !== "2026-05-20") return false;
+  const hasSampleWater = data.waterLogs?.some(log => log.date === "2026-06-01" && Number(log.temp) === 25.4);
+  const hasSampleLivestock = data.livestock?.some(item => item.name === "니모 1호" || item.name === "블루탱");
+  const hasSampleEquipment = data.equipment?.some(item => item.name === "조명" || item.name === "스키머");
+  return Boolean(hasSampleWater || hasSampleLivestock || hasSampleEquipment);
 }
 
 async function initializeSharedState() {
@@ -182,7 +180,7 @@ async function saveSharedState() {
 const $ = (selector) => document.querySelector(selector);
 const $$ = (selector) => [...document.querySelectorAll(selector)];
 const daysBetween = (a, b) => Math.ceil((new Date(a) - new Date(b)) / 86400000);
-const sortedLogs = () => [...state.waterLogs].sort((a, b) => a.date.localeCompare(b.date));
+const sortedLogs = () => [...state.waterLogs].sort((a, b) => (a.date || "").localeCompare(b.date || ""));
 
 function setAuthUi(locked) {
   const authScreen = $("#authScreen");
@@ -301,20 +299,20 @@ function renderAll() {
 
 function renderDashboard() {
   const latest = latestLog();
-  $("#heroTemp").textContent = latest.temp ? `${latest.temp}°C` : "-";
-  $("#heroSalinity").textContent = latest.salinity ? `${latest.salinity}ppt` : "-";
-  const nextWater = state.tasks.filter(t => t.category === "환수").sort((a,b) => a.due.localeCompare(b.due))[0];
+  $("#heroTemp").textContent = formatMetric(latest.temp, 1, "°C");
+  $("#heroSalinity").textContent = formatMetric(latest.salinity, 3, "ppt");
+  const nextWater = state.tasks.filter(t => t.category === "환수" && isValidDateString(t.due)).sort((a,b) => a.due.localeCompare(b.due))[0];
   const dday = nextWater ? daysBetween(nextWater.due, todayIso) : null;
   $("#heroWaterChange").textContent = dday === null ? "-" : dday === 0 ? "오늘" : `D${dday > 0 ? "-" + dday : "+" + Math.abs(dday)}`;
   $("#nextReminder").textContent = nextDueText();
   $("#livestockCount").textContent = state.livestock.length;
-  $("#taskCount").textContent = state.tasks.filter(t => daysBetween(t.due, todayIso) <= 7).length;
+  $("#taskCount").textContent = state.tasks.filter(t => isValidDateString(t.due) && daysBetween(t.due, todayIso) <= 7).length;
   $("#tankDays").textContent = `${Math.max(1, daysBetween(todayIso, state.tankStart))}일`;
   const score = stabilityScore(latest);
-  $("#stabilityScore").textContent = `${score}점`;
-  $("#stabilityText").textContent = score >= 85 ? "아주 안정적" : score >= 70 ? "관찰 권장" : "조정 필요";
+  $("#stabilityScore").textContent = score === null ? "-" : `${score}점`;
+  $("#stabilityText").textContent = score === null ? "수질 기록 없음" : score >= 85 ? "아주 안정적" : score >= 70 ? "관찰 권장" : "조정 필요";
   renderTankInhabitants();
-  renderTasks("#todayTasks", state.tasks.filter(t => t.due <= todayIso).slice(0, 5));
+  renderTasks("#todayTasks", state.tasks.filter(t => isValidDateString(t.due) && t.due <= todayIso).slice(0, 5));
   drawChart();
 }
 
@@ -430,9 +428,11 @@ function renderSelectedCreature() {
 }
 
 function addLivestockFromForm(form) {
-  const data = Object.fromEntries(new FormData(form));
+  const data = cleanFormData(form);
   const selected = species.find(item => item.name === data.name);
-  data.type = selected?.type || "물고기";
+  data.name = data.name || "생물 이름 없음";
+  data.type = selected?.type || "생물";
+  data.status = data.status || "상태 미입력";
   if (Number.isInteger(editingLivestockIndex)) {
     data.tankPosition = state.livestock[editingLivestockIndex]?.tankPosition;
     state.livestock[editingLivestockIndex] = data;
@@ -443,7 +443,6 @@ function addLivestockFromForm(form) {
   }
   form.reset();
   setLivestockEditMode(null);
-  $$('input[type="date"]').forEach(input => { if (!input.value) input.value = todayIso; });
   renderAll();
 }
 
@@ -451,8 +450,8 @@ function fillLivestockForm(item) {
   const form = $("#livestockForm");
   if (!form || !item) return;
   const selectedSpecies = speciesForLivestock(item);
-  form.elements.name.value = selectedSpecies?.name || species[0].name;
-  form.elements.added.value = item.added || todayIso;
+  form.elements.name.value = selectedSpecies?.name || "";
+  form.elements.added.value = item.added || "";
   form.elements.status.value = item.status || "건강";
   form.elements.memo.value = item.memo || "";
   syncSpeciesType(form.elements.name);
@@ -474,7 +473,12 @@ function setLivestockEditMode(index = null) {
 }
 
 function equipmentFromForm(form) {
-  return Object.fromEntries(new FormData(form));
+  const data = cleanFormData(form);
+  return {
+    name: data.name || "장비명 없음",
+    status: data.status || "상태 미입력",
+    cycle: data.cycle || ""
+  };
 }
 
 function fillEquipmentForm(item) {
@@ -494,7 +498,7 @@ function setEquipmentEditMode(index = null) {
 }
 
 function renderSpeciesSelects() {
-  const options = species.map(item => `<option value="${escapeHtml(item.name)}">${escapeHtml(item.name)}</option>`).join("");
+  const options = `<option value="">선택 안 함</option>${species.map(item => `<option value="${escapeHtml(item.name)}">${escapeHtml(item.name)}</option>`).join("")}`;
   $$("[data-species-select]").forEach(select => {
     if (select.innerHTML !== options) select.innerHTML = options;
     syncSpeciesType(select);
@@ -504,9 +508,16 @@ function renderSpeciesSelects() {
 function syncSpeciesType(select) {
   const form = select.closest("form");
   const selected = species.find(item => item.name === select.value);
-  if (!selected) return;
   const badge = form?.querySelector("[data-species-level]");
   const note = form?.querySelector("[data-species-level-note]");
+  if (!selected) {
+    if (badge) {
+      badge.textContent = "선택 안 함";
+      badge.className = "level-badge";
+    }
+    if (note) note.textContent = "도감에서 선택하지 않아도 저장할 수 있습니다.";
+    return;
+  }
   if (badge) {
     badge.textContent = selected.level;
     badge.className = `level-badge ${levelClass(selected.level)}`;
@@ -527,22 +538,22 @@ function levelNote(level) {
 }
 
 function stabilityScore(log) {
-  if (!log.temp) return 0;
+  if (!hasNumber(log?.temp)) return null;
   let score = 100;
-  if (log.temp < 24.5 || log.temp > 26.5) score -= 15;
-  if (log.salinity < 34 || log.salinity > 36) score -= 15;
-  if (log.kh < 7.5 || log.kh > 9.5) score -= 10;
-  if (log.no3 > 15) score -= 15;
-  if ((log.nh3 || 0) > 0) score -= 20;
-  if (log.po4 > 0.1) score -= 15;
+  if (hasNumber(log.temp) && (log.temp < 24.5 || log.temp > 26.5)) score -= 15;
+  if (hasNumber(log.salinity) && (log.salinity < 34 || log.salinity > 36)) score -= 15;
+  if (hasNumber(log.kh) && (log.kh < 7.5 || log.kh > 9.5)) score -= 10;
+  if (hasNumber(log.no3) && log.no3 > 15) score -= 15;
+  if (hasNumber(log.nh3) && log.nh3 > 0) score -= 20;
+  if (hasNumber(log.po4) && log.po4 > 0.1) score -= 15;
   return Math.max(0, score);
 }
 
 function nextDueText() {
-  const task = [...state.tasks].sort((a,b) => a.due.localeCompare(b.due))[0];
+  const task = [...state.tasks].filter(t => isValidDateString(t.due)).sort((a,b) => a.due.localeCompare(b.due))[0];
   if (!task) return "등록된 일정 없음";
   const d = daysBetween(task.due, todayIso);
-  return `${task.title} · ${d === 0 ? "오늘" : d > 0 ? `${d}일 후` : `${Math.abs(d)}일 지남`}`;
+  return `${task.title || "작업명 없음"} · ${d === 0 ? "오늘" : d > 0 ? `${d}일 후` : `${Math.abs(d)}일 지남`}`;
 }
 
 function upcomingTasksForNotification() {
@@ -665,24 +676,24 @@ function scheduleReminderNotification() {
 
 function renderTasks(selector, tasks) {
   const target = $(selector);
-  target.innerHTML = tasks.length ? tasks.map(t => `<article class="task-item"><strong>${escapeHtml(t.title)}</strong><small>${t.category} · ${t.due} · ${escapeHtml(t.memo || "메모 없음")}</small></article>`).join("") : `<article class="task-item"><strong>밀린 작업 없음</strong><small>어항이 편안한 하루입니다.</small></article>`;
+  target.innerHTML = tasks.length ? tasks.map(t => `<article class="task-item"><strong>${escapeHtml(t.title || "작업명 없음")}</strong><small>${escapeHtml(t.category || "분류 없음")} · ${escapeHtml(t.due || "날짜 미정")} · ${escapeHtml(t.memo || "메모 없음")}</small></article>`).join("") : `<article class="task-item"><strong>밀린 작업 없음</strong><small>어항이 편안한 하루입니다.</small></article>`;
 }
 
 function renderWater() {
-  renderTasks("#taskTimeline", [...state.tasks].sort((a,b) => a.due.localeCompare(b.due)));
+  renderTasks("#taskTimeline", sortedTasks());
   $("#waterRows").innerHTML = state.waterLogs
     .map((log, index) => ({ ...log, index }))
-    .sort((a,b) => b.date.localeCompare(a.date))
-    .map(log => `<tr><td>${log.date}</td><td>${formatNumber(log.temp, 1)}</td><td>${formatNumber(log.salinity, 3)}</td><td>${formatNumber(log.kh, 1)}</td><td>${formatNumber(log.no3, 1)}</td><td>${formatNumber(log.nh3 || 0, 1)}</td><td>${formatNumber(log.po4, 2)}</td><td><div class="row-actions"><button class="text-button compact-button" data-edit-water="${log.index}" type="button">수정</button><button class="text-button compact-button danger" data-delete-water="${log.index}" type="button">삭제</button></div></td></tr>`)
+    .sort((a,b) => (b.date || "").localeCompare(a.date || ""))
+    .map(log => `<tr><td>${escapeHtml(log.date || "날짜 미정")}</td><td>${formatNumber(log.temp, 1)}</td><td>${formatNumber(log.salinity, 3)}</td><td>${formatNumber(log.kh, 1)}</td><td>${formatNumber(log.no3, 1)}</td><td>${formatNumber(log.nh3, 1)}</td><td>${formatNumber(log.po4, 2)}</td><td><div class="row-actions"><button class="text-button compact-button" data-edit-water="${log.index}" type="button">수정</button><button class="text-button compact-button danger" data-delete-water="${log.index}" type="button">삭제</button></div></td></tr>`)
     .join("");
 }
 
 function renderLivestock() {
   $("#livestockGrid").innerHTML = state.livestock.map((item, index) => {
     const asset = livestockImage(item, index);
-    return `<article class="creature-card">${asset ? `<img class="creature-image" src="${versionedAsset(asset)}" alt="${escapeHtml(item.name)}" />` : ""}<span class="badge">${item.type}</span><h2>${escapeHtml(item.name)}</h2><p>${item.added} 투입 · ${item.status}</p><small>${escapeHtml(item.memo || "메모 없음")}</small><div class="card-actions"><button class="text-button compact-button" data-edit-livestock="${index}" type="button">수정</button><button class="text-button compact-button danger" data-delete-livestock="${index}" type="button">삭제</button></div></article>`;
+    return `<article class="creature-card">${asset ? `<img class="creature-image" src="${versionedAsset(asset)}" alt="${escapeHtml(item.name)}" />` : ""}<span class="badge">${escapeHtml(item.type || "생물")}</span><h2>${escapeHtml(item.name || "생물 이름 없음")}</h2><p>${escapeHtml(item.added || "투입일 미정")} 투입 · ${escapeHtml(item.status || "상태 미입력")}</p><small>${escapeHtml(item.memo || "메모 없음")}</small><div class="card-actions"><button class="text-button compact-button" data-edit-livestock="${index}" type="button">수정</button><button class="text-button compact-button danger" data-delete-livestock="${index}" type="button">삭제</button></div></article>`;
   }).join("");
-  $("#equipmentGrid").innerHTML = state.equipment.map((e, index) => `<article class="equipment-item"><strong>${escapeHtml(e.name)}</strong><small>${escapeHtml(e.status)} · ${escapeHtml(e.cycle)}</small><div class="row-actions"><button class="text-button compact-button" data-edit-equipment="${index}" type="button">수정</button><button class="text-button compact-button danger" data-delete-equipment="${index}" type="button">삭제</button></div></article>`).join("");
+  $("#equipmentGrid").innerHTML = state.equipment.map((e, index) => `<article class="equipment-item"><strong>${escapeHtml(e.name || "장비명 없음")}</strong><small>${escapeHtml(e.status || "상태 미입력")} · ${escapeHtml(e.cycle || "관리 주기 미입력")}</small><div class="row-actions"><button class="text-button compact-button" data-edit-equipment="${index}" type="button">수정</button><button class="text-button compact-button danger" data-delete-equipment="${index}" type="button">삭제</button></div></article>`).join("");
 }
 
 function renderLibrary() {
@@ -696,7 +707,7 @@ function renderLibrary() {
 function drawChart() {
   const canvas = $("#waterChart");
   const ctx = canvas.getContext("2d");
-  const logs = sortedLogs().slice(-7);
+  const logs = sortedLogs().filter(log => ["salinity", "kh", "no3"].some(key => hasNumber(log[key]))).slice(-7);
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   ctx.fillStyle = "#f7fbfb";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -711,16 +722,17 @@ function drawChart() {
 function plot(logs, key, color, min, max, label) {
   const canvas = $("#waterChart");
   const ctx = canvas.getContext("2d");
-  const xStep = logs.length > 1 ? 540 / (logs.length - 1) : 0;
+  const points = logs.filter(log => hasNumber(log[key]));
+  const xStep = points.length > 1 ? 540 / (points.length - 1) : 0;
   ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineWidth = 3;
   ctx.beginPath();
-  logs.forEach((log, i) => {
+  points.forEach((log, i) => {
     const x = 50 + i * xStep;
     const y = 230 - ((log[key] - min) / (max - min)) * 185;
     if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
   });
-  ctx.stroke();
-  logs.forEach((log, i) => { const x = 50 + i * xStep; const y = 230 - ((log[key] - min) / (max - min)) * 185; ctx.beginPath(); ctx.arc(x, y, 4, 0, Math.PI * 2); ctx.fill(); });
+  if (points.length) ctx.stroke();
+  points.forEach((log, i) => { const x = 50 + i * xStep; const y = 230 - ((log[key] - min) / (max - min)) * 185; ctx.beginPath(); ctx.arc(x, y, 4, 0, Math.PI * 2); ctx.fill(); });
   const legendX = { salinity: 430, kh: 500, no3: 555 }[key];
   ctx.fillRect(legendX, 18, 10, 10); ctx.fillStyle = "#19313d"; ctx.font = "13px Segoe UI"; ctx.fillText(label, legendX + 16, 28);
 }
@@ -734,16 +746,47 @@ function formatNumber(value, digits) {
   return Number.isFinite(number) ? number.toFixed(digits) : "-";
 }
 
+function formatMetric(value, digits, unit) {
+  return hasNumber(value) ? `${formatNumber(value, digits)}${unit}` : "-";
+}
+
+function hasNumber(value) {
+  return value !== "" && value !== null && value !== undefined && Number.isFinite(Number(value));
+}
+
+function optionalNumber(value) {
+  const trimmed = String(value ?? "").trim();
+  if (!trimmed) return null;
+  const number = Number(trimmed);
+  return Number.isFinite(number) ? number : null;
+}
+
+function cleanFormData(form) {
+  return Object.fromEntries([...new FormData(form)].map(([key, value]) => [key, String(value ?? "").trim()]));
+}
+
+function isValidDateString(value) {
+  return /^\d{4}-\d{2}-\d{2}$/.test(String(value || ""));
+}
+
+function sortedTasks() {
+  return [...state.tasks].sort((a, b) => {
+    const aDue = isValidDateString(a.due) ? a.due : "9999-12-31";
+    const bDue = isValidDateString(b.due) ? b.due : "9999-12-31";
+    return aDue.localeCompare(bDue);
+  });
+}
+
 function waterLogFromForm(form) {
-  const data = Object.fromEntries(new FormData(form));
+  const data = cleanFormData(form);
   return {
     date: data.date,
-    temp: +data.temp,
-    salinity: +data.salinity,
-    kh: +data.kh,
-    no3: +data.no3,
-    nh3: +data.nh3,
-    po4: +data.po4
+    temp: optionalNumber(data.temp),
+    salinity: optionalNumber(data.salinity),
+    kh: optionalNumber(data.kh),
+    no3: optionalNumber(data.no3),
+    nh3: optionalNumber(data.nh3),
+    po4: optionalNumber(data.po4)
   };
 }
 
@@ -758,12 +801,12 @@ function setWaterEditMode(index = null) {
 function fillWaterForm(log) {
   const form = $("#waterForm");
   if (!form || !log) return;
-  form.elements.date.value = log.date || todayIso;
+  form.elements.date.value = log.date || "";
   form.elements.temp.value = formatInputValue(log.temp, 1);
   form.elements.salinity.value = formatInputValue(log.salinity, 3);
   form.elements.kh.value = formatInputValue(log.kh, 1);
   form.elements.no3.value = formatInputValue(log.no3, 1);
-  form.elements.nh3.value = formatInputValue(log.nh3 || 0, 1);
+  form.elements.nh3.value = formatInputValue(log.nh3, 1);
   form.elements.po4.value = formatInputValue(log.po4, 2);
 }
 
@@ -882,13 +925,11 @@ $("#waterForm").addEventListener("submit", event => {
   }
   event.currentTarget.reset();
   setWaterEditMode(null);
-  $$('input[type="date"]').forEach(input => { if (!input.value) input.value = todayIso; });
   renderAll();
 });
 $("#cancelWaterEdit").addEventListener("click", () => {
   $("#waterForm").reset();
   setWaterEditMode(null);
-  $$('input[type="date"]').forEach(input => { if (!input.value) input.value = todayIso; });
 });
 $("#waterRows").addEventListener("click", event => {
   const editButton = event.target.closest("[data-edit-water]");
@@ -919,7 +960,6 @@ $("#cancelLivestockEdit").addEventListener("click", () => {
   $("#livestockForm").reset();
   setLivestockEditMode(null);
   renderSpeciesSelects();
-  $$('input[type="date"]').forEach(input => { if (!input.value) input.value = todayIso; });
 });
 $("#livestockGrid").addEventListener("click", event => {
   const editButton = event.target.closest("[data-edit-livestock]");
@@ -985,7 +1025,13 @@ $("#quickLivestockForm").addEventListener("submit", event => {
 });
 $("#taskForm").addEventListener("submit", event => {
   event.preventDefault();
-  state.tasks.push(Object.fromEntries(new FormData(event.currentTarget)));
+  const data = cleanFormData(event.currentTarget);
+  state.tasks.push({
+    title: data.title || "작업명 없음",
+    category: data.category || "분류 없음",
+    due: data.due || "",
+    memo: data.memo || ""
+  });
   $("#taskModal").close(); event.currentTarget.reset(); renderAll();
 });
 $("#tankInhabitants").addEventListener("click", event => {
@@ -1005,7 +1051,7 @@ $("#checkCompat").addEventListener("click", () => {
   const risky = [a, b].some(name => name.includes("탱")) && a !== b && [a, b].some(name => name.includes("옐로우"));
   $("#compatResult").textContent = a === b ? "같은 생물은 개체 수와 수조 크기를 먼저 확인하세요." : risky ? "주의: 영역성이 강할 수 있어 충분한 수조 크기와 은신처가 필요합니다." : "대체로 가능: 체급 차이, 먹이 경쟁, 공격성만 관찰하세요.";
 });
-$("#resetDemo").addEventListener("click", () => { state = cloneData(seedData); selectedLivestockIndex = null; setWaterEditMode(null); renderAll(); });
+$("#resetDemo")?.addEventListener("click", () => { state = cloneData(seedData); selectedLivestockIndex = null; setWaterEditMode(null); renderAll(); });
 $$("[data-notification-settings]").forEach(btn => btn.addEventListener("click", () => {
   updateNotificationUi();
   $("#notificationModal")?.showModal();
@@ -1034,7 +1080,6 @@ $("#testNotification")?.addEventListener("click", async () => {
 $("#loginForm")?.addEventListener("submit", handleLogin);
 $("#logoutButton")?.addEventListener("click", handleLogout);
 
-$$('input[type="date"]').forEach(input => { if (!input.value) input.value = todayIso; });
 registerServiceWorker().then(() => scheduleReminderNotification());
 setupAquariumCursorIdle();
 setupTankDrag();

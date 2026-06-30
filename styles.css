@@ -1297,12 +1297,12 @@ th {
 
   .topbar-actions {
     display: grid;
-    grid-template-columns: 44px repeat(2, minmax(92px, auto)) 1fr;
+    grid-template-columns: minmax(92px, auto) minmax(92px, auto) 1fr;
     gap: 12px;
   }
 
   #logoutButton[hidden] + .primary-button {
-    grid-column: 3 / -1;
+    grid-column: 2 / -1;
   }
 
   h1 {

@@ -8,7 +8,7 @@
   <title>리프로그 - 해수어항 관리</title>
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="apple-touch-icon" href="assets/icons/icon-192.png" />
-  <link rel="stylesheet" href="styles.css?v=shared-login-v2" />
+  <link rel="stylesheet" href="styles.css?v=empty-data-v3" />
 </head>
 <body>
   <section class="auth-screen" id="authScreen" hidden aria-label="로그인">
@@ -67,7 +67,6 @@
           <h1>오늘의 어항 상태</h1>
         </div>
         <div class="topbar-actions">
-          <button class="icon-button" id="resetDemo" title="샘플 데이터 초기화" aria-label="샘플 데이터 초기화">↻</button>
           <button class="text-button" data-notification-settings type="button">알림 설정</button>
           <button class="text-button" id="logoutButton" type="button" hidden>로그아웃</button>
           <button class="primary-button" data-open-modal="taskModal">관리 일정 추가</button>
@@ -163,13 +162,13 @@
               <h2>수질 기록</h2>
             </div>
             <form class="form-grid" id="waterForm">
-              <label>날짜<input type="date" name="date" required /></label>
-              <label>수온<input type="number" step="0.1" name="temp" required /></label>
-              <label>염도 ppt<input type="number" step="0.001" name="salinity" required /></label>
-              <label>알칼리티 dKH<input type="number" step="0.1" name="kh" required /></label>
-              <label>질산염 ppm<input type="number" step="0.1" name="no3" required /></label>
-              <label>암모니아 ppm<input type="number" step="0.1" name="nh3" required /></label>
-              <label>인산염 ppm<input type="number" step="0.01" name="po4" required /></label>
+              <label>날짜<input type="date" name="date" /></label>
+              <label>수온<input type="number" step="0.1" name="temp" /></label>
+              <label>염도 ppt<input type="number" step="0.001" name="salinity" /></label>
+              <label>알칼리티 dKH<input type="number" step="0.1" name="kh" /></label>
+              <label>질산염 ppm<input type="number" step="0.1" name="no3" /></label>
+              <label>암모니아 ppm<input type="number" step="0.1" name="nh3" /></label>
+              <label>인산염 ppm<input type="number" step="0.01" name="po4" /></label>
               <button class="primary-button wide" id="waterSubmitLabel" type="submit">수질 저장</button>
               <button class="text-button wide" id="cancelWaterEdit" type="button" hidden>수정 취소</button>
             </form>
@@ -202,12 +201,12 @@
               <h2>생물 등록</h2>
             </div>
             <form class="form-grid" id="livestockForm">
-              <label>생물 선택<select name="name" data-species-select required></select></label>
+              <label>생물 선택<select name="name" data-species-select></select></label>
               <div class="species-level-card" data-species-level-card>
                 <span class="level-badge beginner" data-species-level>초급</span>
                 <small data-species-level-note>안정적인 수질에서 적응이 쉬운 생물입니다.</small>
               </div>
-              <label>투입일<input type="date" name="added" required /></label>
+              <label>투입일<input type="date" name="added" /></label>
               <label>상태<select name="status"><option>건강</option><option>관찰</option><option>격리</option></select></label>
               <label class="wide">메모<input name="memo" placeholder="먹이 반응, 성격, 위치 등" /></label>
               <button class="primary-button wide" id="livestockSubmitLabel" type="submit">생물 저장</button>
@@ -219,9 +218,9 @@
               <h2>장비 상태</h2>
             </div>
             <form class="form-grid equipment-form" id="equipmentForm">
-              <label>장비명<input name="name" placeholder="예: 조명" required /></label>
-              <label>상태<input name="status" placeholder="예: 정상" required /></label>
-              <label class="wide">관리 주기<input name="cycle" placeholder="예: 10:00-20:00, 주 2회" required /></label>
+              <label>장비명<input name="name" placeholder="예: 조명" /></label>
+              <label>상태<input name="status" placeholder="예: 정상" /></label>
+              <label class="wide">관리 주기<input name="cycle" placeholder="예: 10:00-20:00, 주 2회" /></label>
               <button class="primary-button wide" id="equipmentSubmitLabel" type="submit">장비 저장</button>
               <button class="text-button wide" id="cancelEquipmentEdit" type="button" hidden>수정 취소</button>
             </form>
@@ -269,9 +268,9 @@
         <h2>관리 일정 추가</h2>
         <button class="icon-button" data-close-dialog type="button" aria-label="닫기">×</button>
       </div>
-      <label>작업명<input name="title" placeholder="예: 20% 환수" required /></label>
+      <label>작업명<input name="title" placeholder="예: 20% 환수" /></label>
       <label>분류<select name="category"><option>환수</option><option>먹이</option><option>첨가제</option><option>장비</option><option>검역</option></select></label>
-      <label>예정일<input type="date" name="due" required /></label>
+      <label>예정일<input type="date" name="due" /></label>
       <label>메모<input name="memo" placeholder="소금량, 교체 부품 등" /></label>
       <button class="primary-button wide" value="default" type="submit">저장</button>
     </form>
@@ -283,12 +282,12 @@
         <h2>생물 빠른 추가</h2>
         <button class="icon-button" data-close-dialog type="button" aria-label="닫기">×</button>
       </div>
-      <label>생물 선택<select name="name" data-species-select required></select></label>
+      <label>생물 선택<select name="name" data-species-select></select></label>
       <div class="species-level-card" data-species-level-card>
         <span class="level-badge beginner" data-species-level>초급</span>
         <small data-species-level-note>안정적인 수질에서 적응이 쉬운 생물입니다.</small>
       </div>
-      <label>투입일<input type="date" name="added" required /></label>
+      <label>투입일<input type="date" name="added" /></label>
       <label>상태<select name="status"><option>건강</option><option>관찰</option><option>격리</option></select></label>
       <label>메모<input name="memo" placeholder="먹이 반응, 위치, 성격 등" /></label>
       <button class="primary-button wide" value="default" type="submit">어항에 추가</button>
@@ -329,6 +328,6 @@
     </form>
   </dialog>
 
-  <script src="app.js?v=shared-login-v2"></script>
+  <script src="app.js?v=empty-data-v3"></script>
 </body>
 </html>
