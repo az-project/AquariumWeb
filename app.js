@@ -8,6 +8,9 @@ const defaultNotificationSettings = {
 };
 const assetVersion = "invert-pseudo-fix";
 const sharedStateEndpoint = "/api/state";
+const sessionEndpoint = "/api/session";
+const loginEndpoint = "/api/login";
+const logoutEndpoint = "/api/logout";
 const memoryStorage = new Map();
 
 const species = [
@@ -77,6 +80,8 @@ let suppressTankClickUntil = 0;
 let sharedStateEnabled = false;
 let sharedStateSaveTimer = null;
 let applyingSharedState = false;
+let authMode = "local";
+let currentUser = null;
 let notificationSettings = loadNotificationSettings();
 let notificationTimer = null;
 let serviceWorkerRegistration = null;
@@ -127,6 +132,11 @@ function migrateState(data) {
 async function initializeSharedState() {
   try {
     const response = await fetch(sharedStateEndpoint, { cache: "no-store" });
+    if (response.status === 401) {
+      sharedStateEnabled = false;
+      setAuthUi(true);
+      return;
+    }
     if (!response.ok) return;
     const sharedState = await response.json();
     sharedStateEnabled = true;
@@ -159,6 +169,11 @@ async function saveSharedState() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(state)
     });
+    if (response.status === 401) {
+      sharedStateEnabled = false;
+      setAuthUi(true);
+      return;
+    }
     sharedStateEnabled = response.ok;
   } catch {
     sharedStateEnabled = false;
@@ -168,6 +183,109 @@ const $ = (selector) => document.querySelector(selector);
 const $$ = (selector) => [...document.querySelectorAll(selector)];
 const daysBetween = (a, b) => Math.ceil((new Date(a) - new Date(b)) / 86400000);
 const sortedLogs = () => [...state.waterLogs].sort((a, b) => a.date.localeCompare(b.date));
+
+function setAuthUi(locked) {
+  const authScreen = $("#authScreen");
+  const logoutButton = $("#logoutButton");
+  const disabled = authMode === "file";
+  if (authScreen) authScreen.hidden = !locked;
+  document.body.classList.toggle("auth-locked", locked);
+  if (logoutButton) logoutButton.hidden = authMode !== "server" || locked;
+  $$("#loginForm input, #loginForm button[type='submit']").forEach(control => {
+    control.disabled = disabled;
+  });
+}
+
+function setAuthMessage(message = "", type = "hint") {
+  const hint = $("#authHint");
+  const error = $("#loginError");
+  if (hint) hint.textContent = type === "hint" ? message : "";
+  if (error) error.textContent = type === "error" ? message : "";
+}
+
+function getLoginErrorMessage(status, fallback = "") {
+  if (status === 401) return "아이디 또는 비밀번호가 맞지 않습니다.";
+  if (status === 429) return "로그인 시도가 너무 많습니다. 잠시 후 다시 시도하세요.";
+  return fallback || "로그인에 실패했습니다.";
+}
+
+async function initializeAuth() {
+  if (window.location.protocol === "file:") {
+    authMode = "file";
+    currentUser = null;
+    setAuthMessage("로그인과 공유 저장은 서버 실행이 필요합니다. start-server-4174.ps1 또는 Docker로 실행한 뒤 http://127.0.0.1:4174 로 접속하세요.");
+    setAuthUi(true);
+    return false;
+  }
+
+  try {
+    const response = await fetch(sessionEndpoint, { cache: "no-store" });
+    if (!response.ok) {
+      authMode = "local";
+      setAuthMessage("");
+      setAuthUi(false);
+      return true;
+    }
+
+    const session = await response.json();
+    authMode = "server";
+    currentUser = session.authenticated ? session.username : null;
+    setAuthMessage("");
+    setAuthUi(!session.authenticated);
+    return Boolean(session.authenticated);
+  } catch {
+    authMode = "local";
+    setAuthMessage("");
+    setAuthUi(false);
+    return true;
+  }
+}
+
+async function handleLogin(event) {
+  event.preventDefault();
+  const form = event.currentTarget;
+  const error = $("#loginError");
+  const submitButton = form.querySelector("button[type='submit']");
+  const data = Object.fromEntries(new FormData(form));
+  setAuthMessage("");
+  if (submitButton) submitButton.disabled = true;
+
+  try {
+    const response = await fetch(loginEndpoint, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data)
+    });
+    const result = await response.json().catch(() => ({}));
+    if (!response.ok) {
+      throw new Error(getLoginErrorMessage(response.status, result.error));
+    }
+
+    currentUser = result.username || data.username;
+    authMode = "server";
+    setAuthUi(false);
+    await initializeSharedState();
+  } catch (loginError) {
+    if (error) error.textContent = loginError.message || "로그인에 실패했습니다.";
+  } finally {
+    if (submitButton) submitButton.disabled = false;
+  }
+}
+
+async function handleLogout() {
+  try {
+    await fetch(logoutEndpoint, { method: "POST" });
+  } catch {
+    // The UI should still return to the login screen if the network drops.
+  }
+  currentUser = null;
+  sharedStateEnabled = false;
+  if (sharedStateSaveTimer) {
+    window.clearTimeout(sharedStateSaveTimer);
+    sharedStateSaveTimer = null;
+  }
+  setAuthUi(true);
+}
 const latestLog = () => sortedLogs().at(-1) || {};
 
 function renderAll() {
@@ -913,10 +1031,14 @@ $("#testNotification")?.addEventListener("click", async () => {
   await showReminderNotification(true);
   updateNotificationUi();
 });
+$("#loginForm")?.addEventListener("submit", handleLogin);
+$("#logoutButton")?.addEventListener("click", handleLogout);
 
 $$('input[type="date"]').forEach(input => { if (!input.value) input.value = todayIso; });
 registerServiceWorker().then(() => scheduleReminderNotification());
 setupAquariumCursorIdle();
 setupTankDrag();
 renderAll();
-initializeSharedState();
+initializeAuth().then(canLoadSharedState => {
+  if (canLoadSharedState) initializeSharedState();
+});

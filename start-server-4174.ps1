@@ -1,61 +1,68 @@
-﻿param(
+param(
   [string]$Root = "C:\Users\PC-2\source\repos\AquariumWeb",
-  [int]$Port = 4174
+  [int]$Port = 4174,
+  [string]$Username = "admin",
+  [string]$Password = "aquarium",
+  [string]$DataDir = ""
 )
-$listener = [System.Net.Sockets.TcpListener]::new([System.Net.IPAddress]::Parse('127.0.0.1'), $Port)
-$listener.Start()
-Write-Host "AquariumWeb server running at http://127.0.0.1:$Port/"
-while ($true) {
-  $client = $listener.AcceptTcpClient()
-  try {
-    $client.ReceiveTimeout = 3000
-    $client.SendTimeout = 3000
-    $stream = $client.GetStream()
-    $reader = [System.IO.StreamReader]::new($stream, [System.Text.Encoding]::ASCII, $false, 1024, $true)
-    $requestLine = $reader.ReadLine()
-    if ([string]::IsNullOrWhiteSpace($requestLine)) { continue }
-    do { $headerLine = $reader.ReadLine() } while ($null -ne $headerLine -and $headerLine -ne '')
 
-    $parts = $requestLine.Split(' ')
-    $urlPath = if ($parts.Length -gt 1) { $parts[1].Split('?')[0] } else { '/' }
-    $urlPath = [System.Uri]::UnescapeDataString($urlPath).TrimStart('/')
-    if ([string]::IsNullOrWhiteSpace($urlPath)) { $urlPath = 'index.html' }
-
-    $rootFull = [System.IO.Path]::GetFullPath($Root)
-    $file = [System.IO.Path]::GetFullPath([System.IO.Path]::Combine($rootFull, $urlPath.Replace('/', [System.IO.Path]::DirectorySeparatorChar)))
-    if (-not $file.StartsWith($rootFull, [System.StringComparison]::OrdinalIgnoreCase)) { throw 'Forbidden' }
-
-    if (Test-Path -LiteralPath $file -PathType Leaf) {
-      $ext = [System.IO.Path]::GetExtension($file).ToLowerInvariant()
-      $type = switch ($ext) {
-        '.html' { 'text/html; charset=utf-8' }
-        '.css' { 'text/css; charset=utf-8' }
-        '.js' { 'text/javascript; charset=utf-8' }
-        '.webmanifest' { 'application/manifest+json; charset=utf-8' }
-        '.json' { 'application/json; charset=utf-8' }
-        '.png' { 'image/png' }
-        default { 'application/octet-stream' }
-      }
-      $bytes = [System.IO.File]::ReadAllBytes($file)
-      $status = '200 OK'
-    } else {
-      $bytes = [System.Text.Encoding]::UTF8.GetBytes('Not found')
-      $type = 'text/plain; charset=utf-8'
-      $status = '404 Not Found'
-    }
-    $header = "HTTP/1.1 $status`r`nContent-Type: $type`r`nContent-Length: $($bytes.Length)`r`nConnection: close`r`n`r`n"
-    $headBytes = [System.Text.Encoding]::ASCII.GetBytes($header)
-    $stream.Write($headBytes, 0, $headBytes.Length)
-    $stream.Write($bytes, 0, $bytes.Length)
-  } catch {
-    try {
-      $bytes = [System.Text.Encoding]::UTF8.GetBytes('Server error')
-      $header = "HTTP/1.1 500 Internal Server Error`r`nContent-Type: text/plain; charset=utf-8`r`nContent-Length: $($bytes.Length)`r`nConnection: close`r`n`r`n"
-      $headBytes = [System.Text.Encoding]::ASCII.GetBytes($header)
-      $stream.Write($headBytes, 0, $headBytes.Length)
-      $stream.Write($bytes, 0, $bytes.Length)
-    } catch { }
-  } finally {
-    $client.Close()
+$nodePath = (Get-Command node -ErrorAction SilentlyContinue | Select-Object -First 1 -ExpandProperty Source)
+if (-not $nodePath) {
+  $visualStudioNode = "C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VisualStudio\NodeJs\node.exe"
+  if (Test-Path -LiteralPath $visualStudioNode) {
+    $nodePath = $visualStudioNode
   }
+}
+
+if (-not $nodePath) {
+  Write-Error "Node.js was not found. Install Node.js or run the Docker command in README.md."
+  exit 1
+}
+
+if (-not (Test-Path -LiteralPath $Root -PathType Container)) {
+  Write-Error "Project folder was not found: $Root"
+  exit 1
+}
+
+if (-not $DataDir) {
+  $DataDir = Join-Path $Root "data"
+}
+
+$env:PORT = [string]$Port
+$env:APP_USERNAME = $Username
+$env:APP_PASSWORD = $Password
+$env:DATA_DIR = $DataDir
+
+$localUrls = @("http://127.0.0.1:$Port")
+$lanUrls = Get-NetIPAddress -AddressFamily IPv4 -ErrorAction SilentlyContinue |
+  Where-Object {
+    $_.IPAddress -notlike "127.*" -and
+    $_.IPAddress -notlike "169.254.*" -and
+    $_.PrefixOrigin -ne "WellKnown"
+  } |
+  Select-Object -ExpandProperty IPAddress -Unique |
+  ForEach-Object { "http://$($_):$Port" }
+
+Write-Host ""
+Write-Host "AquariumWeb login server"
+Write-Host "Local URL:"
+$localUrls | ForEach-Object { Write-Host "  $_" }
+if ($lanUrls) {
+  Write-Host "Phone / other PC URL on the same Wi-Fi:"
+  $lanUrls | ForEach-Object { Write-Host "  $_" }
+}
+Write-Host "Login:"
+Write-Host "  ID: $Username"
+Write-Host "  PW: $Password"
+Write-Host "Shared state folder:"
+Write-Host "  $DataDir"
+Write-Host ""
+Write-Host "Keep this PowerShell window open while using the app."
+Write-Host ""
+
+Push-Location $Root
+try {
+  & $nodePath ".\server.js"
+} finally {
+  Pop-Location
 }

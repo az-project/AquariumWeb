@@ -8,9 +8,35 @@
   <title>리프로그 - 해수어항 관리</title>
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="apple-touch-icon" href="assets/icons/icon-192.png" />
-  <link rel="stylesheet" href="styles.css?v=shared-docker-state" />
+  <link rel="stylesheet" href="styles.css?v=shared-login-v2" />
 </head>
 <body>
+  <section class="auth-screen" id="authScreen" hidden aria-label="로그인">
+    <form class="auth-card" id="loginForm">
+      <div class="auth-brand">
+        <span class="brand-mark">R</span>
+        <div>
+          <strong>리프로그</strong>
+          <small>Shared Reef Care</small>
+        </div>
+      </div>
+      <div>
+        <p class="eyebrow">Private Aquarium</p>
+        <h1>로그인</h1>
+        <p class="auth-copy" id="authCopy">공유 어항 데이터를 보려면 계정으로 접속하세요.</p>
+      </div>
+      <label>아이디
+        <input name="username" autocomplete="username" required />
+      </label>
+      <label>비밀번호
+        <input name="password" type="password" autocomplete="current-password" required />
+      </label>
+      <p class="auth-hint" id="authHint"></p>
+      <p class="auth-error" id="loginError" role="alert"></p>
+      <button class="primary-button wide-button" type="submit">로그인</button>
+    </form>
+  </section>
+
   <div class="app-shell">
     <aside class="sidebar" aria-label="주 메뉴">
       <div class="brand">
@@ -43,6 +69,7 @@
         <div class="topbar-actions">
           <button class="icon-button" id="resetDemo" title="샘플 데이터 초기화" aria-label="샘플 데이터 초기화">↻</button>
           <button class="text-button" data-notification-settings type="button">알림 설정</button>
+          <button class="text-button" id="logoutButton" type="button" hidden>로그아웃</button>
           <button class="primary-button" data-open-modal="taskModal">관리 일정 추가</button>
         </div>
       </header>
@@ -302,6 +329,6 @@
     </form>
   </dialog>
 
-  <script src="app.js?v=shared-docker-state"></script>
+  <script src="app.js?v=shared-login-v2"></script>
 </body>
 </html>

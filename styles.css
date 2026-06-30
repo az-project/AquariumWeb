@@ -24,6 +24,72 @@ body {
 }
 button, input, select { font: inherit; }
 button { cursor: pointer; }
+.auth-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  padding: 22px;
+  background:
+    linear-gradient(180deg, rgba(5, 31, 39, .5), rgba(5, 31, 39, .72)),
+    url("assets/reef-bg-no-fish-v2.png") center / cover;
+}
+.auth-screen[hidden] { display: none; }
+.auth-card {
+  width: min(420px, 100%);
+  display: grid;
+  gap: 16px;
+  padding: 28px;
+  border: 1px solid rgba(255, 255, 255, .28);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, .94);
+  box-shadow: 0 32px 90px rgba(4, 20, 28, .32);
+  backdrop-filter: blur(16px);
+}
+.auth-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.auth-brand small,
+.auth-copy {
+  color: var(--muted);
+}
+.auth-copy {
+  margin: 8px 0 0;
+  line-height: 1.55;
+}
+.auth-hint {
+  margin: 0;
+  padding: 12px;
+  border-radius: 8px;
+  background: rgba(21, 159, 183, .1);
+  color: #18545d;
+  line-height: 1.5;
+  font-size: 13px;
+  font-weight: 800;
+}
+.auth-hint:empty { display: none; }
+.auth-card label {
+  display: grid;
+  gap: 8px;
+  color: var(--deep);
+  font-weight: 800;
+}
+.auth-error {
+  min-height: 20px;
+  margin: 0;
+  color: #c33c32;
+  font-size: 14px;
+  font-weight: 800;
+}
+.wide-button { width: 100%; }
+body.auth-locked .app-shell {
+  pointer-events: none;
+  user-select: none;
+  filter: blur(8px);
+}
 .app-shell { min-height: 100vh; display: grid; grid-template-columns: 260px 1fr; }
 .sidebar {
   background: linear-gradient(180deg, #102832 0%, #0b1b22 100%);
@@ -1231,8 +1297,12 @@ th {
 
   .topbar-actions {
     display: grid;
-    grid-template-columns: 44px minmax(92px, auto) 1fr;
+    grid-template-columns: 44px repeat(2, minmax(92px, auto)) 1fr;
     gap: 12px;
+  }
+
+  #logoutButton[hidden] + .primary-button {
+    grid-column: 3 / -1;
   }
 
   h1 {
