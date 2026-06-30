@@ -241,6 +241,18 @@ async function handleApi(req, res, url) {
   sendJson(res, 405, { error: "Method not allowed" });
 }
 
+const publicFiles = new Set([
+  "index.html",
+  "app.js",
+  "styles.css",
+  "manifest.webmanifest",
+  "service-worker.js"
+]);
+
+function isPublicAsset(relativePath) {
+  return publicFiles.has(relativePath) || relativePath.startsWith("assets/");
+}
+
 function serveStatic(req, res, url) {
   const rawPath = decodeURIComponent(url.pathname);
   const relativePath = rawPath === "/" ? "index.html" : rawPath.replace(/^\/+/, "");
@@ -249,6 +261,12 @@ function serveStatic(req, res, url) {
 
   if (filePath !== path.join(rootDir, "index.html") && !filePath.startsWith(rootPrefix)) {
     send(res, 403, "Forbidden");
+    return;
+  }
+
+  // 앱 구동에 필요한 자산만 공개. server.js, Dockerfile 등 소스 노출 차단.
+  if (!isPublicAsset(relativePath)) {
+    send(res, 404, "Not found");
     return;
   }
 
