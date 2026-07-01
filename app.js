@@ -729,6 +729,7 @@ function drawChart() {
     { key: "nh3", label: "암모니아", color: "#f0bd4f", min: 0, max: 1, digits: 1, unit: "ppm" },
     { key: "po4", label: "인산염", color: "#7c6fe8", min: 0, max: .5, digits: 2, unit: "ppm" }
   ];
+  renderChartLegend(series);
   const logs = sortedLogs().filter(log => series.some(item => hasNumber(log[item.key]))).slice(-14);
   const width = canvas.width;
   const height = canvas.height;
@@ -755,12 +756,10 @@ function drawChart() {
     ctx.font = "18px Segoe UI, Malgun Gothic, sans-serif";
     ctx.textAlign = "center";
     ctx.fillText("수질 기록을 추가하면 그래프가 표시됩니다.", width / 2, height / 2);
-    drawLegend(ctx, series, plotArea.left, 24);
     return;
   }
 
   series.forEach(item => plotSeries(ctx, logs, item, plotArea));
-  drawLegend(ctx, series, plotArea.left, 24);
 
   ctx.fillStyle = "#8aa09d";
   ctx.font = "13px Segoe UI, Malgun Gothic, sans-serif";
@@ -809,23 +808,15 @@ function plotSeries(ctx, logs, item, plotArea) {
   chartPoints.push(...points);
 }
 
-function drawLegend(ctx, series, startX, startY) {
-  let x = startX;
-  let y = startY;
-  ctx.font = "14px Segoe UI, Malgun Gothic, sans-serif";
-  ctx.textAlign = "left";
-  series.forEach(item => {
-    const labelWidth = ctx.measureText(item.label).width + 34;
-    if (x + labelWidth > ctx.canvas.width - 24) {
-      x = startX;
-      y += 24;
-    }
-    ctx.fillStyle = item.color;
-    ctx.fillRect(x, y - 10, 10, 10);
-    ctx.fillStyle = "#19313d";
-    ctx.fillText(item.label, x + 16, y);
-    x += labelWidth;
-  });
+function renderChartLegend(series) {
+  const legend = $("#chartLegend");
+  if (!legend) return;
+  legend.innerHTML = series.map(item => `
+    <span class="chart-legend-item">
+      <i style="background:${item.color}"></i>
+      ${escapeHtml(item.label)}
+    </span>
+  `).join("");
 }
 
 function showChartTooltip(event) {

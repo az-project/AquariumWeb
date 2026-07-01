@@ -8,7 +8,7 @@
   <title>리프로그 - 해수어항 관리</title>
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="apple-touch-icon" href="assets/icons/icon-192.png" />
-  <link rel="stylesheet" href="styles.css?v=mobile-v1" />
+  <link rel="stylesheet" href="styles.css?v=mobile-v2" />
 </head>
 <body>
   <section class="auth-screen" id="authScreen" hidden aria-label="로그인">
@@ -67,9 +67,9 @@
           <h1>오늘의 어항 상태</h1>
         </div>
         <div class="topbar-actions">
-          <button class="text-button" data-notification-settings type="button">알림 설정</button>
-          <button class="text-button" id="logoutButton" type="button" hidden>로그아웃</button>
-          <button class="primary-button" data-open-modal="taskModal">관리 일정 추가</button>
+          <button class="text-button" data-notification-settings data-mobile-label="알림" type="button">알림 설정</button>
+          <button class="text-button" id="logoutButton" data-mobile-label="로그아웃" type="button" hidden>로그아웃</button>
+          <button class="primary-button" data-open-modal="taskModal" data-mobile-label="일정 추가">관리 일정 추가</button>
         </div>
       </header>
 
@@ -152,6 +152,7 @@
             <button class="text-button" data-view-jump="water">기록 추가</button>
           </div>
           <div class="chart-canvas-wrap">
+            <div class="chart-legend" id="chartLegend" aria-label="수질 그래프 항목"></div>
             <canvas id="waterChart" width="1200" height="520" aria-label="최근 수질 그래프"></canvas>
             <div class="chart-tooltip" id="chartTooltip" role="status" aria-live="polite" hidden></div>
           </div>
@@ -331,6 +332,6 @@
     </form>
   </dialog>
 
-  <script src="app.js?v=mobile-v1"></script>
+  <script src="app.js?v=mobile-v2"></script>
 </body>
 </html>
