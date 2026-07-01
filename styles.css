@@ -738,7 +738,23 @@ th { color:var(--muted); font-size:13px; }
   display: block;
   width: 100%;
   max-width: 100%;
-  height: auto;
+  height: 460px;
+  border-radius: 8px;
+  background: #f7fbfb;
+}
+
+.dashboard-insights {
+  grid-template-columns: minmax(0, 1fr);
+  align-items: stretch;
+}
+
+.chart-panel {
+  min-height: 560px;
+  margin-top: 18px;
+}
+
+.chart-panel .panel-heading {
+  margin-bottom: 16px;
 }
 .creature-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
 .creature-card { padding:16px; position:relative; overflow:hidden; }

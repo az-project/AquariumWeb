@@ -719,34 +719,105 @@ function renderLibrary() {
 function drawChart() {
   const canvas = $("#waterChart");
   const ctx = canvas.getContext("2d");
-  const logs = sortedLogs().filter(log => ["salinity", "kh", "no3"].some(key => hasNumber(log[key]))).slice(-7);
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  const series = [
+    { key: "temp", label: "수온", color: "#159fb7", min: 22, max: 30 },
+    { key: "salinity", label: "염도", color: "#0f7fb8", min: 32, max: 38 },
+    { key: "kh", label: "알칼리티", color: "#20bfa0", min: 5, max: 12 },
+    { key: "no3", label: "질산염", color: "#ff7f73", min: 0, max: 50 },
+    { key: "nh3", label: "암모니아", color: "#f0bd4f", min: 0, max: 1 },
+    { key: "po4", label: "인산염", color: "#7c6fe8", min: 0, max: .5 }
+  ];
+  const logs = sortedLogs().filter(log => series.some(item => hasNumber(log[item.key]))).slice(-14);
+  const width = canvas.width;
+  const height = canvas.height;
+  const plotArea = { left: 54, right: width - 24, top: 78, bottom: height - 58 };
+  const plotWidth = plotArea.right - plotArea.left;
+  const plotHeight = plotArea.bottom - plotArea.top;
+
+  ctx.clearRect(0, 0, width, height);
   ctx.fillStyle = "#f7fbfb";
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.fillRect(0, 0, width, height);
+
   ctx.strokeStyle = "#d9e7e8";
   ctx.lineWidth = 1;
-  for (let i = 0; i < 5; i++) { const y = 30 + i * 48; ctx.beginPath(); ctx.moveTo(40, y); ctx.lineTo(610, y); ctx.stroke(); }
-  plot(logs, "salinity", "#1d9bd1", 33, 37, "염도");
-  plot(logs, "kh", "#30b99a", 6, 11, "KH");
-  plot(logs, "no3", "#ff7d6e", 0, 20, "NO3");
+  for (let i = 0; i < 6; i++) {
+    const y = plotArea.top + (plotHeight / 5) * i;
+    ctx.beginPath();
+    ctx.moveTo(plotArea.left, y);
+    ctx.lineTo(plotArea.right, y);
+    ctx.stroke();
+  }
+
+  if (!logs.length) {
+    ctx.fillStyle = "#6c817e";
+    ctx.font = "18px Segoe UI, Malgun Gothic, sans-serif";
+    ctx.textAlign = "center";
+    ctx.fillText("수질 기록을 추가하면 그래프가 표시됩니다.", width / 2, height / 2);
+    drawLegend(ctx, series, plotArea.left, 24);
+    return;
+  }
+
+  series.forEach(item => plotSeries(ctx, logs, item, plotArea));
+  drawLegend(ctx, series, plotArea.left, 24);
+
+  ctx.fillStyle = "#8aa09d";
+  ctx.font = "13px Segoe UI, Malgun Gothic, sans-serif";
+  ctx.textAlign = "left";
+  ctx.fillText(logs[0]?.date || "시작", plotArea.left, height - 24);
+  ctx.textAlign = "right";
+  ctx.fillText(logs[logs.length - 1]?.date || "최근", plotArea.right, height - 24);
 }
 
-function plot(logs, key, color, min, max, label) {
-  const canvas = $("#waterChart");
-  const ctx = canvas.getContext("2d");
-  const points = logs.filter(log => hasNumber(log[key]));
-  const xStep = points.length > 1 ? 540 / (points.length - 1) : 0;
-  ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineWidth = 3;
+function plotSeries(ctx, logs, item, plotArea) {
+  const plotWidth = plotArea.right - plotArea.left;
+  const plotHeight = plotArea.bottom - plotArea.top;
+  const xStep = logs.length > 1 ? plotWidth / (logs.length - 1) : 0;
+  const points = logs
+    .map((log, index) => {
+      if (!hasNumber(log[item.key])) return null;
+      const value = Number(log[item.key]);
+      const ratio = Math.min(1, Math.max(0, (value - item.min) / (item.max - item.min)));
+      return {
+        x: plotArea.left + xStep * index,
+        y: plotArea.bottom - ratio * plotHeight
+      };
+    })
+    .filter(Boolean);
+  if (!points.length) return;
+
+  ctx.strokeStyle = item.color;
+  ctx.fillStyle = item.color;
+  ctx.lineWidth = 3;
   ctx.beginPath();
-  points.forEach((log, i) => {
-    const x = 50 + i * xStep;
-    const y = 230 - ((log[key] - min) / (max - min)) * 185;
-    if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+  points.forEach((point, index) => {
+    if (index === 0) ctx.moveTo(point.x, point.y);
+    else ctx.lineTo(point.x, point.y);
   });
-  if (points.length) ctx.stroke();
-  points.forEach((log, i) => { const x = 50 + i * xStep; const y = 230 - ((log[key] - min) / (max - min)) * 185; ctx.beginPath(); ctx.arc(x, y, 4, 0, Math.PI * 2); ctx.fill(); });
-  const legendX = { salinity: 430, kh: 500, no3: 555 }[key];
-  ctx.fillRect(legendX, 18, 10, 10); ctx.fillStyle = "#19313d"; ctx.font = "13px Segoe UI"; ctx.fillText(label, legendX + 16, 28);
+  ctx.stroke();
+  points.forEach(point => {
+    ctx.beginPath();
+    ctx.arc(point.x, point.y, 4, 0, Math.PI * 2);
+    ctx.fill();
+  });
+}
+
+function drawLegend(ctx, series, startX, startY) {
+  let x = startX;
+  let y = startY;
+  ctx.font = "14px Segoe UI, Malgun Gothic, sans-serif";
+  ctx.textAlign = "left";
+  series.forEach(item => {
+    const labelWidth = ctx.measureText(item.label).width + 34;
+    if (x + labelWidth > ctx.canvas.width - 24) {
+      x = startX;
+      y += 24;
+    }
+    ctx.fillStyle = item.color;
+    ctx.fillRect(x, y - 10, 10, 10);
+    ctx.fillStyle = "#19313d";
+    ctx.fillText(item.label, x + 16, y);
+    x += labelWidth;
+  });
 }
 
 function escapeHtml(value) {

@@ -8,7 +8,7 @@
   <title>리프로그 - 해수어항 관리</title>
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="apple-touch-icon" href="assets/icons/icon-192.png" />
-  <link rel="stylesheet" href="styles.css?v=spacing-v4" />
+  <link rel="stylesheet" href="styles.css?v=chart-v3" />
 </head>
 <body>
   <section class="auth-screen" id="authScreen" hidden aria-label="로그인">
@@ -137,7 +137,7 @@
           </article>
         </div>
 
-        <div class="content-grid two">
+        <div class="content-grid dashboard-insights">
           <section class="panel">
             <div class="panel-heading">
               <h2>오늘 할 일</h2>
@@ -145,14 +145,14 @@
             </div>
             <div class="task-list" id="todayTasks"></div>
           </section>
-          <section class="panel">
-            <div class="panel-heading">
-              <h2>최근 수질 추이</h2>
-              <button class="text-button" data-view-jump="water">기록 추가</button>
-            </div>
-            <canvas id="waterChart" width="640" height="280" aria-label="최근 수질 그래프"></canvas>
-          </section>
         </div>
+        <section class="panel chart-panel">
+          <div class="panel-heading">
+            <h2>최근 수질 추이</h2>
+            <button class="text-button" data-view-jump="water">기록 추가</button>
+          </div>
+          <canvas id="waterChart" width="1200" height="520" aria-label="최근 수질 그래프"></canvas>
+        </section>
       </section>
 
       <section class="view" id="water">
@@ -328,6 +328,6 @@
     </form>
   </dialog>
 
-  <script src="app.js?v=spacing-v4"></script>
+  <script src="app.js?v=chart-v3"></script>
 </body>
 </html>
