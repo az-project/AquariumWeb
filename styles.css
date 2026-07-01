@@ -1565,6 +1565,10 @@ th {
 }
 
 @media (max-width: 640px) {
+  body {
+    overflow-x: hidden;
+  }
+
   .main-area {
     padding: 16px 14px 24px;
   }
@@ -1633,6 +1637,125 @@ th {
   .status-rail,
   .creature-card {
     border-radius: 8px;
+  }
+}
+
+@media (max-width: 430px) {
+  body {
+    padding-bottom: 152px;
+  }
+
+  .main-area {
+    width: 100%;
+    padding: 12px 12px 18px;
+  }
+
+  .topbar {
+    position: static;
+    margin: -12px -12px 14px;
+    padding: 16px 12px 14px;
+  }
+
+  .topbar > div:first-child {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .topbar-actions {
+    grid-template-columns: 1fr;
+    gap: 9px;
+  }
+
+  .topbar-actions .primary-button,
+  .topbar-actions .text-button {
+    min-width: 0;
+    min-height: 52px;
+    padding: 11px 14px;
+    font-size: 16px;
+    line-height: 1.4;
+  }
+
+  h1 {
+    font-size: 25px;
+    line-height: 1.28;
+  }
+
+  h2 {
+    font-size: 17px;
+    line-height: 1.35;
+  }
+
+  .eyebrow {
+    font-size: 10px;
+    line-height: 1.35;
+  }
+
+  .dashboard-hero,
+  .content-grid,
+  .content-grid.two,
+  .metric-grid,
+  .creature-grid,
+  .form-grid,
+  .status-rail,
+  .equipment-grid,
+  .compat-box {
+    grid-template-columns: 1fr;
+  }
+
+  .panel,
+  #livestock .panel {
+    padding: 16px;
+  }
+
+  .panel-heading {
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .panel-heading .text-button,
+  .panel-heading .primary-button {
+    flex: 0 0 auto;
+    min-width: 88px;
+  }
+
+  .chart-panel {
+    min-height: 0;
+    margin-top: 14px;
+  }
+
+  #waterChart {
+    height: 300px;
+  }
+
+  .chart-tooltip {
+    max-width: min(220px, calc(100vw - 48px));
+  }
+
+  .nav-tabs {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px;
+  }
+
+  .nav-button {
+    min-height: 54px;
+    padding: 8px 6px 10px;
+    font-size: 13px;
+    line-height: 1.35;
+  }
+
+  input,
+  select,
+  #livestock input,
+  #livestock select {
+    min-height: 50px;
+    padding: 11px 13px;
+    font-size: 15px;
+  }
+
+  #livestock .species-level-card {
+    min-height: 50px;
+    padding: 11px 13px;
+    align-items: flex-start;
   }
 }
 
