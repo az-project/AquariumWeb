@@ -693,7 +693,19 @@ function renderLivestock() {
     const asset = livestockImage(item, index);
     return `<article class="creature-card">${asset ? `<img class="creature-image" src="${versionedAsset(asset)}" alt="${escapeHtml(item.name)}" />` : ""}<span class="badge">${escapeHtml(item.type || "생물")}</span><h2>${escapeHtml(item.name || "생물 이름 없음")}</h2><p>${escapeHtml(item.added || "투입일 미정")} 투입 · ${escapeHtml(item.status || "상태 미입력")}</p><small>${escapeHtml(item.memo || "메모 없음")}</small><div class="card-actions"><button class="text-button compact-button" data-edit-livestock="${index}" type="button">수정</button><button class="text-button compact-button danger" data-delete-livestock="${index}" type="button">삭제</button></div></article>`;
   }).join("");
-  $("#equipmentGrid").innerHTML = state.equipment.map((e, index) => `<article class="equipment-item"><strong>${escapeHtml(e.name || "장비명 없음")}</strong><small>${escapeHtml(e.status || "상태 미입력")} · ${escapeHtml(e.cycle || "관리 주기 미입력")}</small><div class="row-actions"><button class="text-button compact-button" data-edit-equipment="${index}" type="button">수정</button><button class="text-button compact-button danger" data-delete-equipment="${index}" type="button">삭제</button></div></article>`).join("");
+  $("#equipmentGrid").innerHTML = state.equipment.map((e, index) => `
+    <article class="equipment-item">
+      <strong>${escapeHtml(e.name || "장비명 없음")}</strong>
+      <small class="equipment-meta">
+        <span>${escapeHtml(e.status || "상태 미입력")}</span>
+        <span>${escapeHtml(e.cycle || "관리 주기 미입력")}</span>
+      </small>
+      <div class="row-actions">
+        <button class="text-button compact-button" data-edit-equipment="${index}" type="button">수정</button>
+        <button class="text-button compact-button danger" data-delete-equipment="${index}" type="button">삭제</button>
+      </div>
+    </article>
+  `).join("");
 }
 
 function renderLibrary() {
