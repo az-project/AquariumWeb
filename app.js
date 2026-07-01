@@ -840,6 +840,8 @@ function showChartTooltip(event) {
   const y = (event.clientY - rect.top) * scaleY;
   let nearest = null;
   let nearestDistance = Infinity;
+  const hitRadius = 34;
+  const overlapRadius = 18;
 
   chartPoints.forEach(point => {
     const distance = Math.hypot(point.x - x, point.y - y);
@@ -849,20 +851,39 @@ function showChartTooltip(event) {
     }
   });
 
-  if (!nearest || nearestDistance > 34) {
+  if (!nearest || nearestDistance > hitRadius) {
     hideChartTooltip();
     return;
   }
 
-  const cssX = nearest.x / scaleX;
-  const cssY = nearest.y / scaleY;
-  const tooltipWidth = 180;
+  const visiblePoints = chartPoints
+    .filter(point => Math.hypot(point.x - nearest.x, point.y - nearest.y) <= overlapRadius)
+    .sort((a, b) => a.label.localeCompare(b.label, "ko"));
+  const anchor = visiblePoints.reduce((sum, point) => ({
+    x: sum.x + point.x,
+    y: sum.y + point.y
+  }), { x: 0, y: 0 });
+  anchor.x /= visiblePoints.length;
+  anchor.y /= visiblePoints.length;
+
+  const cssX = anchor.x / scaleX;
+  const cssY = anchor.y / scaleY;
+  const tooltipWidth = 220;
   const left = Math.min(Math.max(cssX, tooltipWidth / 2 + 8), rect.width - tooltipWidth / 2 - 8);
   const top = Math.max(cssY, 72);
   tooltip.hidden = false;
   tooltip.style.left = `${left}px`;
   tooltip.style.top = `${top}px`;
-  tooltip.innerHTML = `<strong style="color:${nearest.color}">${escapeHtml(nearest.label)} ${escapeHtml(nearest.formatted)}</strong><span>${escapeHtml(nearest.date)}</span>`;
+  tooltip.innerHTML = `
+    <span class="chart-tooltip-date">${escapeHtml(nearest.date)}</span>
+    ${visiblePoints.map(point => `
+      <span class="chart-tooltip-row">
+        <i style="background:${point.color}"></i>
+        <strong>${escapeHtml(point.label)}</strong>
+        <span>${escapeHtml(point.formatted)}</span>
+      </span>
+    `).join("")}
+  `;
 }
 
 function hideChartTooltip() {

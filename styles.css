@@ -763,22 +763,41 @@ th { color:var(--muted); font-size:13px; }
   backdrop-filter: blur(14px);
 }
 
-.chart-tooltip strong,
-.chart-tooltip span {
+.chart-tooltip-date {
   display: block;
+  margin-bottom: 7px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.45;
 }
 
-.chart-tooltip strong {
-  font-size: 14px;
+.chart-tooltip-row {
+  display: grid;
+  grid-template-columns: 10px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+  min-height: 24px;
+}
+
+.chart-tooltip-row i {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+}
+
+.chart-tooltip-row strong {
+  min-width: 0;
+  font-size: 13px;
   line-height: 1.35;
   font-weight: 700;
 }
 
-.chart-tooltip span {
-  margin-top: 4px;
-  color: var(--muted);
-  font-size: 12px;
-  line-height: 1.45;
+.chart-tooltip-row span {
+  color: var(--ink);
+  font-size: 13px;
+  line-height: 1.35;
+  font-weight: 600;
+  white-space: nowrap;
 }
 
 .dashboard-insights {
