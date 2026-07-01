@@ -69,6 +69,7 @@ let currentUser = null;
 let notificationSettings = loadNotificationSettings();
 let notificationTimer = null;
 let serviceWorkerRegistration = null;
+let chartPoints = [];
 
 function loadState() {
   legacyStorageKeys.forEach(removeStorageItem);
@@ -719,13 +720,14 @@ function renderLibrary() {
 function drawChart() {
   const canvas = $("#waterChart");
   const ctx = canvas.getContext("2d");
+  chartPoints = [];
   const series = [
-    { key: "temp", label: "수온", color: "#159fb7", min: 22, max: 30 },
-    { key: "salinity", label: "염도", color: "#0f7fb8", min: 32, max: 38 },
-    { key: "kh", label: "알칼리티", color: "#20bfa0", min: 5, max: 12 },
-    { key: "no3", label: "질산염", color: "#ff7f73", min: 0, max: 50 },
-    { key: "nh3", label: "암모니아", color: "#f0bd4f", min: 0, max: 1 },
-    { key: "po4", label: "인산염", color: "#7c6fe8", min: 0, max: .5 }
+    { key: "temp", label: "수온", color: "#159fb7", min: 22, max: 30, digits: 1, unit: "°C" },
+    { key: "salinity", label: "염도", color: "#0f7fb8", min: 32, max: 38, digits: 3, unit: "ppt" },
+    { key: "kh", label: "알칼리티", color: "#20bfa0", min: 5, max: 12, digits: 1, unit: "dKH" },
+    { key: "no3", label: "질산염", color: "#ff7f73", min: 0, max: 50, digits: 1, unit: "ppm" },
+    { key: "nh3", label: "암모니아", color: "#f0bd4f", min: 0, max: 1, digits: 1, unit: "ppm" },
+    { key: "po4", label: "인산염", color: "#7c6fe8", min: 0, max: .5, digits: 2, unit: "ppm" }
   ];
   const logs = sortedLogs().filter(log => series.some(item => hasNumber(log[item.key]))).slice(-14);
   const width = canvas.width;
@@ -779,7 +781,12 @@ function plotSeries(ctx, logs, item, plotArea) {
       const ratio = Math.min(1, Math.max(0, (value - item.min) / (item.max - item.min)));
       return {
         x: plotArea.left + xStep * index,
-        y: plotArea.bottom - ratio * plotHeight
+        y: plotArea.bottom - ratio * plotHeight,
+        value,
+        date: log.date || "날짜 미정",
+        label: item.label,
+        color: item.color,
+        formatted: `${formatNumber(value, item.digits)}${item.unit}`
       };
     })
     .filter(Boolean);
@@ -799,6 +806,7 @@ function plotSeries(ctx, logs, item, plotArea) {
     ctx.arc(point.x, point.y, 4, 0, Math.PI * 2);
     ctx.fill();
   });
+  chartPoints.push(...points);
 }
 
 function drawLegend(ctx, series, startX, startY) {
@@ -818,6 +826,48 @@ function drawLegend(ctx, series, startX, startY) {
     ctx.fillText(item.label, x + 16, y);
     x += labelWidth;
   });
+}
+
+function showChartTooltip(event) {
+  const canvas = $("#waterChart");
+  const tooltip = $("#chartTooltip");
+  if (!canvas || !tooltip || !chartPoints.length) return;
+
+  const rect = canvas.getBoundingClientRect();
+  const scaleX = canvas.width / rect.width;
+  const scaleY = canvas.height / rect.height;
+  const x = (event.clientX - rect.left) * scaleX;
+  const y = (event.clientY - rect.top) * scaleY;
+  let nearest = null;
+  let nearestDistance = Infinity;
+
+  chartPoints.forEach(point => {
+    const distance = Math.hypot(point.x - x, point.y - y);
+    if (distance < nearestDistance) {
+      nearest = point;
+      nearestDistance = distance;
+    }
+  });
+
+  if (!nearest || nearestDistance > 34) {
+    hideChartTooltip();
+    return;
+  }
+
+  const cssX = nearest.x / scaleX;
+  const cssY = nearest.y / scaleY;
+  const tooltipWidth = 180;
+  const left = Math.min(Math.max(cssX, tooltipWidth / 2 + 8), rect.width - tooltipWidth / 2 - 8);
+  const top = Math.max(cssY, 72);
+  tooltip.hidden = false;
+  tooltip.style.left = `${left}px`;
+  tooltip.style.top = `${top}px`;
+  tooltip.innerHTML = `<strong style="color:${nearest.color}">${escapeHtml(nearest.label)} ${escapeHtml(nearest.formatted)}</strong><span>${escapeHtml(nearest.date)}</span>`;
+}
+
+function hideChartTooltip() {
+  const tooltip = $("#chartTooltip");
+  if (tooltip) tooltip.hidden = true;
 }
 
 function escapeHtml(value) {
@@ -998,6 +1048,8 @@ function switchView(id) {
 $$("[data-open-modal]").forEach(btn => btn.addEventListener("click", () => $("#" + btn.dataset.openModal).showModal()));
 $$("[data-close-dialog]").forEach(btn => btn.addEventListener("click", () => btn.closest("dialog")?.close()));
 $$("[data-species-select]").forEach(select => select.addEventListener("change", () => syncSpeciesType(select)));
+$("#waterChart")?.addEventListener("mousemove", showChartTooltip);
+$("#waterChart")?.addEventListener("mouseleave", hideChartTooltip);
 $("#waterForm").addEventListener("submit", event => {
   event.preventDefault();
   const waterLog = waterLogFromForm(event.currentTarget);

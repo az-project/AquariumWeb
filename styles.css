@@ -743,6 +743,44 @@ th { color:var(--muted); font-size:13px; }
   background: #f7fbfb;
 }
 
+.chart-canvas-wrap {
+  position: relative;
+}
+
+.chart-tooltip {
+  position: absolute;
+  z-index: 3;
+  min-width: 148px;
+  max-width: 220px;
+  padding: 10px 12px;
+  border: 1px solid rgba(29, 55, 63, .12);
+  border-radius: 8px;
+  color: var(--ink);
+  background: rgba(255, 255, 255, .94);
+  box-shadow: 0 14px 30px rgba(13, 35, 42, .16);
+  pointer-events: none;
+  transform: translate(-50%, calc(-100% - 14px));
+  backdrop-filter: blur(14px);
+}
+
+.chart-tooltip strong,
+.chart-tooltip span {
+  display: block;
+}
+
+.chart-tooltip strong {
+  font-size: 14px;
+  line-height: 1.35;
+  font-weight: 700;
+}
+
+.chart-tooltip span {
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
 .dashboard-insights {
   grid-template-columns: minmax(0, 1fr);
   align-items: stretch;
