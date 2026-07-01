@@ -70,6 +70,7 @@ let notificationSettings = loadNotificationSettings();
 let notificationTimer = null;
 let serviceWorkerRegistration = null;
 let chartPoints = [];
+let chartResizeTimer = null;
 
 function loadState() {
   legacyStorageKeys.forEach(removeStorageItem);
@@ -719,6 +720,9 @@ function renderLibrary() {
 
 function drawChart() {
   const canvas = $("#waterChart");
+  if (!canvas) return;
+  const size = resizeChartCanvas(canvas);
+  if (!size) return;
   const ctx = canvas.getContext("2d");
   chartPoints = [];
   const series = [
@@ -731,9 +735,15 @@ function drawChart() {
   ];
   renderChartLegend(series);
   const logs = sortedLogs().filter(log => series.some(item => hasNumber(log[item.key]))).slice(-14);
-  const width = canvas.width;
-  const height = canvas.height;
-  const plotArea = { left: 54, right: width - 24, top: 78, bottom: height - 58 };
+  const width = size.width;
+  const height = size.height;
+  const isCompact = width < 430;
+  const plotArea = {
+    left: isCompact ? 24 : 54,
+    right: width - (isCompact ? 12 : 24),
+    top: isCompact ? 28 : 46,
+    bottom: height - (isCompact ? 40 : 58)
+  };
   const plotWidth = plotArea.right - plotArea.left;
   const plotHeight = plotArea.bottom - plotArea.top;
 
@@ -753,7 +763,7 @@ function drawChart() {
 
   if (!logs.length) {
     ctx.fillStyle = "#6c817e";
-    ctx.font = "18px Segoe UI, Malgun Gothic, sans-serif";
+    ctx.font = `${isCompact ? 14 : 18}px Segoe UI, Malgun Gothic, sans-serif`;
     ctx.textAlign = "center";
     ctx.fillText("수질 기록을 추가하면 그래프가 표시됩니다.", width / 2, height / 2);
     return;
@@ -762,11 +772,29 @@ function drawChart() {
   series.forEach(item => plotSeries(ctx, logs, item, plotArea));
 
   ctx.fillStyle = "#8aa09d";
-  ctx.font = "13px Segoe UI, Malgun Gothic, sans-serif";
+  ctx.font = `${isCompact ? 11 : 13}px Segoe UI, Malgun Gothic, sans-serif`;
   ctx.textAlign = "left";
   ctx.fillText(logs[0]?.date || "시작", plotArea.left, height - 24);
   ctx.textAlign = "right";
   ctx.fillText(logs[logs.length - 1]?.date || "최근", plotArea.right, height - 24);
+}
+
+function resizeChartCanvas(canvas) {
+  const rect = canvas.getBoundingClientRect();
+  const width = Math.round(rect.width);
+  const height = Math.round(rect.height);
+  if (width < 20 || height < 20) return null;
+
+  const dpr = Math.max(1, Math.min(window.devicePixelRatio || 1, 2));
+  const nextWidth = Math.round(width * dpr);
+  const nextHeight = Math.round(height * dpr);
+  if (canvas.width !== nextWidth || canvas.height !== nextHeight) {
+    canvas.width = nextWidth;
+    canvas.height = nextHeight;
+  }
+  const ctx = canvas.getContext("2d");
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  return { width, height, dpr };
 }
 
 function plotSeries(ctx, logs, item, plotArea) {
@@ -825,10 +853,8 @@ function showChartTooltip(event) {
   if (!canvas || !tooltip || !chartPoints.length) return;
 
   const rect = canvas.getBoundingClientRect();
-  const scaleX = canvas.width / rect.width;
-  const scaleY = canvas.height / rect.height;
-  const x = (event.clientX - rect.left) * scaleX;
-  const y = (event.clientY - rect.top) * scaleY;
+  const x = event.clientX - rect.left;
+  const y = event.clientY - rect.top;
   let nearest = null;
   let nearestDistance = Infinity;
   const hitRadius = 34;
@@ -857,8 +883,8 @@ function showChartTooltip(event) {
   anchor.x /= visiblePoints.length;
   anchor.y /= visiblePoints.length;
 
-  const cssX = anchor.x / scaleX;
-  const cssY = anchor.y / scaleY;
+  const cssX = anchor.x;
+  const cssY = anchor.y;
   const tooltipWidth = 220;
   const left = Math.min(Math.max(cssX, tooltipWidth / 2 + 8), rect.width - tooltipWidth / 2 - 8);
   const top = Math.max(cssY, 72);
@@ -1055,6 +1081,7 @@ $$("[data-view-jump]").forEach(btn => btn.addEventListener("click", () => switch
 function switchView(id) {
   $$(".nav-button").forEach(b => b.classList.toggle("active", b.dataset.view === id));
   $$(".view").forEach(v => v.classList.toggle("active", v.id === id));
+  if (id === "dashboard") requestAnimationFrame(drawChart);
 }
 
 $$("[data-open-modal]").forEach(btn => btn.addEventListener("click", () => $("#" + btn.dataset.openModal).showModal()));
@@ -1062,6 +1089,13 @@ $$("[data-close-dialog]").forEach(btn => btn.addEventListener("click", () => btn
 $$("[data-species-select]").forEach(select => select.addEventListener("change", () => syncSpeciesType(select)));
 $("#waterChart")?.addEventListener("mousemove", showChartTooltip);
 $("#waterChart")?.addEventListener("mouseleave", hideChartTooltip);
+window.addEventListener("resize", () => {
+  window.clearTimeout(chartResizeTimer);
+  chartResizeTimer = window.setTimeout(() => {
+    hideChartTooltip();
+    drawChart();
+  }, 120);
+});
 $("#waterForm").addEventListener("submit", event => {
   event.preventDefault();
   const waterLog = waterLogFromForm(event.currentTarget);
