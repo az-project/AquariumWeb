@@ -8,6 +8,7 @@ const rootDir = __dirname;
 const port = Number(process.env.PORT || 4174);
 const dataDir = process.env.DATA_DIR || path.join(rootDir, "data");
 const statePath = path.join(dataDir, "state.json");
+const usersPath = path.join(dataDir, "users.json");
 const maxBodyBytes = 2 * 1024 * 1024;
 const appUsername = process.env.APP_USERNAME || "admin";
 const appPassword = process.env.APP_PASSWORD || "aquarium";
@@ -119,6 +120,68 @@ function timingsafeEqual(a, b) {
   return crypto.timingSafeEqual(left, right);
 }
 
+function normalizeUsername(username = "") {
+  return String(username).trim();
+}
+
+function validateUsername(username) {
+  if (!/^[A-Za-z0-9_.-]{3,32}$/.test(username)) {
+    return "아이디는 영문, 숫자, 점, 밑줄, 하이픈으로 3~32자까지 입력하세요.";
+  }
+  return "";
+}
+
+function validatePassword(password = "") {
+  if (String(password).length < 6) return "비밀번호는 6자 이상 입력하세요.";
+  return "";
+}
+
+function hashPassword(password) {
+  const salt = crypto.randomBytes(16).toString("hex");
+  const hash = crypto.pbkdf2Sync(String(password), salt, 120000, 32, "sha256").toString("hex");
+  return { algorithm: "pbkdf2-sha256", iterations: 120000, salt, hash };
+}
+
+function verifyPassword(password, user) {
+  if (!user?.password?.salt || !user.password.hash) return false;
+  const iterations = Number(user.password.iterations || 120000);
+  const hash = crypto.pbkdf2Sync(String(password), user.password.salt, iterations, 32, "sha256").toString("hex");
+  return timingsafeEqual(hash, user.password.hash);
+}
+
+function readUsers() {
+  ensureDataDir();
+  if (!fs.existsSync(usersPath)) {
+    const seedUser = {
+      username: appUsername,
+      usernameKey: appUsername.toLowerCase(),
+      password: hashPassword(appPassword),
+      createdAt: new Date().toISOString()
+    };
+    writeUsers([seedUser]);
+    return [seedUser];
+  }
+
+  try {
+    const data = JSON.parse(fs.readFileSync(usersPath, "utf8"));
+    return Array.isArray(data.users) ? data.users : [];
+  } catch {
+    return [];
+  }
+}
+
+function writeUsers(users) {
+  ensureDataDir();
+  const tmpPath = `${usersPath}.tmp`;
+  fs.writeFileSync(tmpPath, `${JSON.stringify({ users }, null, 2)}\n`, "utf8");
+  fs.renameSync(tmpPath, usersPath);
+}
+
+function findUser(username, users = readUsers()) {
+  const usernameKey = normalizeUsername(username).toLowerCase();
+  return users.find(user => user.usernameKey === usernameKey) || null;
+}
+
 function getClientKey(req) {
   const forwarded = req.headers["x-forwarded-for"];
   const ip = Array.isArray(forwarded) ? forwarded[0] : forwarded?.split(",")[0];
@@ -161,19 +224,57 @@ async function handleLogin(req, res) {
 
   try {
     const credentials = await readJsonBody(req);
-    const usernameOk = timingsafeEqual(credentials.username || "", appUsername);
-    const passwordOk = timingsafeEqual(credentials.password || "", appPassword);
-    if (!usernameOk || !passwordOk) {
+    const username = normalizeUsername(credentials.username);
+    const user = findUser(username);
+    if (!user || !verifyPassword(credentials.password || "", user)) {
       recordLoginFailure(req);
       sendJson(res, 401, { error: "Invalid username or password." });
       return;
     }
 
     clearLoginFailures(req);
-    const token = createSession(appUsername);
-    sendJson(res, 200, { ok: true, username: appUsername }, { "Set-Cookie": sessionCookie(token) });
+    const token = createSession(user.username);
+    sendJson(res, 200, { ok: true, username: user.username }, { "Set-Cookie": sessionCookie(token) });
   } catch (error) {
     sendJson(res, error.status || 500, { error: error.message || "Login failed" });
+  }
+}
+
+async function handleRegister(req, res) {
+  if (req.method !== "POST") {
+    sendJson(res, 405, { error: "Method not allowed" });
+    return;
+  }
+
+  try {
+    const body = await readJsonBody(req);
+    const username = normalizeUsername(body.username);
+    const password = String(body.password || "");
+    const usernameError = validateUsername(username);
+    const passwordError = validatePassword(password);
+    if (usernameError || passwordError) {
+      sendJson(res, 400, { error: usernameError || passwordError });
+      return;
+    }
+
+    const users = readUsers();
+    if (findUser(username, users)) {
+      sendJson(res, 409, { error: "이미 사용 중인 아이디입니다." });
+      return;
+    }
+
+    const user = {
+      username,
+      usernameKey: username.toLowerCase(),
+      password: hashPassword(password),
+      createdAt: new Date().toISOString()
+    };
+    writeUsers([...users, user]);
+
+    const token = createSession(user.username);
+    sendJson(res, 201, { ok: true, username: user.username }, { "Set-Cookie": sessionCookie(token) });
+  } catch (error) {
+    sendJson(res, error.status || 500, { error: error.message || "Registration failed" });
   }
 }
 
@@ -197,6 +298,11 @@ async function handleApi(req, res, url) {
 
   if (url.pathname === "/api/login") {
     await handleLogin(req, res);
+    return;
+  }
+
+  if (url.pathname === "/api/register") {
+    await handleRegister(req, res);
     return;
   }
 

@@ -11,6 +11,7 @@ const assetVersion = "invert-pseudo-fix";
 const sharedStateEndpoint = "/api/state";
 const sessionEndpoint = "/api/session";
 const loginEndpoint = "/api/login";
+const registerEndpoint = "/api/register";
 const logoutEndpoint = "/api/logout";
 const memoryStorage = new Map();
 
@@ -65,6 +66,7 @@ let sharedStateEnabled = false;
 let sharedStateSaveTimer = null;
 let applyingSharedState = false;
 let authMode = "local";
+let authView = "login";
 let currentUser = null;
 let notificationSettings = loadNotificationSettings();
 let notificationTimer = null;
@@ -191,9 +193,31 @@ function setAuthUi(locked) {
   if (authScreen) authScreen.hidden = !locked;
   document.body.classList.toggle("auth-locked", locked);
   if (logoutButton) logoutButton.hidden = authMode !== "server" || locked;
-  $$("#loginForm input, #loginForm button[type='submit']").forEach(control => {
+  $$("#loginForm input, #loginForm button").forEach(control => {
     control.disabled = disabled;
   });
+}
+
+function setAuthView(mode) {
+  authView = mode === "register" ? "register" : "login";
+  const isRegister = authView === "register";
+  $("#authTitle").textContent = isRegister ? "회원가입" : "로그인";
+  $("#authCopy").textContent = isRegister
+    ? "새 계정을 만든 뒤 같은 서버의 공유 어항 데이터를 함께 사용할 수 있습니다."
+    : "공유 어항 데이터를 보려면 계정으로 접속하세요.";
+  $("#authSubmitButton").textContent = isRegister ? "회원가입" : "로그인";
+  const passwordInput = $("#loginForm input[name='password']");
+  const confirmInput = $("#loginForm input[name='confirmPassword']");
+  if (passwordInput) passwordInput.autocomplete = isRegister ? "new-password" : "current-password";
+  if (confirmInput) {
+    confirmInput.required = isRegister;
+    confirmInput.closest("[data-register-only]").hidden = !isRegister;
+    if (!isRegister) confirmInput.value = "";
+  }
+  $$("[data-auth-mode]").forEach(button => {
+    button.classList.toggle("active", button.dataset.authMode === authView);
+  });
+  setAuthMessage("");
 }
 
 function setAuthMessage(message = "", type = "hint") {
@@ -203,10 +227,12 @@ function setAuthMessage(message = "", type = "hint") {
   if (error) error.textContent = type === "error" ? message : "";
 }
 
-function getLoginErrorMessage(status, fallback = "") {
+function getAuthErrorMessage(status, fallback = "") {
   if (status === 401) return "아이디 또는 비밀번호가 맞지 않습니다.";
   if (status === 429) return "로그인 시도가 너무 많습니다. 잠시 후 다시 시도하세요.";
-  return fallback || "로그인에 실패했습니다.";
+  if (status === 409) return "이미 사용 중인 아이디입니다.";
+  if (status === 400) return fallback || "입력값을 다시 확인해 주세요.";
+  return fallback || (authView === "register" ? "회원가입에 실패했습니다." : "로그인에 실패했습니다.");
 }
 
 async function initializeAuth() {
@@ -241,32 +267,38 @@ async function initializeAuth() {
   }
 }
 
-async function handleLogin(event) {
+async function handleAuthSubmit(event) {
   event.preventDefault();
   const form = event.currentTarget;
   const error = $("#loginError");
   const submitButton = form.querySelector("button[type='submit']");
   const data = Object.fromEntries(new FormData(form));
   setAuthMessage("");
+  data.username = String(data.username || "").trim();
+  if (authView === "register" && data.password !== data.confirmPassword) {
+    if (error) error.textContent = "비밀번호 확인이 일치하지 않습니다.";
+    return;
+  }
   if (submitButton) submitButton.disabled = true;
 
   try {
-    const response = await fetch(loginEndpoint, {
+    const response = await fetch(authView === "register" ? registerEndpoint : loginEndpoint, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data)
     });
     const result = await response.json().catch(() => ({}));
     if (!response.ok) {
-      throw new Error(getLoginErrorMessage(response.status, result.error));
+      throw new Error(getAuthErrorMessage(response.status, result.error));
     }
 
     currentUser = result.username || data.username;
     authMode = "server";
+    setAuthView("login");
     setAuthUi(false);
     await initializeSharedState();
   } catch (loginError) {
-    if (error) error.textContent = loginError.message || "로그인에 실패했습니다.";
+    if (error) error.textContent = loginError.message || getAuthErrorMessage(0);
   } finally {
     if (submitButton) submitButton.disabled = false;
   }
@@ -1258,7 +1290,10 @@ $("#testNotification")?.addEventListener("click", async () => {
   await showReminderNotification(true);
   updateNotificationUi();
 });
-$("#loginForm")?.addEventListener("submit", handleLogin);
+$("[data-auth-mode='login']")?.addEventListener("click", () => setAuthView("login"));
+$("[data-auth-mode='register']")?.addEventListener("click", () => setAuthView("register"));
+setAuthView("login");
+$("#loginForm")?.addEventListener("submit", handleAuthSubmit);
 $("#logoutButton")?.addEventListener("click", handleLogout);
 
 registerServiceWorker().then(() => scheduleReminderNotification());
