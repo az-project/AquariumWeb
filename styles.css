@@ -101,6 +101,10 @@ button { cursor: pointer; }
   color: var(--deep);
   font-weight: 800;
 }
+.auth-card [hidden],
+.auth-card [data-register-only][hidden] {
+  display: none !important;
+}
 .auth-error {
   min-height: 20px;
   margin: 0;

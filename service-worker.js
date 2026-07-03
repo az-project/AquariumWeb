@@ -1,9 +1,9 @@
-const CACHE_NAME = "reef-log-pwa-v46";
+const CACHE_NAME = "reef-log-pwa-v47";
 const APP_SHELL = [
   "./",
   "index.html",
-  "styles.css?v=freshwater-bg-hq-v1",
-  "app.js?v=freshwater-bg-hq-v1",
+  "styles.css?v=auth-split-v1",
+  "app.js?v=auth-split-v1",
   "manifest.webmanifest",
   "assets/backgrounds/saltwater-coral-open-hq.jpg",
   "assets/backgrounds/saltwater-coral-canyon-hq.jpg",

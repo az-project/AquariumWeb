@@ -7,7 +7,7 @@ const defaultNotificationSettings = {
   time: "09:00",
   leadDays: 1
 };
-const assetVersion = "freshwater-bg-hq-v1";
+const assetVersion = "auth-split-v1";
 const sharedStateEndpoint = "/api/state";
 const sessionEndpoint = "/api/session";
 const loginEndpoint = "/api/login";
@@ -384,6 +384,7 @@ function setAuthView(mode) {
   if (passwordInput) passwordInput.autocomplete = isRegister ? "new-password" : "current-password";
   if (confirmInput) {
     confirmInput.required = isRegister;
+    confirmInput.disabled = !isRegister;
     confirmInput.closest("[data-register-only]").hidden = !isRegister;
     if (!isRegister) confirmInput.value = "";
   }
