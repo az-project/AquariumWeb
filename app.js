@@ -7,7 +7,7 @@ const defaultNotificationSettings = {
   time: "09:00",
   leadDays: 1
 };
-const assetVersion = "invert-pseudo-fix";
+const assetVersion = "freshwater-bg-hq-v1";
 const sharedStateEndpoint = "/api/state";
 const sessionEndpoint = "/api/session";
 const loginEndpoint = "/api/login";
@@ -31,6 +31,74 @@ const species = [
   { name: "그린 스타폴립", type: "산호", level: "초급", nature: "빠른 성장", note: "폴립이 잘 열리며 번식력이 좋아 위치 관리가 중요", image: "assets/livestock/green-star-polyp.png" }
 ];
 
+const freshwaterSpecies = [
+  { name: "네온 테트라", type: "물고기", level: "초급", nature: "군영", note: "6마리 이상 무리로 키우면 안정적이며 온순한 소형어와 잘 어울림", habitat: "freshwater" },
+  { name: "구피", type: "물고기", level: "초급", nature: "활발", note: "번식이 쉽고 수질 변화에 비교적 강하지만 과밀을 피해야 함", habitat: "freshwater" },
+  { name: "코리도라스", type: "물고기", level: "초급", nature: "저층 활동", note: "바닥재가 부드러우면 수염 손상이 적고 무리 사육이 안정적임", habitat: "freshwater" },
+  { name: "베타", type: "물고기", level: "초급", nature: "단독 선호", note: "수컷끼리 합사는 피하고 잔잔한 수류와 은신처가 좋음", habitat: "freshwater" },
+  { name: "체리 새우", type: "무척추", level: "초급", nature: "온순", note: "구리 성분에 취약하며 촘촘한 수초와 안정적인 수질이 중요", habitat: "freshwater" },
+  { name: "오토싱", type: "물고기", level: "중급", nature: "이끼 섭식", note: "초기 적응과 먹이 보충이 중요하며 공격적인 어종은 피하는 편이 좋음", habitat: "freshwater" },
+  { name: "엔젤피시", type: "물고기", level: "중급", nature: "영역성", note: "성장 후 공간이 필요하고 작은 어종과의 합사는 주의가 필요", habitat: "freshwater" },
+  { name: "아누비아스", type: "수초", level: "초급", nature: "음성 수초", note: "뿌리줄기를 묻지 않고 유목이나 돌에 활착하면 관리가 쉬움", habitat: "freshwater" },
+  { name: "부세파란드라", type: "수초", level: "중급", nature: "느린 성장", note: "안정적인 수질과 낮은 광량에서도 잘 어울리는 활착 수초", habitat: "freshwater" },
+  { name: "아마존 소드", type: "수초", level: "초급", nature: "대형 성장", note: "뿌리 비료와 넓은 공간이 있으면 풍성하게 자람", habitat: "freshwater" }
+];
+
+species.push(...freshwaterSpecies);
+
+const aquariumTypes = {
+  saltwater: {
+    label: "해수어항",
+    eyebrow: "My Saltwater Aquarium",
+    defaultName: "나의 해수어항",
+    defaultBackground: "saltwater-open",
+    livestockHelp: "물고기/산호/무척추",
+    secondaryMetric: "salinity"
+  },
+  freshwater: {
+    label: "담수어항",
+    eyebrow: "My Freshwater Aquarium",
+    defaultName: "나의 담수어항",
+    defaultBackground: "freshwater-rocks",
+    livestockHelp: "물고기/수초/무척추",
+    secondaryMetric: "ph"
+  }
+};
+
+const aquariumBackgrounds = [
+  { id: "saltwater-open", label: "해수 오픈 리프", type: "해수", src: "assets/backgrounds/saltwater-coral-open-hq.jpg" },
+  { id: "saltwater-canyon", label: "해수 코랄 캐년", type: "해수", src: "assets/backgrounds/saltwater-coral-canyon-hq.jpg" },
+  { id: "saltwater-cave", label: "해수 리프 케이브", type: "해수", src: "assets/backgrounds/saltwater-coral-cave-hq.jpg" },
+  { id: "saltwater-pillars", label: "해수 코랄 타워", type: "해수", src: "assets/backgrounds/saltwater-coral-pillars-hq.jpg" },
+  { id: "saltwater-lagoon", label: "해수 라군", type: "해수", src: "assets/backgrounds/saltwater-coral-lagoon-hq.jpg" },
+  { id: "saltwater-left-reef", label: "해수 사이드 리프", type: "해수", src: "assets/backgrounds/saltwater-coral-left-reef-hq.jpg" },
+  { id: "freshwater-rocks", label: "담수 스톤 가든", type: "담수", src: "assets/backgrounds/freshwater-rocks-hq.jpg" },
+  { id: "freshwater-driftwood", label: "담수 유목 아치", type: "담수", src: "assets/backgrounds/freshwater-driftwood-arch-hq.jpg" },
+  { id: "freshwater-jungle", label: "담수 정글 패스", type: "담수", src: "assets/backgrounds/freshwater-jungle-path-hq.jpg" },
+  { id: "freshwater-stump", label: "담수 스텀프 밸리", type: "담수", src: "assets/backgrounds/freshwater-stump-valley-hq.jpg" },
+  { id: "freshwater-center", label: "담수 센터 플랜트", type: "담수", src: "assets/backgrounds/freshwater-center-plants-hq.jpg" },
+  { id: "freshwater-lily", label: "담수 릴리 패스", type: "담수", src: "assets/backgrounds/freshwater-lily-path-hq.jpg" }
+];
+
+const waterMetricSets = {
+  saltwater: [
+    { key: "temp", label: "수온", unit: "°C", digits: 1, step: "0.1", min: 22, max: 30, color: "#159fb7" },
+    { key: "salinity", label: "염도", unit: "ppt", digits: 3, step: "0.001", min: 32, max: 38, color: "#0f7fb8" },
+    { key: "kh", label: "알칼리티", unit: "dKH", digits: 1, step: "0.1", min: 5, max: 12, color: "#20bfa0" },
+    { key: "no3", label: "질산염", unit: "ppm", digits: 1, step: "0.1", min: 0, max: 50, color: "#ff7f73" },
+    { key: "nh3", label: "암모니아", unit: "ppm", digits: 1, step: "0.1", min: 0, max: 1, color: "#f0bd4f" },
+    { key: "po4", label: "인산염", unit: "ppm", digits: 2, step: "0.01", min: 0, max: .5, color: "#7c6fe8" }
+  ],
+  freshwater: [
+    { key: "temp", label: "수온", unit: "°C", digits: 1, step: "0.1", min: 18, max: 30, color: "#159fb7" },
+    { key: "ph", label: "pH", unit: "", digits: 1, step: "0.1", min: 5.5, max: 8.5, color: "#0f7fb8" },
+    { key: "gh", label: "GH", unit: "dGH", digits: 1, step: "0.1", min: 0, max: 20, color: "#20bfa0" },
+    { key: "no3", label: "질산염", unit: "ppm", digits: 1, step: "0.1", min: 0, max: 50, color: "#ff7f73" },
+    { key: "nh3", label: "암모니아", unit: "ppm", digits: 1, step: "0.1", min: 0, max: 1, color: "#f0bd4f" },
+    { key: "no2", label: "아질산염", unit: "ppm", digits: 1, step: "0.1", min: 0, max: 5, color: "#7c6fe8" }
+  ]
+};
+
 const livestockAssetMap = [
   { test: /니모|클라운|퍼큘라|clown/i, src: "assets/livestock/clownfish.png" },
   { test: /옐로우|yellow/i, src: "assets/livestock/yellow-tang.png" },
@@ -47,12 +115,12 @@ const livestockAssetMap = [
   { test: /산호|coral/i, src: "assets/livestock/bubble-coral.png" }
 ];
 
+const tankDataKeys = ["name", "aquariumType", "tankStart", "aquariumBackground", "waterLogs", "tasks", "livestock", "equipment"];
+const seedTank = createTank("saltwater", aquariumTypes.saltwater.defaultName, "tank-saltwater-main");
 const seedData = {
-  tankStart: todayIso,
-  waterLogs: [],
-  tasks: [],
-  livestock: [],
-  equipment: []
+  activeTankId: seedTank.id,
+  tanks: [seedTank],
+  ...tankSnapshot(seedTank)
 };
 
 let state = loadState();
@@ -82,6 +150,7 @@ function loadState() {
 }
 
 function saveState() {
+  syncActiveTank();
   setStorageItem(storageKey, JSON.stringify(state));
   if (sharedStateEnabled && !applyingSharedState) queueSharedStateSave();
 }
@@ -111,16 +180,120 @@ function cloneData(value) {
   return JSON.parse(JSON.stringify(value));
 }
 
-function migrateState(data) {
-  if (isDefaultSampleState(data)) return cloneData(seedData);
-  if (!data?.livestock) return data;
-  data.livestock = data.livestock.map(item => {
-    if (item.image === "assets/livestock/cleaner-shrimp.png") {
-      return { ...item, image: "assets/livestock/cleaner-shrimp-v2.png" };
-    }
-    return item;
+function tankSnapshot(tank) {
+  return {
+    name: tank.name,
+    aquariumType: tank.aquariumType,
+    tankStart: tank.tankStart,
+    aquariumBackground: tank.aquariumBackground,
+    waterLogs: cloneData(tank.waterLogs || []),
+    tasks: cloneData(tank.tasks || []),
+    livestock: cloneData(tank.livestock || []),
+    equipment: cloneData(tank.equipment || [])
+  };
+}
+
+function createTank(type = "saltwater", name = "", id = "") {
+  const aquariumType = aquariumTypes[type] ? type : "saltwater";
+  const config = aquariumTypes[aquariumType];
+  return {
+    id: id || `tank-${aquariumType}-${Date.now()}-${Math.random().toString(16).slice(2, 8)}`,
+    name: name || config.defaultName,
+    aquariumType,
+    tankStart: todayIso,
+    aquariumBackground: config.defaultBackground,
+    waterLogs: [],
+    tasks: [],
+    livestock: [],
+    equipment: []
+  };
+}
+
+function normalizeTank(tank, fallbackType = "saltwater", fallbackName = "") {
+  const type = aquariumTypes[tank?.aquariumType] ? tank.aquariumType : fallbackType;
+  const config = aquariumTypes[type] || aquariumTypes.saltwater;
+  const id = tank?.id || `tank-${type}-${Date.now()}-${Math.random().toString(16).slice(2, 8)}`;
+  const background = aquariumBackgrounds.some(item => item.id === tank?.aquariumBackground)
+    ? tank.aquariumBackground
+    : config.defaultBackground;
+  return {
+    id,
+    name: String(tank?.name || fallbackName || config.defaultName),
+    aquariumType: type,
+    tankStart: tank?.tankStart || todayIso,
+    aquariumBackground: background,
+    waterLogs: Array.isArray(tank?.waterLogs) ? tank.waterLogs : [],
+    tasks: Array.isArray(tank?.tasks) ? tank.tasks : [],
+    livestock: Array.isArray(tank?.livestock) ? tank.livestock.map(normalizeLivestockAsset) : [],
+    equipment: Array.isArray(tank?.equipment) ? tank.equipment : []
+  };
+}
+
+function normalizeLivestockAsset(item) {
+  if (item?.image === "assets/livestock/cleaner-shrimp.png") {
+    return { ...item, image: "assets/livestock/cleaner-shrimp-v2.png" };
+  }
+  return item;
+}
+
+function hydrateActiveTank() {
+  const tank = activeTank();
+  if (!tank) return;
+  Object.assign(state, tankSnapshot(tank));
+}
+
+function syncActiveTank() {
+  const tank = activeTank();
+  if (!tank) return;
+  tankDataKeys.forEach(key => {
+    tank[key] = cloneData(state[key]);
   });
-  return data;
+}
+
+function activeTank() {
+  return state.tanks?.find(tank => tank.id === state.activeTankId) || state.tanks?.[0] || null;
+}
+
+function currentAquariumType() {
+  return aquariumTypes[state.aquariumType] ? state.aquariumType : "saltwater";
+}
+
+function currentAquariumConfig() {
+  return aquariumTypes[currentAquariumType()];
+}
+
+function currentWaterMetrics() {
+  return waterMetricSets[currentAquariumType()] || waterMetricSets.saltwater;
+}
+
+function migrateState(data) {
+  if (!data) return cloneData(seedData);
+  if (isDefaultSampleState(data)) return cloneData(seedData);
+
+  if (Array.isArray(data.tanks) && data.tanks.length) {
+    const tanks = data.tanks.map(tank => normalizeTank(tank));
+    const activeTankId = tanks.some(tank => tank.id === data.activeTankId) ? data.activeTankId : tanks[0].id;
+    const nextState = { ...data, tanks, activeTankId };
+    Object.assign(nextState, tankSnapshot(tanks.find(tank => tank.id === activeTankId) || tanks[0]));
+    return nextState;
+  }
+
+  const legacyTank = normalizeTank({
+    id: "tank-saltwater-main",
+    name: "나의 해수어항",
+    aquariumType: "saltwater",
+    tankStart: data.tankStart,
+    aquariumBackground: data.aquariumBackground,
+    waterLogs: data.waterLogs,
+    tasks: data.tasks,
+    livestock: data.livestock,
+    equipment: data.equipment
+  });
+  return {
+    activeTankId: legacyTank.id,
+    tanks: [legacyTank],
+    ...tankSnapshot(legacyTank)
+  };
 }
 
 function isDefaultSampleState(data) {
@@ -321,6 +494,7 @@ async function handleLogout() {
 const latestLog = () => sortedLogs().at(-1) || {};
 
 function renderAll() {
+  renderTankSwitcher();
   renderSpeciesSelects();
   renderDashboard();
   renderWater();
@@ -331,10 +505,74 @@ function renderAll() {
   saveState();
 }
 
+function renderTankSwitcher() {
+  const select = $("#tankSelect");
+  const deleteButton = $("#deleteTank");
+  const config = currentAquariumConfig();
+  $("#tankTypeEyebrow").textContent = config.eyebrow;
+  $("#activeTankTitle").textContent = `${state.name || config.defaultName} 상태`;
+  $("#livestockMetricHelp").textContent = config.livestockHelp;
+  if (deleteButton) {
+    deleteButton.disabled = state.tanks.length <= 1;
+    deleteButton.title = state.tanks.length <= 1 ? "어항은 최소 1개가 필요합니다." : "현재 선택한 어항 삭제";
+  }
+  if (!select) return;
+  select.innerHTML = state.tanks.map(tank => {
+    const typeLabel = aquariumTypes[tank.aquariumType]?.label || "어항";
+    return `<option value="${escapeHtml(tank.id)}">${escapeHtml(tank.name)} · ${typeLabel}</option>`;
+  }).join("");
+  select.value = state.activeTankId;
+}
+
+function switchTank(tankId) {
+  if (!state.tanks?.some(tank => tank.id === tankId)) return;
+  syncActiveTank();
+  state.activeTankId = tankId;
+  hydrateActiveTank();
+  selectedLivestockIndex = null;
+  setWaterEditMode(null);
+  setLivestockEditMode(null);
+  setEquipmentEditMode(null);
+  renderAll();
+}
+
+function addTank(type) {
+  syncActiveTank();
+  const sameTypeCount = state.tanks.filter(tank => tank.aquariumType === type).length + 1;
+  const tank = createTank(type, `${aquariumTypes[type].label} ${sameTypeCount}`);
+  state.tanks.push(tank);
+  state.activeTankId = tank.id;
+  hydrateActiveTank();
+  selectedLivestockIndex = null;
+  setWaterEditMode(null);
+  setLivestockEditMode(null);
+  setEquipmentEditMode(null);
+  renderAll();
+}
+
+function deleteActiveTank() {
+  if (state.tanks.length <= 1) return;
+  const tank = activeTank();
+  const name = tank?.name || "현재 어항";
+  const ok = window.confirm(`${name}을(를) 삭제할까요? 이 어항의 수질, 일정, 생물, 장비 기록이 함께 삭제됩니다.`);
+  if (!ok) return;
+  state.tanks = state.tanks.filter(item => item.id !== state.activeTankId);
+  state.activeTankId = state.tanks[0].id;
+  hydrateActiveTank();
+  selectedLivestockIndex = null;
+  setWaterEditMode(null);
+  setLivestockEditMode(null);
+  setEquipmentEditMode(null);
+  renderAll();
+}
+
 function renderDashboard() {
   const latest = latestLog();
   $("#heroTemp").textContent = formatMetric(latest.temp, 1, "°C");
-  $("#heroSalinity").textContent = formatMetric(latest.salinity, 3, "ppt");
+  const secondary = currentWaterMetrics().find(item => item.key === currentAquariumConfig().secondaryMetric) || currentWaterMetrics()[1];
+  $("#heroSecondaryLabel").textContent = secondary.label;
+  $("#heroSecondaryUnit").textContent = secondary.unit || secondary.label;
+  $("#heroSalinity").textContent = formatMetric(latest[secondary.key], secondary.digits, secondary.unit);
   const nextWater = state.tasks.filter(t => t.category === "환수" && isValidDateString(t.due)).sort((a,b) => a.due.localeCompare(b.due))[0];
   const dday = nextWater ? daysBetween(nextWater.due, todayIso) : null;
   $("#heroWaterChange").textContent = dday === null ? "-" : dday === 0 ? "오늘" : `D${dday > 0 ? "-" + dday : "+" + Math.abs(dday)}`;
@@ -345,9 +583,41 @@ function renderDashboard() {
   const score = stabilityScore(latest);
   $("#stabilityScore").textContent = score === null ? "-" : `${score}점`;
   $("#stabilityText").textContent = score === null ? "수질 기록 없음" : score >= 85 ? "아주 안정적" : score >= 70 ? "관찰 권장" : "조정 필요";
+  renderBackgroundPicker();
   renderTankInhabitants();
   renderTasks("#todayTasks", state.tasks.filter(t => isValidDateString(t.due) && t.due <= todayIso).slice(0, 5));
   drawChart();
+}
+
+function selectedAquariumBackground() {
+  const fallbackType = currentAquariumType() === "freshwater" ? "담수" : "해수";
+  return aquariumBackgrounds.find(background => background.id === state.aquariumBackground)
+    || aquariumBackgrounds.find(background => background.type === fallbackType)
+    || aquariumBackgrounds[0];
+}
+
+function renderBackgroundPicker() {
+  const background = selectedAquariumBackground();
+  if (state.aquariumBackground !== background.id) state.aquariumBackground = background.id;
+  const image = $("#aquariumBackgroundImage");
+  if (image) {
+    image.src = versionedAsset(background.src);
+    image.alt = `${background.label} 어항 배경`;
+  }
+  $("#currentBackgroundName").textContent = background.label;
+  $("#tankSettingsSubtitle").textContent = `${state.name || currentAquariumConfig().defaultName} · ${currentAquariumConfig().label}`;
+
+  const target = $("#backgroundOptions");
+  if (!target) return;
+  const typeLabel = currentAquariumType() === "freshwater" ? "담수" : "해수";
+  const options = aquariumBackgrounds.filter(item => item.type === typeLabel);
+  target.innerHTML = options.map(item => `
+    <button class="${item.id === background.id ? "active" : ""}" data-background-id="${item.id}" type="button" title="${item.label}">
+      <span class="background-thumb" style="background-image:url('${versionedAsset(item.src)}')"></span>
+      <span class="background-label">${item.label}</span>
+      <small>${item.type}</small>
+    </button>
+  `).join("");
 }
 
 function renderTankInhabitants() {
@@ -404,6 +674,7 @@ function livestockImage(item, index = 0) {
   const name = item.name || "";
   const match = livestockAssetMap.find(entry => entry.test.test(name));
   if (match) return match.src;
+  if (currentAquariumType() === "freshwater") return "";
   if (item.type === "무척추") return "assets/livestock/cleaner-shrimp-v2.png";
   if (item.type === "산호") {
     const coralFallbacks = [
@@ -463,7 +734,7 @@ function renderSelectedCreature() {
 
 function addLivestockFromForm(form) {
   const data = cleanFormData(form);
-  const selected = species.find(item => item.name === data.name);
+  const selected = availableSpecies().find(item => item.name === data.name);
   data.name = data.name || "생물 이름 없음";
   data.type = selected?.type || "생물";
   data.status = data.status || "상태 미입력";
@@ -492,10 +763,10 @@ function fillLivestockForm(item) {
 }
 
 function speciesForLivestock(item) {
-  const exact = species.find(entry => entry.name === item.name);
+  const exact = availableSpecies().find(entry => entry.name === item.name);
   if (exact) return exact;
   const asset = livestockImage(item);
-  return species.find(entry => entry.image === asset) || null;
+  return availableSpecies().find(entry => entry.image === asset) || null;
 }
 
 function setLivestockEditMode(index = null) {
@@ -532,16 +803,21 @@ function setEquipmentEditMode(index = null) {
 }
 
 function renderSpeciesSelects() {
-  const options = `<option value="">선택 안 함</option>${species.map(item => `<option value="${escapeHtml(item.name)}">${escapeHtml(item.name)}</option>`).join("")}`;
+  const options = `<option value="">선택 안 함</option>${availableSpecies().map(item => `<option value="${escapeHtml(item.name)}">${escapeHtml(item.name)}</option>`).join("")}`;
   $$("[data-species-select]").forEach(select => {
     if (select.innerHTML !== options) select.innerHTML = options;
     syncSpeciesType(select);
   });
 }
 
+function availableSpecies() {
+  const habitat = currentAquariumType();
+  return species.filter(item => (item.habitat || "saltwater") === habitat);
+}
+
 function syncSpeciesType(select) {
   const form = select.closest("form");
-  const selected = species.find(item => item.name === select.value);
+  const selected = availableSpecies().find(item => item.name === select.value);
   const badge = form?.querySelector("[data-species-level]");
   const note = form?.querySelector("[data-species-level-note]");
   if (!selected) {
@@ -574,12 +850,21 @@ function levelNote(level) {
 function stabilityScore(log) {
   if (!hasNumber(log?.temp)) return null;
   let score = 100;
-  if (hasNumber(log.temp) && (log.temp < 24.5 || log.temp > 26.5)) score -= 15;
-  if (hasNumber(log.salinity) && (log.salinity < 34 || log.salinity > 36)) score -= 15;
-  if (hasNumber(log.kh) && (log.kh < 7.5 || log.kh > 9.5)) score -= 10;
-  if (hasNumber(log.no3) && log.no3 > 15) score -= 15;
-  if (hasNumber(log.nh3) && log.nh3 > 0) score -= 20;
-  if (hasNumber(log.po4) && log.po4 > 0.1) score -= 15;
+  if (currentAquariumType() === "freshwater") {
+    if (hasNumber(log.temp) && (log.temp < 22 || log.temp > 28)) score -= 15;
+    if (hasNumber(log.ph) && (log.ph < 6.2 || log.ph > 7.8)) score -= 15;
+    if (hasNumber(log.gh) && (log.gh < 3 || log.gh > 14)) score -= 10;
+    if (hasNumber(log.no3) && log.no3 > 30) score -= 15;
+    if (hasNumber(log.nh3) && log.nh3 > 0) score -= 20;
+    if (hasNumber(log.no2) && log.no2 > 0) score -= 20;
+  } else {
+    if (hasNumber(log.temp) && (log.temp < 24.5 || log.temp > 26.5)) score -= 15;
+    if (hasNumber(log.salinity) && (log.salinity < 34 || log.salinity > 36)) score -= 15;
+    if (hasNumber(log.kh) && (log.kh < 7.5 || log.kh > 9.5)) score -= 10;
+    if (hasNumber(log.no3) && log.no3 > 15) score -= 15;
+    if (hasNumber(log.nh3) && log.nh3 > 0) score -= 20;
+    if (hasNumber(log.po4) && log.po4 > 0.1) score -= 15;
+  }
   return Math.max(0, score);
 }
 
@@ -714,12 +999,32 @@ function renderTasks(selector, tasks) {
 }
 
 function renderWater() {
+  renderWaterFields();
   renderTasks("#taskTimeline", sortedTasks());
+  const metrics = currentWaterMetrics();
+  $("#waterTableHead").innerHTML = `<tr><th>날짜</th>${metrics.map(item => `<th>${escapeHtml(item.label)}</th>`).join("")}<th>관리</th></tr>`;
   $("#waterRows").innerHTML = state.waterLogs
     .map((log, index) => ({ ...log, index }))
     .sort((a,b) => (b.date || "").localeCompare(a.date || ""))
-    .map(log => `<tr><td>${escapeHtml(log.date || "날짜 미정")}</td><td>${formatNumber(log.temp, 1)}</td><td>${formatNumber(log.salinity, 3)}</td><td>${formatNumber(log.kh, 1)}</td><td>${formatNumber(log.no3, 1)}</td><td>${formatNumber(log.nh3, 1)}</td><td>${formatNumber(log.po4, 2)}</td><td><div class="row-actions"><button class="text-button compact-button" data-edit-water="${log.index}" type="button">수정</button><button class="text-button compact-button danger" data-delete-water="${log.index}" type="button">삭제</button></div></td></tr>`)
+    .map(log => `<tr><td>${escapeHtml(log.date || "날짜 미정")}</td>${metrics.map(item => `<td>${formatNumber(log[item.key], item.digits)}</td>`).join("")}<td><div class="row-actions"><button class="text-button compact-button" data-edit-water="${log.index}" type="button">수정</button><button class="text-button compact-button danger" data-delete-water="${log.index}" type="button">삭제</button></div></td></tr>`)
     .join("");
+}
+
+function renderWaterFields() {
+  const metrics = currentWaterMetrics();
+  const enabledKeys = new Set(metrics.map(item => item.key));
+  $$("[data-water-field]").forEach(label => {
+    const key = label.dataset.waterField;
+    const metric = metrics.find(item => item.key === key);
+    label.hidden = !enabledKeys.has(key);
+    if (!metric) return;
+    const input = label.querySelector("input");
+    label.firstChild.textContent = `${metric.label}${metric.unit ? ` ${metric.unit}` : ""}`;
+    if (input) {
+      input.step = metric.step;
+      input.disabled = !enabledKeys.has(key);
+    }
+  });
 }
 
 function renderLivestock() {
@@ -744,10 +1049,12 @@ function renderLivestock() {
 
 function renderLibrary() {
   const q = ($("#librarySearch")?.value || "").trim().toLowerCase();
-  const list = species.filter(s => [s.name, s.type, s.level, s.nature, s.note].join(" ").toLowerCase().includes(q));
+  const list = availableSpecies().filter(s => [s.name, s.type, s.level, s.nature, s.note].join(" ").toLowerCase().includes(q));
   $("#libraryList").innerHTML = list.map(s => `<article class="library-item">${s.image ? `<img class="library-image" src="${versionedAsset(s.image)}" alt="${escapeHtml(s.name)}" />` : ""}<div><strong>${s.name}</strong><small>${s.type} · <span class="level-pill ${levelClass(s.level)}">${s.level}</span> · ${s.nature}</small><p>${s.note}</p></div></article>`).join("");
-  const options = species.map(s => `<option>${s.name}</option>`).join("");
-  if (!$("#compatA").innerHTML) { $("#compatA").innerHTML = options; $("#compatB").innerHTML = options; $("#compatB").selectedIndex = 1; }
+  const options = availableSpecies().map(s => `<option>${s.name}</option>`).join("");
+  $("#compatA").innerHTML = options;
+  $("#compatB").innerHTML = options;
+  $("#compatB").selectedIndex = Math.min(1, availableSpecies().length - 1);
 }
 
 function drawChart() {
@@ -757,14 +1064,7 @@ function drawChart() {
   if (!size) return;
   const ctx = canvas.getContext("2d");
   chartPoints = [];
-  const series = [
-    { key: "temp", label: "수온", color: "#159fb7", min: 22, max: 30, digits: 1, unit: "°C" },
-    { key: "salinity", label: "염도", color: "#0f7fb8", min: 32, max: 38, digits: 3, unit: "ppt" },
-    { key: "kh", label: "알칼리티", color: "#20bfa0", min: 5, max: 12, digits: 1, unit: "dKH" },
-    { key: "no3", label: "질산염", color: "#ff7f73", min: 0, max: 50, digits: 1, unit: "ppm" },
-    { key: "nh3", label: "암모니아", color: "#f0bd4f", min: 0, max: 1, digits: 1, unit: "ppm" },
-    { key: "po4", label: "인산염", color: "#7c6fe8", min: 0, max: .5, digits: 2, unit: "ppm" }
-  ];
+  const series = currentWaterMetrics();
   renderChartLegend(series);
   const logs = sortedLogs().filter(log => series.some(item => hasNumber(log[item.key]))).slice(-14);
   const width = size.width;
@@ -987,9 +1287,12 @@ function waterLogFromForm(form) {
     temp: optionalNumber(data.temp),
     salinity: optionalNumber(data.salinity),
     kh: optionalNumber(data.kh),
+    ph: optionalNumber(data.ph),
+    gh: optionalNumber(data.gh),
     no3: optionalNumber(data.no3),
     nh3: optionalNumber(data.nh3),
-    po4: optionalNumber(data.po4)
+    po4: optionalNumber(data.po4),
+    no2: optionalNumber(data.no2)
   };
 }
 
@@ -1008,9 +1311,12 @@ function fillWaterForm(log) {
   form.elements.temp.value = formatInputValue(log.temp, 1);
   form.elements.salinity.value = formatInputValue(log.salinity, 3);
   form.elements.kh.value = formatInputValue(log.kh, 1);
+  form.elements.ph.value = formatInputValue(log.ph, 1);
+  form.elements.gh.value = formatInputValue(log.gh, 1);
   form.elements.no3.value = formatInputValue(log.no3, 1);
   form.elements.nh3.value = formatInputValue(log.nh3, 1);
   form.elements.po4.value = formatInputValue(log.po4, 2);
+  form.elements.no2.value = formatInputValue(log.no2, 1);
 }
 
 function formatInputValue(value, digits) {
@@ -1110,6 +1416,10 @@ function clamp(value, min, max) {
 
 $$(".nav-button").forEach(btn => btn.addEventListener("click", () => switchView(btn.dataset.view)));
 $$("[data-view-jump]").forEach(btn => btn.addEventListener("click", () => switchView(btn.dataset.viewJump)));
+$("#tankSelect")?.addEventListener("change", event => switchTank(event.target.value));
+$("#addSaltwaterTank")?.addEventListener("click", () => addTank("saltwater"));
+$("#addFreshwaterTank")?.addEventListener("click", () => addTank("freshwater"));
+$("#deleteTank")?.addEventListener("click", deleteActiveTank);
 function switchView(id) {
   $$(".nav-button").forEach(b => b.classList.toggle("active", b.dataset.view === id));
   $$(".view").forEach(v => v.classList.toggle("active", v.id === id));
@@ -1261,8 +1571,19 @@ $("#librarySearch").addEventListener("input", renderLibrary);
 $("#checkCompat").addEventListener("click", () => {
   const a = $("#compatA").value;
   const b = $("#compatB").value;
+  if (!a || !b) {
+    $("#compatResult").textContent = "먼저 현재 어항 타입에 맞는 생물을 선택하세요.";
+    return;
+  }
   const risky = [a, b].some(name => name.includes("탱")) && a !== b && [a, b].some(name => name.includes("옐로우"));
   $("#compatResult").textContent = a === b ? "같은 생물은 개체 수와 수조 크기를 먼저 확인하세요." : risky ? "주의: 영역성이 강할 수 있어 충분한 수조 크기와 은신처가 필요합니다." : "대체로 가능: 체급 차이, 먹이 경쟁, 공격성만 관찰하세요.";
+});
+$("#backgroundOptions")?.addEventListener("click", event => {
+  const button = event.target.closest("[data-background-id]");
+  if (!button) return;
+  state.aquariumBackground = button.dataset.backgroundId;
+  renderBackgroundPicker();
+  saveState();
 });
 $("#resetDemo")?.addEventListener("click", () => { state = cloneData(seedData); selectedLivestockIndex = null; setWaterEditMode(null); renderAll(); });
 $$("[data-notification-settings]").forEach(btn => btn.addEventListener("click", () => {

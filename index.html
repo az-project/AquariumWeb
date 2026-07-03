@@ -8,7 +8,7 @@
   <title>리프로그 - 해수어항 관리</title>
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="apple-touch-icon" href="assets/icons/icon-192.png" />
-  <link rel="stylesheet" href="styles.css?v=auth-register-v1" />
+  <link rel="stylesheet" href="styles.css?v=freshwater-bg-hq-v1" />
 </head>
 <body>
   <section class="auth-screen" id="authScreen" hidden aria-label="로그인">
@@ -70,8 +70,20 @@
     <main class="main-area">
       <header class="topbar">
         <div>
-          <p class="eyebrow">My Saltwater Aquarium</p>
-          <h1>오늘의 어항 상태</h1>
+          <p class="eyebrow" id="tankTypeEyebrow">My Saltwater Aquarium</p>
+          <h1 id="activeTankTitle">오늘의 어항 상태</h1>
+          <div class="tank-switcher" aria-label="관리 어항 선택">
+            <div class="tank-select-wrap">
+              <span>관리 어항</span>
+              <select id="tankSelect"></select>
+            </div>
+            <div class="tank-actions">
+              <button class="chip-button salt" id="addSaltwaterTank" type="button">+ 해수</button>
+              <button class="chip-button fresh" id="addFreshwaterTank" type="button">+ 담수</button>
+              <button class="chip-button settings" data-open-modal="tankSettingsModal" type="button">어항 설정</button>
+              <button class="chip-button danger" id="deleteTank" type="button">삭제</button>
+            </div>
+          </div>
         </div>
         <div class="topbar-actions">
           <button class="text-button" data-notification-settings data-mobile-label="알림" type="button">알림 설정</button>
@@ -83,13 +95,19 @@
       <section class="view active" id="dashboard">
         <div class="dashboard-hero">
           <div class="aquarium-stage" aria-label="어항 시각화">
-            <img src="assets/reef-bg-no-fish-v2.png" alt="물고기 없는 트렌디한 3D 해수어항 배경" />
+            <img id="aquariumBackgroundImage" src="assets/backgrounds/saltwater-coral-open-hq.jpg" alt="선택한 어항 배경" />
             <div class="tank-inhabitants" id="tankInhabitants" aria-label="투입된 생물 표시"></div>
+            <button class="tank-stage-settings" data-open-modal="tankSettingsModal" type="button">설정</button>
           </div>
           <aside class="status-rail" aria-label="어항 주요 상태">
             <div class="rail-heading">
               <p class="eyebrow">Live Reef Monitor</p>
               <h2>내 어항 생물 지도</h2>
+            </div>
+            <div class="tank-settings-summary">
+              <span>현재 배경</span>
+              <strong id="currentBackgroundName">배경 설정</strong>
+              <small>어항 이미지 우상단 설정에서 변경</small>
             </div>
             <div class="tank-stat">
               <span class="stat-icon">°C</span>
@@ -99,9 +117,9 @@
               </div>
             </div>
             <div class="tank-stat">
-              <span class="stat-icon">ppt</span>
+              <span class="stat-icon" id="heroSecondaryUnit">ppt</span>
               <div>
-                <span>염도</span>
+                <span id="heroSecondaryLabel">염도</span>
                 <strong id="heroSalinity">-</strong>
               </div>
             </div>
@@ -130,7 +148,7 @@
           <article class="metric-card">
             <span>등록 생물</span>
             <strong id="livestockCount">-</strong>
-            <small>물고기/산호/무척추</small>
+            <small id="livestockMetricHelp">물고기/산호/무척추</small>
           </article>
           <article class="metric-card warn">
             <span>예정 작업</span>
@@ -174,12 +192,15 @@
             </div>
             <form class="form-grid" id="waterForm">
               <label>날짜<input type="date" name="date" /></label>
-              <label>수온<input type="number" step="0.1" name="temp" /></label>
-              <label>염도 ppt<input type="number" step="0.001" name="salinity" /></label>
-              <label>알칼리티 dKH<input type="number" step="0.1" name="kh" /></label>
-              <label>질산염 ppm<input type="number" step="0.1" name="no3" /></label>
-              <label>암모니아 ppm<input type="number" step="0.1" name="nh3" /></label>
-              <label>인산염 ppm<input type="number" step="0.01" name="po4" /></label>
+              <label data-water-field="temp">수온<input type="number" step="0.1" name="temp" /></label>
+              <label data-water-field="salinity">염도 ppt<input type="number" step="0.001" name="salinity" /></label>
+              <label data-water-field="kh">알칼리티 dKH<input type="number" step="0.1" name="kh" /></label>
+              <label data-water-field="ph">pH<input type="number" step="0.1" name="ph" /></label>
+              <label data-water-field="gh">GH dGH<input type="number" step="0.1" name="gh" /></label>
+              <label data-water-field="no3">질산염 ppm<input type="number" step="0.1" name="no3" /></label>
+              <label data-water-field="nh3">암모니아 ppm<input type="number" step="0.1" name="nh3" /></label>
+              <label data-water-field="po4">인산염 ppm<input type="number" step="0.01" name="po4" /></label>
+              <label data-water-field="no2">아질산염 ppm<input type="number" step="0.1" name="no2" /></label>
               <button class="primary-button wide" id="waterSubmitLabel" type="submit">수질 저장</button>
               <button class="text-button wide" id="cancelWaterEdit" type="button" hidden>수정 취소</button>
             </form>
@@ -198,7 +219,7 @@
           </div>
           <div class="table-wrap">
             <table>
-              <thead><tr><th>날짜</th><th>수온</th><th>염도</th><th>알칼리티</th><th>질산염</th><th>암모니아</th><th>인산염</th><th>관리</th></tr></thead>
+              <thead id="waterTableHead"><tr><th>날짜</th><th>수온</th><th>염도</th><th>알칼리티</th><th>질산염</th><th>암모니아</th><th>인산염</th><th>관리</th></tr></thead>
               <tbody id="waterRows"></tbody>
             </table>
           </div>
@@ -339,6 +360,25 @@
     </form>
   </dialog>
 
-  <script src="app.js?v=auth-register-v1"></script>
+  <dialog class="modal" id="tankSettingsModal">
+    <form method="dialog" class="modal-card tank-settings-modal">
+      <div class="panel-heading">
+        <div>
+          <h2>어항 설정</h2>
+          <small id="tankSettingsSubtitle">배경 화면 변경</small>
+        </div>
+        <button class="icon-button" data-close-dialog type="button" aria-label="닫기">×</button>
+      </div>
+      <div class="background-picker" aria-label="어항 배경 선택">
+        <div class="background-picker-heading">
+          <span>배경 화면 변경</span>
+          <small>현재 어항 타입에 맞는 배경만 표시</small>
+        </div>
+        <div class="background-options" id="backgroundOptions"></div>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="app.js?v=freshwater-bg-hq-v1"></script>
 </body>
 </html>
