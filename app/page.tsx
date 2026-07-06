@@ -25,6 +25,13 @@ export default function Home() {
 
   useEffect(() => {
     void initialize();
+    // 기존 바닐라 PWA의 서비스워커 해제 (킬스위치 SW와 이중 방어)
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker
+        .getRegistrations()
+        .then(registrations => registrations.forEach(registration => void registration.unregister()))
+        .catch(() => {});
+    }
   }, [initialize]);
 
   if (authStatus === "checking") {
