@@ -1,8 +1,13 @@
 .git
 .agents
 .codex
-data
+.omc
+.next
 node_modules
+data
+__tests__
 npm-debug.log
 *.tmp
 *.tmp.png
+CLAUDE.md
+deploy.sh
