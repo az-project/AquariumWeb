@@ -8,7 +8,7 @@
   <title>리프로그 - 해수어항 관리</title>
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="apple-touch-icon" href="assets/icons/icon-192.png" />
-  <link rel="stylesheet" href="styles.css?v=freshwater-species-v1" />
+  <link rel="stylesheet" href="styles.css?v=mobile-readable-v1" />
 </head>
 <body>
   <section class="auth-screen" id="authScreen" hidden aria-label="로그인">
@@ -78,10 +78,10 @@
               <select id="tankSelect"></select>
             </div>
             <div class="tank-actions">
-              <button class="chip-button salt" id="addSaltwaterTank" type="button">+ 해수</button>
-              <button class="chip-button fresh" id="addFreshwaterTank" type="button">+ 담수</button>
-              <button class="chip-button settings" data-open-modal="tankSettingsModal" type="button">어항 설정</button>
-              <button class="chip-button danger" id="deleteTank" type="button">삭제</button>
+              <button class="chip-button salt" id="addSaltwaterTank" data-mobile-label="+해수" type="button">+ 해수</button>
+              <button class="chip-button fresh" id="addFreshwaterTank" data-mobile-label="+담수" type="button">+ 담수</button>
+              <button class="chip-button settings" data-open-modal="tankSettingsModal" data-mobile-label="설정" type="button">어항 설정</button>
+              <button class="chip-button danger" id="deleteTank" data-mobile-label="삭제" type="button">삭제</button>
             </div>
           </div>
         </div>
@@ -379,6 +379,6 @@
     </form>
   </dialog>
 
-  <script src="app.js?v=freshwater-species-v1"></script>
+  <script src="app.js?v=mobile-readable-v1"></script>
 </body>
 </html>

@@ -7,7 +7,7 @@ const defaultNotificationSettings = {
   time: "09:00",
   leadDays: 1
 };
-const assetVersion = "freshwater-species-v1";
+const assetVersion = "mobile-readable-v1";
 const sharedStateEndpoint = "/api/state";
 const sessionEndpoint = "/api/session";
 const loginEndpoint = "/api/login";

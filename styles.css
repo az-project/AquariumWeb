@@ -2122,6 +2122,331 @@ th {
   }
 }
 
+@media (max-width: 640px) {
+  body {
+    padding-bottom: calc(102px + env(safe-area-inset-bottom, 0px));
+    background: linear-gradient(180deg, #f8fbfa 0%, #edf7f2 100%);
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  .main-area {
+    padding: 18px 14px 24px;
+  }
+
+  .topbar {
+    position: static;
+    display: grid;
+    gap: 14px;
+    margin: -18px -14px 14px;
+    padding: 18px 14px 16px;
+    background: rgba(250, 253, 252, .96);
+    border-bottom: 1px solid rgba(29, 55, 63, .08);
+    backdrop-filter: none;
+  }
+
+  .topbar > div:first-child {
+    display: grid;
+    gap: 12px;
+    width: 100%;
+  }
+
+  .eyebrow {
+    font-size: 11px;
+    line-height: 1.35;
+  }
+
+  h1 {
+    font-size: 30px;
+    line-height: 1.22;
+    word-break: keep-all;
+    overflow-wrap: anywhere;
+  }
+
+  h2 {
+    font-size: 18px;
+    line-height: 1.35;
+  }
+
+  .tank-switcher {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+    width: 100%;
+    margin-top: 0;
+    padding: 10px;
+    border-radius: 8px;
+    background: #fff;
+    box-shadow: 0 10px 24px rgba(13, 35, 42, .07);
+  }
+
+  .tank-select-wrap {
+    min-width: 0;
+    padding: 10px 12px;
+    border: 1px solid rgba(29, 55, 63, .08);
+    background: #f4faf7;
+  }
+
+  .tank-select-wrap span {
+    font-size: 11px;
+  }
+
+  .tank-switcher select {
+    min-height: 34px;
+    font-size: 16px;
+    line-height: 1.4;
+    white-space: normal;
+  }
+
+  .tank-actions {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 7px;
+  }
+
+  .chip-button {
+    min-width: 0;
+    min-height: 40px;
+    padding: 0 6px;
+    font-size: 0;
+    border-radius: 8px;
+    box-shadow: none;
+  }
+
+  .chip-button::after {
+    content: attr(data-mobile-label);
+    font-size: 13px;
+    font-weight: 800;
+    line-height: 1.2;
+    white-space: nowrap;
+  }
+
+  .topbar-actions {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+    width: 100%;
+  }
+
+  .topbar-actions .primary-button,
+  .topbar-actions .text-button {
+    min-width: 0;
+    min-height: 42px;
+    padding: 8px 6px;
+    font-size: 0;
+    border-radius: 8px;
+    box-shadow: 0 8px 18px rgba(13, 35, 42, .08);
+  }
+
+  .topbar-actions .primary-button::after,
+  .topbar-actions .text-button::after {
+    content: attr(data-mobile-label);
+    font-size: 13px;
+    font-weight: 800;
+    line-height: 1.2;
+    white-space: nowrap;
+  }
+
+  .dashboard-hero {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .aquarium-stage {
+    min-height: 360px;
+    border-radius: 8px;
+  }
+
+  .tank-stage-settings {
+    top: 12px;
+    right: 12px;
+    min-height: 40px;
+    padding: 0 14px;
+    font-size: 14px;
+  }
+
+  .status-rail {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    padding: 12px;
+    border-radius: 8px;
+    box-shadow: 0 10px 24px rgba(13, 35, 42, .07);
+  }
+
+  .rail-heading,
+  .tank-settings-summary,
+  .tank-inspector,
+  .status-rail .primary-button {
+    grid-column: 1 / -1;
+  }
+
+  .rail-heading {
+    padding-bottom: 4px;
+  }
+
+  .rail-heading h2 {
+    font-size: 19px;
+  }
+
+  .tank-stat,
+  .tank-inspector,
+  .tank-settings-summary {
+    min-width: 0;
+    padding: 12px;
+    border-radius: 8px;
+  }
+
+  .tank-stat {
+    align-items: flex-start;
+  }
+
+  .tank-stat .stat-icon {
+    width: 34px;
+    height: 34px;
+    font-size: 12px;
+  }
+
+  .tank-stat strong,
+  .tank-inspector strong,
+  .tank-settings-summary strong {
+    font-size: 18px;
+    line-height: 1.3;
+    word-break: keep-all;
+    overflow-wrap: anywhere;
+  }
+
+  .metric-grid,
+  .content-grid,
+  .content-grid.two,
+  .form-grid,
+  .creature-grid,
+  .equipment-grid,
+  .compat-box {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .metric-card,
+  .panel,
+  #livestock .panel,
+  .creature-card {
+    padding: 16px;
+    border-radius: 8px;
+    box-shadow: 0 10px 24px rgba(13, 35, 42, .07);
+  }
+
+  .metric-card {
+    min-height: 108px;
+  }
+
+  .metric-card strong {
+    font-size: 30px;
+  }
+
+  .panel-heading {
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+
+  .panel-heading .text-button,
+  .panel-heading .primary-button {
+    flex: 0 0 auto;
+    min-height: 38px;
+    padding: 8px 12px;
+    font-size: 13px;
+    white-space: nowrap;
+  }
+
+  input,
+  select,
+  #livestock input,
+  #livestock select {
+    min-height: 50px;
+    padding: 11px 13px;
+    font-size: 16px;
+    line-height: 1.45;
+  }
+
+  label,
+  #livestock label {
+    font-size: 13px;
+    line-height: 1.45;
+  }
+
+  table {
+    min-width: 560px;
+  }
+
+  #waterChart {
+    height: 300px;
+    min-height: 300px;
+    max-height: none;
+    aspect-ratio: auto;
+  }
+
+  .chart-panel {
+    min-height: 0;
+    margin-top: 12px;
+  }
+
+  .chart-legend {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 7px 10px;
+    font-size: 12px;
+  }
+
+  .chart-legend-item {
+    min-width: 0;
+    white-space: normal;
+    word-break: keep-all;
+  }
+
+  .sidebar {
+    left: 10px;
+    right: 10px;
+    bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+    padding: 8px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, .92);
+  }
+
+  .nav-tabs {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 6px;
+  }
+
+  .nav-button {
+    min-height: 48px;
+    padding: 7px 4px 10px;
+    font-size: 12px;
+    line-height: 1.25;
+    font-weight: 800;
+    word-break: keep-all;
+    overflow-wrap: anywhere;
+  }
+}
+
+@media (max-width: 380px) {
+  h1 {
+    font-size: 27px;
+  }
+
+  .topbar-actions .primary-button::after,
+  .topbar-actions .text-button::after,
+  .chip-button::after {
+    font-size: 12px;
+  }
+
+  .tank-stat strong,
+  .tank-inspector strong,
+  .tank-settings-summary strong {
+    font-size: 16px;
+  }
+}
+
 .inhabitant.has-image.coral,
 .inhabitant.has-image.coral:hover,
 .inhabitant.has-image.coral:focus,
