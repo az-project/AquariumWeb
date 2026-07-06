@@ -1,11 +1,16 @@
 "use client";
 
 // 앱 엔트리 — 바닐라 부트스트랩(app.js:1625-1631) 대응.
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { AuthScreen } from "@/components/auth/AuthScreen";
 import { DashboardView } from "@/components/dashboard/DashboardView";
+import { LibraryView } from "@/components/library/LibraryView";
+import { LivestockView } from "@/components/livestock/LivestockView";
+import { AppModals, type ModalId } from "@/components/modals/AppModals";
 import { Sidebar } from "@/components/shell/Sidebar";
 import { TopBar } from "@/components/shell/TopBar";
+import { WaterView } from "@/components/water/WaterView";
+import { useNotifications } from "@/hooks/useNotifications";
 import { nextDueText } from "@/lib/domain/derive";
 import { useActiveTank, useAppStore } from "@/lib/state/store";
 
@@ -14,6 +19,9 @@ export default function Home() {
   const view = useAppStore(state => state.view);
   const initialize = useAppStore(state => state.initialize);
   const activeTank = useActiveTank();
+  const [openModal, setOpenModal] = useState<ModalId | null>(null);
+
+  const notifications = useNotifications(activeTank?.tasks || []);
 
   useEffect(() => {
     void initialize();
@@ -31,25 +39,27 @@ export default function Home() {
     <div className="app-shell">
       <Sidebar
         nextReminderText={nextDueText(activeTank.tasks)}
-        notificationSummary="알림 설정 꺼짐"
-        onOpenNotificationSettings={() => {}}
+        notificationSummary={notifications.summaryText}
+        onOpenNotificationSettings={() => setOpenModal("notificationModal")}
       />
       <main className="main-area">
-        <TopBar onOpenModal={() => {}} />
+        <TopBar onOpenModal={setOpenModal} />
 
-        <DashboardView tank={activeTank} active={view === "dashboard"} onOpenModal={() => {}} />
-
-        {/* M4에서 이식 예정 */}
-        <section className={`view ${view === "water" ? "active" : ""}`} id="water">
-          <p style={{ padding: "1rem" }}>수질/환수 (M4에서 이식)</p>
-        </section>
-        <section className={`view ${view === "livestock" ? "active" : ""}`} id="livestock">
-          <p style={{ padding: "1rem" }}>생물/장비 (M4에서 이식)</p>
-        </section>
-        <section className={`view ${view === "library" ? "active" : ""}`} id="library">
-          <p style={{ padding: "1rem" }}>도감/합사 (M4에서 이식)</p>
-        </section>
+        <DashboardView tank={activeTank} active={view === "dashboard"} onOpenModal={setOpenModal} />
+        <WaterView tank={activeTank} active={view === "water"} onOpenTaskModal={() => setOpenModal("taskModal")} />
+        <LivestockView tank={activeTank} active={view === "livestock"} />
+        <LibraryView tank={activeTank} active={view === "library"} />
       </main>
+
+      <AppModals
+        tank={activeTank}
+        openModal={openModal}
+        onClose={() => setOpenModal(null)}
+        notificationSettings={notifications.settings}
+        notificationStatusText={notifications.statusText}
+        onSaveNotificationSettings={notifications.saveSettings}
+        onTestNotification={() => notifications.showReminder(true)}
+      />
     </div>
   );
 }
