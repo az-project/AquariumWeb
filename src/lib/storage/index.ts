@@ -1,21 +1,26 @@
-// 스토리지 팩토리 — Phase 2에서 STORAGE_DRIVER=supabase 분기를 추가하면
-// API 라우트 무수정으로 저장소가 교체된다.
 import { FileStateStore, FileUserStore } from "./file-store";
+import { hasSupabaseStorageConfig, SupabaseStateStore, SupabaseUserStore } from "./supabase-store";
 import type { StateStore, UserStore } from "./types";
 
 let stateStore: StateStore | null = null;
 let userStore: UserStore | null = null;
 
+function shouldUseSupabaseStorage(): boolean {
+  if (process.env.STORAGE_DRIVER === "supabase") return true;
+  if (process.env.STORAGE_DRIVER === "file") return false;
+  return hasSupabaseStorageConfig();
+}
+
 export function getStateStore(): StateStore {
   if (!stateStore) {
-    stateStore = new FileStateStore();
+    stateStore = shouldUseSupabaseStorage() ? new SupabaseStateStore() : new FileStateStore();
   }
   return stateStore;
 }
 
 export function getUserStore(): UserStore {
   if (!userStore) {
-    userStore = new FileUserStore();
+    userStore = shouldUseSupabaseStorage() ? new SupabaseUserStore() : new FileUserStore();
   }
   return userStore;
 }
