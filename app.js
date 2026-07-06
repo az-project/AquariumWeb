@@ -7,7 +7,7 @@ const defaultNotificationSettings = {
   time: "09:00",
   leadDays: 1
 };
-const assetVersion = "auth-split-v1";
+const assetVersion = "freshwater-species-v1";
 const sharedStateEndpoint = "/api/state";
 const sessionEndpoint = "/api/session";
 const loginEndpoint = "/api/login";
@@ -32,16 +32,16 @@ const species = [
 ];
 
 const freshwaterSpecies = [
-  { name: "네온 테트라", type: "물고기", level: "초급", nature: "군영", note: "6마리 이상 무리로 키우면 안정적이며 온순한 소형어와 잘 어울림", habitat: "freshwater" },
-  { name: "구피", type: "물고기", level: "초급", nature: "활발", note: "번식이 쉽고 수질 변화에 비교적 강하지만 과밀을 피해야 함", habitat: "freshwater" },
-  { name: "코리도라스", type: "물고기", level: "초급", nature: "저층 활동", note: "바닥재가 부드러우면 수염 손상이 적고 무리 사육이 안정적임", habitat: "freshwater" },
-  { name: "베타", type: "물고기", level: "초급", nature: "단독 선호", note: "수컷끼리 합사는 피하고 잔잔한 수류와 은신처가 좋음", habitat: "freshwater" },
-  { name: "체리 새우", type: "무척추", level: "초급", nature: "온순", note: "구리 성분에 취약하며 촘촘한 수초와 안정적인 수질이 중요", habitat: "freshwater" },
-  { name: "오토싱", type: "물고기", level: "중급", nature: "이끼 섭식", note: "초기 적응과 먹이 보충이 중요하며 공격적인 어종은 피하는 편이 좋음", habitat: "freshwater" },
-  { name: "엔젤피시", type: "물고기", level: "중급", nature: "영역성", note: "성장 후 공간이 필요하고 작은 어종과의 합사는 주의가 필요", habitat: "freshwater" },
-  { name: "아누비아스", type: "수초", level: "초급", nature: "음성 수초", note: "뿌리줄기를 묻지 않고 유목이나 돌에 활착하면 관리가 쉬움", habitat: "freshwater" },
-  { name: "부세파란드라", type: "수초", level: "중급", nature: "느린 성장", note: "안정적인 수질과 낮은 광량에서도 잘 어울리는 활착 수초", habitat: "freshwater" },
-  { name: "아마존 소드", type: "수초", level: "초급", nature: "대형 성장", note: "뿌리 비료와 넓은 공간이 있으면 풍성하게 자람", habitat: "freshwater" }
+  { name: "네온 테트라", type: "물고기", level: "초급", nature: "군영", note: "6마리 이상 무리로 키우면 안정적이며 온순한 소형어와 잘 어울림", habitat: "freshwater", image: "assets/livestock/neon-tetra.png" },
+  { name: "구피", type: "물고기", level: "초급", nature: "활발", note: "번식이 쉽고 수질 변화에 비교적 강하지만 과밀을 피해야 함", habitat: "freshwater", image: "assets/livestock/guppy.png" },
+  { name: "코리도라스", type: "물고기", level: "초급", nature: "저층 활동", note: "바닥재가 부드러우면 수염 손상이 적고 무리 사육이 안정적임", habitat: "freshwater", image: "assets/livestock/corydoras.png" },
+  { name: "베타", type: "물고기", level: "초급", nature: "단독 선호", note: "수컷끼리 합사는 피하고 잔잔한 수류와 은신처가 좋음", habitat: "freshwater", image: "assets/livestock/betta.png" },
+  { name: "오토싱", type: "물고기", level: "중급", nature: "이끼 섭식", note: "초기 적응과 먹이 보충이 중요하며 공격적인 어종은 피하는 편이 좋음", habitat: "freshwater", image: "assets/livestock/otocinclus.png" },
+  { name: "엔젤피시", type: "물고기", level: "중급", nature: "영역성", note: "성장 후 공간이 필요하고 작은 어종과의 합사는 주의가 필요", habitat: "freshwater", image: "assets/livestock/freshwater-angelfish.png" },
+  { name: "제브라 다니오", type: "물고기", level: "초급", nature: "활발", note: "수면 근처를 빠르게 헤엄치며 튼튼하지만 점프 방지 뚜껑이 좋음", habitat: "freshwater", image: "assets/livestock/zebra-danio.png" },
+  { name: "플래티", type: "물고기", level: "초급", nature: "온순", note: "색상이 다양하고 적응력이 좋아 초보 담수어항에 잘 맞음", habitat: "freshwater", image: "assets/livestock/platy.png" },
+  { name: "블랙 몰리", type: "물고기", level: "초급", nature: "활발", note: "수질이 안정적이고 약알칼리성 환경에서 컨디션이 좋음", habitat: "freshwater", image: "assets/livestock/black-molly.png" },
+  { name: "드워프 구라미", type: "물고기", level: "중급", nature: "온순", note: "수초가 있는 조용한 어항에서 색이 잘 올라오며 공격적인 합사는 피함", habitat: "freshwater", image: "assets/livestock/dwarf-gourami.png" }
 ];
 
 species.push(...freshwaterSpecies);
@@ -91,11 +91,12 @@ const waterMetricSets = {
   ],
   freshwater: [
     { key: "temp", label: "수온", unit: "°C", digits: 1, step: "0.1", min: 18, max: 30, color: "#159fb7" },
-    { key: "ph", label: "pH", unit: "", digits: 1, step: "0.1", min: 5.5, max: 8.5, color: "#0f7fb8" },
-    { key: "gh", label: "GH", unit: "dGH", digits: 1, step: "0.1", min: 0, max: 20, color: "#20bfa0" },
-    { key: "no3", label: "질산염", unit: "ppm", digits: 1, step: "0.1", min: 0, max: 50, color: "#ff7f73" },
+    { key: "ph", label: "산도(pH)", unit: "", digits: 1, step: "0.1", min: 5.5, max: 8.5, color: "#0f7fb8" },
+    { key: "gh", label: "총경도(GH)", unit: "dGH", digits: 1, step: "0.1", min: 0, max: 20, color: "#20bfa0" },
+    { key: "kh", label: "탄산경도(KH)", unit: "dKH", digits: 1, step: "0.1", min: 0, max: 15, color: "#65b66a" },
     { key: "nh3", label: "암모니아", unit: "ppm", digits: 1, step: "0.1", min: 0, max: 1, color: "#f0bd4f" },
-    { key: "no2", label: "아질산염", unit: "ppm", digits: 1, step: "0.1", min: 0, max: 5, color: "#7c6fe8" }
+    { key: "no2", label: "아질산염", unit: "ppm", digits: 1, step: "0.1", min: 0, max: 5, color: "#7c6fe8" },
+    { key: "no3", label: "질산염", unit: "ppm", digits: 1, step: "0.1", min: 0, max: 50, color: "#ff7f73" }
   ]
 };
 
@@ -738,6 +739,8 @@ function addLivestockFromForm(form) {
   const selected = availableSpecies().find(item => item.name === data.name);
   data.name = data.name || "생물 이름 없음";
   data.type = selected?.type || "생물";
+  data.habitat = selected?.habitat || currentAquariumType();
+  data.image = selected?.image || data.image || "";
   data.status = data.status || "상태 미입력";
   if (Number.isInteger(editingLivestockIndex)) {
     data.tankPosition = state.livestock[editingLivestockIndex]?.tankPosition;
@@ -855,6 +858,7 @@ function stabilityScore(log) {
     if (hasNumber(log.temp) && (log.temp < 22 || log.temp > 28)) score -= 15;
     if (hasNumber(log.ph) && (log.ph < 6.2 || log.ph > 7.8)) score -= 15;
     if (hasNumber(log.gh) && (log.gh < 3 || log.gh > 14)) score -= 10;
+    if (hasNumber(log.kh) && (log.kh < 2 || log.kh > 10)) score -= 10;
     if (hasNumber(log.no3) && log.no3 > 30) score -= 15;
     if (hasNumber(log.nh3) && log.nh3 > 0) score -= 20;
     if (hasNumber(log.no2) && log.no2 > 0) score -= 20;

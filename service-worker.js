@@ -1,9 +1,9 @@
-const CACHE_NAME = "reef-log-pwa-v47";
+const CACHE_NAME = "reef-log-pwa-v48";
 const APP_SHELL = [
   "./",
   "index.html",
-  "styles.css?v=auth-split-v1",
-  "app.js?v=auth-split-v1",
+  "styles.css?v=freshwater-species-v1",
+  "app.js?v=freshwater-species-v1",
   "manifest.webmanifest",
   "assets/backgrounds/saltwater-coral-open-hq.jpg",
   "assets/backgrounds/saltwater-coral-canyon-hq.jpg",
@@ -17,6 +17,16 @@ const APP_SHELL = [
   "assets/backgrounds/freshwater-stump-valley-hq.jpg",
   "assets/backgrounds/freshwater-center-plants-hq.jpg",
   "assets/backgrounds/freshwater-lily-path-hq.jpg",
+  "assets/livestock/neon-tetra.png",
+  "assets/livestock/guppy.png",
+  "assets/livestock/corydoras.png",
+  "assets/livestock/betta.png",
+  "assets/livestock/otocinclus.png",
+  "assets/livestock/freshwater-angelfish.png",
+  "assets/livestock/zebra-danio.png",
+  "assets/livestock/platy.png",
+  "assets/livestock/black-molly.png",
+  "assets/livestock/dwarf-gourami.png",
   "assets/icons/icon-192.png",
   "assets/icons/icon-512.png"
 ];
