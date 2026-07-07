@@ -10,7 +10,7 @@ interface TopBarProps {
 
 function titleForView(view: ViewId, tankName: string, tankLabel: string): string {
   if (view === "dashboard") return tankName;
-  if (view === "water") return "수질/환수 관리";
+  if (view === "water") return "수질/관리";
   if (view === "livestock") return "생물/장비 관리";
   return `${tankLabel} 도감`;
 }

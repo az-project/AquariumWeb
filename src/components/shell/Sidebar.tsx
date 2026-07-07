@@ -5,7 +5,7 @@ import { useAppStore, type ViewId } from "@/lib/state/store";
 
 const NAV_ITEMS: { id: ViewId; label: string }[] = [
   { id: "dashboard", label: "대시보드" },
-  { id: "water", label: "수질/환수" },
+  { id: "water", label: "수질/관리" },
   { id: "livestock", label: "생물/장비" },
   { id: "library", label: "도감/합사" }
 ];

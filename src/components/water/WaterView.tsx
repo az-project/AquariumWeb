@@ -1,7 +1,7 @@
 "use client";
 
-// index.html:187-227 + app.js:1006-1033, 1288-1330, 1446-1480 이식 — 수질/환수 뷰
-import { useState, type FormEvent } from "react";
+// index.html:187-227 + app.js:1006-1033, 1288-1330, 1446-1480 이식 — 수질/관리 뷰
+import { useRef, useState, type FormEvent, type KeyboardEvent } from "react";
 import {
   currentWaterMetrics,
   formatInputValue,
@@ -10,9 +10,11 @@ import {
   sortedTasks,
   tankAquariumType
 } from "@/lib/domain/derive";
+import { todayIso } from "@/lib/domain/constants";
 import type { Tank, WaterLog } from "@/lib/domain/types";
 import { useAppStore } from "@/lib/state/store";
 import { TaskListItems } from "@/components/dashboard/TaskListItems";
+import { PlusIcon, RefreshIcon, TrashIcon } from "@/components/ui/ActionIcons";
 
 // index.html:195-203 — 필드 정의 (data-water-field 라벨은 metric에서 유도)
 const ALL_WATER_FIELDS: { key: keyof Omit<WaterLog, "date">; digits: number }[] = [
@@ -37,12 +39,14 @@ export function WaterView({ tank, active, onOpenTaskModal }: WaterViewProps) {
   const upsertWaterLog = useAppStore(state => state.upsertWaterLog);
   const deleteWaterLog = useAppStore(state => state.deleteWaterLog);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
+  const [formKey, setFormKey] = useState(0);
+  const formRef = useRef<HTMLFormElement>(null);
 
   const type = tankAquariumType(tank);
+  const today = todayIso();
   const metrics = currentWaterMetrics(type);
   const enabledKeys = new Set(metrics.map(item => item.key));
   const editingLog = editingIndex !== null ? tank.waterLogs[editingIndex] : null;
-  const isEditing = editingIndex !== null;
 
   // app.js:1288-1302 waterLogFromForm
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -63,7 +67,24 @@ export function WaterView({ tank, active, onOpenTaskModal }: WaterViewProps) {
     };
     upsertWaterLog(editingIndex, log);
     setEditingIndex(null);
+    setFormKey(key => key + 1);
     form.reset();
+  }
+
+  function resetWaterForm() {
+    setEditingIndex(null);
+    setFormKey(key => key + 1);
+    formRef.current?.reset();
+  }
+
+  function editWaterLog(index: number) {
+    setEditingIndex(index);
+  }
+
+  function handleRowKeyDown(event: KeyboardEvent<HTMLTableRowElement>, index: number) {
+    if (event.key !== "Enter" && event.key !== " ") return;
+    event.preventDefault();
+    editWaterLog(index);
   }
 
   const sortedRows = tank.waterLogs
@@ -76,11 +97,14 @@ export function WaterView({ tank, active, onOpenTaskModal }: WaterViewProps) {
         <section className="panel">
           <div className="panel-heading">
             <h2>수질 기록</h2>
+            <button className="surface-icon-button" type="button" aria-label="수질 입력 초기화" onClick={resetWaterForm}>
+              <RefreshIcon />
+            </button>
           </div>
-          <form className="form-grid" id="waterForm" onSubmit={handleSubmit} key={`${tank.id}-${editingIndex ?? "new"}`}>
+          <form className="form-grid" id="waterForm" onSubmit={handleSubmit} key={`${tank.id}-${editingIndex ?? "new"}-${formKey}`} ref={formRef}>
             <label>
               날짜
-              <input type="date" name="date" defaultValue={editingLog?.date || ""} />
+              <input type="date" name="date" defaultValue={editingLog?.date || today} />
             </label>
             {ALL_WATER_FIELDS.map(field => {
               const metric = metrics.find(item => item.key === field.key);
@@ -98,18 +122,15 @@ export function WaterView({ tank, active, onOpenTaskModal }: WaterViewProps) {
               );
             })}
             <button className="primary-button wide" id="waterSubmitLabel" type="submit">
-              {isEditing ? "수질 수정" : "수질 저장"}
-            </button>
-            <button className="text-button wide" id="cancelWaterEdit" type="button" hidden={!isEditing} onClick={() => setEditingIndex(null)}>
-              수정 취소
+              저장
             </button>
           </form>
         </section>
         <section className="panel">
           <div className="panel-heading">
-            <h2>환수/관리 일정</h2>
-            <button className="text-button" onClick={onOpenTaskModal}>
-              추가
+            <h2>관리 일정</h2>
+            <button className="surface-icon-button primary" type="button" aria-label="일정 추가" onClick={onOpenTaskModal}>
+              <PlusIcon />
             </button>
           </div>
           <div className="timeline" id="taskTimeline">
@@ -129,31 +150,36 @@ export function WaterView({ tank, active, onOpenTaskModal }: WaterViewProps) {
                 {metrics.map(item => (
                   <th key={item.key}>{item.label}</th>
                 ))}
-                <th>관리</th>
+                <th aria-label="관리"></th>
               </tr>
             </thead>
             <tbody id="waterRows">
               {sortedRows.map(log => (
-                <tr key={`${log.date}-${log.index}`}>
+                <tr
+                  key={`${log.date}-${log.index}`}
+                  className="clickable-row"
+                  tabIndex={0}
+                  onClick={() => editWaterLog(log.index)}
+                  onKeyDown={event => handleRowKeyDown(event, log.index)}
+                >
                   <td>{log.date || "날짜 미정"}</td>
                   {metrics.map(item => (
                     <td key={item.key}>{formatNumber(log[item.key], item.digits)}</td>
                   ))}
                   <td>
                     <div className="row-actions">
-                      <button className="text-button compact-button" type="button" onClick={() => setEditingIndex(log.index)}>
-                        수정
-                      </button>
                       <button
-                        className="text-button compact-button danger"
+                        className="surface-icon-button danger compact"
                         type="button"
-                        onClick={() => {
+                        aria-label="수질 로그 삭제"
+                        onClick={event => {
+                          event.stopPropagation();
                           if (!window.confirm(`${log.date} 수질 로그를 삭제할까요?`)) return;
                           deleteWaterLog(log.index);
                           setEditingIndex(null);
                         }}
                       >
-                        삭제
+                        <TrashIcon />
                       </button>
                     </div>
                   </td>

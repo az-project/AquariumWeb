@@ -941,7 +941,70 @@ th { color:var(--muted); font-size:13px; }
   display: flex;
   gap: 8px;
   align-items: center;
+  justify-content: flex-end;
   white-space: nowrap;
+}
+
+.clickable-row {
+  cursor: pointer;
+}
+
+.clickable-row:hover td,
+.clickable-row:focus-visible td {
+  background: rgba(32, 191, 160, .08);
+}
+
+.surface-icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  border: 1px solid rgba(216, 230, 226, .9);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, .9);
+  color: var(--deep);
+  box-shadow: 0 8px 18px rgba(16, 45, 52, .08);
+}
+
+.surface-icon-button svg {
+  display: block;
+  width: 18px;
+  height: 18px;
+  stroke: currentColor;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  fill: none;
+}
+
+.surface-icon-button:hover {
+  background: white;
+}
+
+.surface-icon-button.primary {
+  border: 0;
+  background: linear-gradient(135deg, #0f3330 0%, #159fb7 56%, #20bfa0 100%);
+  color: white;
+  box-shadow: 0 14px 30px rgba(21, 159, 183, .2);
+}
+
+.surface-icon-button.danger {
+  color: #b94a42;
+  background: #fff1ef;
+  border-color: rgba(255, 127, 115, .28);
+}
+
+.surface-icon-button.compact {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+}
+
+.surface-icon-button.compact svg {
+  width: 16px;
+  height: 16px;
 }
 .compact-button {
   min-height: 32px;
