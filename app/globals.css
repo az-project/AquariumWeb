@@ -1125,7 +1125,7 @@ th { color:var(--muted); font-size:13px; }
 }
 .creature-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
 .creature-card { padding:16px; position:relative; overflow:hidden; }
-.creature-card::after { content:""; position:absolute; right:14px; top:14px; width:42px; height:24px; border-radius:50%; background:var(--blue); opacity:.12; }
+.creature-card::after { content: none; }
 .creature-image {
   position: absolute;
   right: 10px;
@@ -1807,13 +1807,6 @@ th {
   overflow-wrap: anywhere;
 }
 
-.creature-card::after {
-  width: 54px;
-  height: 54px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, var(--mint), var(--blue));
-  opacity: .11;
-}
 
 .badge {
   border-radius: 8px;
