@@ -6,6 +6,7 @@ import { aquariumTypes } from "@/lib/domain/constants";
 import { selectedAquariumBackground } from "@/lib/domain/derive";
 import type { AquariumTypeId } from "@/lib/domain/types";
 import { useAppStore } from "@/lib/state/store";
+import { BellIcon, CalendarPlusIcon, LogoutIcon } from "@/components/ui/ActionIcons";
 
 interface TankHomeViewProps {
   onOpenModal: (modalId: "taskModal" | "notificationModal" | "tankSettingsModal") => void;
@@ -76,14 +77,30 @@ export function TankHomeView({ onOpenModal }: TankHomeViewProps) {
   return (
     <main className="tank-home" aria-label="내 어항 선택">
       <div className="tank-home-actions" aria-label="빠른 실행">
-        <button className="text-button" type="button" onClick={() => onOpenModal("notificationModal")}>
-          알림
+        <button
+          className="tank-home-action-button"
+          type="button"
+          aria-label="알림 설정"
+          onClick={() => onOpenModal("notificationModal")}
+        >
+          <BellIcon />
         </button>
-        <button className="text-button" type="button" hidden={authMode !== "server"} onClick={() => logout()}>
-          로그아웃
+        <button
+          className="tank-home-action-button"
+          type="button"
+          hidden={authMode !== "server"}
+          aria-label="로그아웃"
+          onClick={() => logout()}
+        >
+          <LogoutIcon />
         </button>
-        <button className="primary-button" type="button" onClick={() => onOpenModal("taskModal")}>
-          일정 추가
+        <button
+          className="tank-home-action-button primary"
+          type="button"
+          aria-label="일정 추가"
+          onClick={() => onOpenModal("taskModal")}
+        >
+          <CalendarPlusIcon />
         </button>
       </div>
 

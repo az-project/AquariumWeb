@@ -2689,6 +2689,17 @@ th {
   background: white;
 }
 
+.topbar-icon-button-primary {
+  border: 0;
+  background: linear-gradient(135deg, #0f3330 0%, #159fb7 56%, #20bfa0 100%);
+  color: white;
+  box-shadow: 0 14px 30px rgba(21, 159, 183, .22);
+}
+
+.topbar-icon-button-primary:hover {
+  background: linear-gradient(135deg, #0f3330 0%, #159fb7 56%, #20bfa0 100%);
+}
+
 .topbar-actions .primary-button {
   flex: 0 0 auto !important;
   min-height: 38px;
@@ -2765,15 +2776,36 @@ th {
   margin-bottom: 28px;
 }
 
-.tank-home-actions .primary-button,
-.tank-home-actions .text-button {
-  min-height: 36px;
-  padding: 0 13px;
+.tank-home-action-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  border: 1px solid rgba(216, 230, 226, .9);
   border-radius: 12px;
-  font-size: 13px;
-  font-weight: 800;
-  line-height: 1;
-  white-space: nowrap;
+  background: rgba(255, 255, 255, .84);
+  color: var(--deep);
+  box-shadow: 0 10px 22px rgba(16, 45, 52, .08);
+}
+
+.tank-home-action-button svg {
+  display: block;
+  width: 18px;
+  height: 18px;
+  stroke: currentColor;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  fill: none;
+}
+
+.tank-home-action-button.primary {
+  border: 0;
+  background: linear-gradient(135deg, #0f3330 0%, #159fb7 56%, #20bfa0 100%);
+  color: white;
+  box-shadow: 0 14px 30px rgba(21, 159, 183, .22);
 }
 
 .tank-home-hero {
@@ -2896,11 +2928,15 @@ th {
     backdrop-filter: blur(14px);
   }
 
-  .tank-home-actions .primary-button,
-  .tank-home-actions .text-button {
-    min-height: 34px;
-    padding: 0 10px;
-    font-size: 12px;
+  .tank-home-action-button {
+    width: 36px;
+    height: 36px;
+    border-radius: 12px;
+  }
+
+  .tank-home-action-button svg {
+    width: 17px;
+    height: 17px;
   }
 
   .tank-home-hero {
