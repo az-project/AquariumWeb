@@ -1,10 +1,11 @@
 "use client";
 
+import { useEffect, useState } from "react";
+
 import { aquariumTypes } from "@/lib/domain/constants";
 import { selectedAquariumBackground } from "@/lib/domain/derive";
-import { useAppStore } from "@/lib/state/store";
 import type { AquariumTypeId } from "@/lib/domain/types";
-import { useEffect, useState } from "react";
+import { useAppStore } from "@/lib/state/store";
 
 interface TankHomeViewProps {
   onOpenModal: (modalId: "taskModal" | "notificationModal" | "tankSettingsModal") => void;
@@ -35,6 +36,7 @@ export function TankHomeView({ onOpenModal }: TankHomeViewProps) {
 
   function openTank(tankId: string) {
     switchTank(tankId);
+    setCreateOpen(false);
     setOpenMenuTankId(null);
     setView("dashboard");
   }
@@ -42,11 +44,13 @@ export function TankHomeView({ onOpenModal }: TankHomeViewProps) {
   function createTank(type: AquariumTypeId) {
     addTank(type);
     setCreateOpen(false);
+    setOpenMenuTankId(null);
     setView("dashboard");
   }
 
   function openSettings(tankId: string) {
     switchTank(tankId);
+    setCreateOpen(false);
     setOpenMenuTankId(null);
     onOpenModal("tankSettingsModal");
   }
@@ -56,6 +60,7 @@ export function TankHomeView({ onOpenModal }: TankHomeViewProps) {
     if (!nextName) return;
     switchTank(tankId);
     setTankSettings({ name: nextName });
+    setCreateOpen(false);
     setOpenMenuTankId(null);
   }
 
@@ -63,6 +68,7 @@ export function TankHomeView({ onOpenModal }: TankHomeViewProps) {
     if (tanks.length <= 1) return;
     if (!window.confirm(`${tankName}을(를) 삭제할까요? 이 어항의 수질, 일정, 생물, 장비 기록이 함께 삭제됩니다.`)) return;
     switchTank(tankId);
+    setCreateOpen(false);
     setOpenMenuTankId(null);
     deleteActiveTank();
   }

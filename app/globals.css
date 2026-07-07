@@ -2785,14 +2785,15 @@ th {
 
 .tank-card-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(280px, 380px));
+  justify-content: start;
   gap: 16px;
 }
 
 .tank-home-card {
   position: relative;
   display: block;
-  min-height: 240px;
+  min-height: 260px;
   overflow: hidden;
   padding: 0;
   border: 1px solid rgba(255, 255, 255, .86);
@@ -2832,10 +2833,11 @@ th {
 
 .tank-card-content {
   position: absolute;
-  inset: auto 16px 16px;
+  inset: auto 18px 20px;
   z-index: 2;
   display: grid;
   gap: 6px;
+  max-width: calc(100% - 84px);
 }
 
 .tank-card-content small,
@@ -2905,6 +2907,7 @@ th {
 
   .tank-card-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+    justify-content: stretch;
     gap: 10px;
   }
 
@@ -2915,6 +2918,7 @@ th {
 
   .tank-card-content {
     inset: auto 12px 12px;
+    max-width: calc(100% - 24px);
   }
 
   .tank-card-content strong {
@@ -2932,7 +2936,7 @@ th {
 
 .tank-create-fab {
   position: fixed;
-  right: max(20px, env(safe-area-inset-right));
+  right: max(calc((100vw - 1180px) / 2 + 20px), max(20px, env(safe-area-inset-right)));
   bottom: max(22px, env(safe-area-inset-bottom));
   z-index: 30;
   display: grid;
@@ -3143,9 +3147,9 @@ th {
 
 .tank-card-stats {
   position: absolute;
-  left: 16px;
-  right: 16px;
-  bottom: 82px;
+  left: 18px;
+  right: 72px;
+  bottom: 106px;
   z-index: 2;
   display: flex;
   flex-wrap: wrap;
