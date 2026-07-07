@@ -4,7 +4,7 @@ import { aquariumTypes } from "@/lib/domain/constants";
 import { selectedAquariumBackground } from "@/lib/domain/derive";
 import { useAppStore } from "@/lib/state/store";
 import type { AquariumTypeId } from "@/lib/domain/types";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 interface TankHomeViewProps {
   onOpenModal: (modalId: "taskModal" | "notificationModal" | "tankSettingsModal") => void;
@@ -21,6 +21,17 @@ export function TankHomeView({ onOpenModal }: TankHomeViewProps) {
   const authMode = useAppStore(state => state.authMode);
   const [createOpen, setCreateOpen] = useState(false);
   const [openMenuTankId, setOpenMenuTankId] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!openMenuTankId) return;
+
+    function closeMenu() {
+      setOpenMenuTankId(null);
+    }
+
+    document.addEventListener("click", closeMenu);
+    return () => document.removeEventListener("click", closeMenu);
+  }, [openMenuTankId]);
 
   function openTank(tankId: string) {
     switchTank(tankId);
@@ -98,7 +109,11 @@ export function TankHomeView({ onOpenModal }: TankHomeViewProps) {
                   <span>{tank.tasks.length} 일정</span>
                 </span>
               </button>
-              <div className={`tank-card-menu ${openMenuTankId === tank.id ? "open" : ""}`} aria-label={`${tank.name} 관리`}>
+              <div
+                className={`tank-card-menu ${openMenuTankId === tank.id ? "open" : ""}`}
+                aria-label={`${tank.name} 관리`}
+                onClick={event => event.stopPropagation()}
+              >
                 <button
                   className="tank-card-menu-toggle"
                   type="button"

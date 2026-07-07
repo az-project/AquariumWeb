@@ -3027,6 +3027,8 @@ th {
   z-index: 2;
   display: inline-grid;
   place-items: center;
+  align-content: center;
+  row-gap: 1.5px;
   width: 32px;
   height: 32px;
   border: 0;
@@ -3047,8 +3049,8 @@ th {
 
 .tank-card-menu-toggle span {
   display: block;
-  width: 1px;
-  height: 1px;
+  width: 2.5px;
+  height: 2.5px;
   margin: 0;
   border-radius: 999px;
   background: currentColor;
@@ -3145,7 +3147,7 @@ th {
   }
 
   .tank-card-menu-toggle span {
-    width: 1px;
+    width: 2.5px;
   }
 
   .tank-card-menu-panel {
