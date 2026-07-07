@@ -2651,8 +2651,33 @@ th {
   display: flex !important;
   width: 100%;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: flex-start;
   gap: 8px;
+}
+
+.topbar-action-spacer {
+  flex: 1 1 auto;
+}
+
+.home-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 36px;
+  padding: 0 13px;
+  border: 1px solid rgba(216, 230, 226, .9);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, .84);
+  color: var(--deep);
+  box-shadow: 0 10px 22px rgba(16, 45, 52, .08);
+  font-size: 13px;
+  font-weight: 900;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.home-button:hover {
+  background: white;
 }
 
 .topbar-actions .primary-button,
@@ -2686,8 +2711,15 @@ th {
   .topbar-actions {
     display: flex !important;
     width: 100%;
-    justify-content: flex-end;
+    justify-content: flex-start;
     gap: 6px;
+  }
+
+  .home-button {
+    min-height: 34px;
+    padding: 0 10px;
+    border-radius: 12px;
+    font-size: 12px;
   }
 
   .topbar-actions .primary-button,
