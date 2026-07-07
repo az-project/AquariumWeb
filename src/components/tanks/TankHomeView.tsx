@@ -4,6 +4,7 @@ import { aquariumTypes } from "@/lib/domain/constants";
 import { selectedAquariumBackground } from "@/lib/domain/derive";
 import { useAppStore } from "@/lib/state/store";
 import type { AquariumTypeId } from "@/lib/domain/types";
+import { useState } from "react";
 
 interface TankHomeViewProps {
   onOpenModal: (modalId: "taskModal" | "notificationModal" | "tankSettingsModal") => void;
@@ -17,6 +18,7 @@ export function TankHomeView({ onOpenModal }: TankHomeViewProps) {
   const deleteActiveTank = useAppStore(state => state.deleteActiveTank);
   const logout = useAppStore(state => state.logout);
   const authMode = useAppStore(state => state.authMode);
+  const [createOpen, setCreateOpen] = useState(false);
 
   function openTank(tankId: string) {
     switchTank(tankId);
@@ -25,6 +27,7 @@ export function TankHomeView({ onOpenModal }: TankHomeViewProps) {
 
   function createTank(type: AquariumTypeId) {
     addTank(type);
+    setCreateOpen(false);
     setView("dashboard");
   }
 
@@ -101,12 +104,25 @@ export function TankHomeView({ onOpenModal }: TankHomeViewProps) {
         })}
       </section>
 
-      <div className="tank-home-create" aria-label="어항 추가">
-        <button className="chip-button salt" type="button" onClick={() => createTank("saltwater")}>
-          + 해수어항
-        </button>
-        <button className="chip-button fresh" type="button" onClick={() => createTank("freshwater")}>
-          + 담수어항
+      <div className={`tank-create-fab ${createOpen ? "open" : ""}`}>
+        <div className="tank-create-menu" aria-label="추가할 어항 종류">
+          <button type="button" onClick={() => createTank("saltwater")}>
+            <span>해수</span>
+            <small>산호와 해수어 관리</small>
+          </button>
+          <button type="button" onClick={() => createTank("freshwater")}>
+            <span>담수</span>
+            <small>수초와 담수어 관리</small>
+          </button>
+        </div>
+        <button
+          className="tank-create-button"
+          type="button"
+          aria-expanded={createOpen}
+          aria-label="어항 추가"
+          onClick={() => setCreateOpen(open => !open)}
+        >
+          +
         </button>
       </div>
     </main>
