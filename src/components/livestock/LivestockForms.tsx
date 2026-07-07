@@ -37,11 +37,11 @@ function speciesNameForLivestock(item: Livestock, tank: Tank): string {
 interface LivestockFormProps {
   tank: Tank;
   editingIndex: number | null;
+  resetToken: number;
   onSubmit: (index: number | null, item: Livestock) => void;
-  onCancelEdit: () => void;
 }
 
-export function LivestockForm({ tank, editingIndex, onSubmit, onCancelEdit }: LivestockFormProps) {
+export function LivestockForm({ tank, editingIndex, resetToken, onSubmit }: LivestockFormProps) {
   const isEditing = editingIndex !== null;
   const editingItem = isEditing ? tank.livestock[editingIndex] : null;
   const [speciesName, setSpeciesName] = useState("");
@@ -62,7 +62,7 @@ export function LivestockForm({ tank, editingIndex, onSubmit, onCancelEdit }: Li
   }
 
   return (
-    <form className="form-grid" id="livestockForm" onSubmit={handleSubmit} key={`${tank.id}-${editingIndex ?? "new"}`}>
+    <form className="form-grid" id="livestockForm" onSubmit={handleSubmit} key={`${tank.id}-${editingIndex ?? "new"}-${resetToken}`}>
       <SpeciesSelect aquariumType={tankAquariumType(tank)} value={speciesName} onChange={setSpeciesName} />
       <label>
         투입일
@@ -81,10 +81,7 @@ export function LivestockForm({ tank, editingIndex, onSubmit, onCancelEdit }: Li
         <input name="memo" placeholder="먹이 반응, 성격, 위치 등" defaultValue={editingItem?.memo || ""} />
       </label>
       <button className="primary-button wide" id="livestockSubmitLabel" type="submit">
-        {isEditing ? "생물 수정" : "생물 저장"}
-      </button>
-      <button className="text-button wide" id="cancelLivestockEdit" type="button" hidden={!isEditing} onClick={onCancelEdit}>
-        수정 취소
+        저장
       </button>
     </form>
   );
@@ -93,11 +90,11 @@ export function LivestockForm({ tank, editingIndex, onSubmit, onCancelEdit }: Li
 interface EquipmentFormProps {
   tank: Tank;
   editingIndex: number | null;
+  resetToken: number;
   onSubmit: (index: number | null, item: Equipment) => void;
-  onCancelEdit: () => void;
 }
 
-export function EquipmentForm({ tank, editingIndex, onSubmit, onCancelEdit }: EquipmentFormProps) {
+export function EquipmentForm({ tank, editingIndex, resetToken, onSubmit }: EquipmentFormProps) {
   const isEditing = editingIndex !== null;
   const editingItem = isEditing ? tank.equipment[editingIndex] : null;
 
@@ -114,7 +111,7 @@ export function EquipmentForm({ tank, editingIndex, onSubmit, onCancelEdit }: Eq
   }
 
   return (
-    <form className="form-grid equipment-form" id="equipmentForm" onSubmit={handleSubmit} key={`${tank.id}-${editingIndex ?? "new"}`}>
+    <form className="form-grid equipment-form" id="equipmentForm" onSubmit={handleSubmit} key={`${tank.id}-${editingIndex ?? "new"}-${resetToken}`}>
       <label>
         장비명
         <input name="name" placeholder="예: 조명" defaultValue={editingItem?.name || ""} />
@@ -128,10 +125,7 @@ export function EquipmentForm({ tank, editingIndex, onSubmit, onCancelEdit }: Eq
         <input name="cycle" placeholder="예: 10:00-20:00, 주 2회" defaultValue={editingItem?.cycle || ""} />
       </label>
       <button className="primary-button wide" id="equipmentSubmitLabel" type="submit">
-        {isEditing ? "장비 수정" : "장비 저장"}
-      </button>
-      <button className="text-button wide" id="cancelEquipmentEdit" type="button" hidden={!isEditing} onClick={onCancelEdit}>
-        수정 취소
+        저장
       </button>
     </form>
   );

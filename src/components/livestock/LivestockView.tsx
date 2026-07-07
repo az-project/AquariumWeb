@@ -5,6 +5,7 @@ import { useState } from "react";
 import { livestockImage, tankAquariumType } from "@/lib/domain/derive";
 import type { Tank } from "@/lib/domain/types";
 import { useAppStore } from "@/lib/state/store";
+import { RefreshIcon, TrashIcon } from "@/components/ui/ActionIcons";
 import { EquipmentForm, LivestockForm } from "./LivestockForms";
 
 interface LivestockViewProps {
@@ -21,6 +22,8 @@ export function LivestockView({ tank, active }: LivestockViewProps) {
 
   const [editingLivestock, setEditingLivestock] = useState<number | null>(null);
   const [editingEquipment, setEditingEquipment] = useState<number | null>(null);
+  const [livestockResetToken, setLivestockResetToken] = useState(0);
+  const [equipmentResetToken, setEquipmentResetToken] = useState(0);
 
   const type = tankAquariumType(tank);
 
@@ -30,56 +33,87 @@ export function LivestockView({ tank, active }: LivestockViewProps) {
         <section className="panel">
           <div className="panel-heading">
             <h2>생물 등록</h2>
+            <button
+              className="surface-icon-button"
+              type="button"
+              aria-label="생물 입력 초기화"
+              onClick={() => {
+                setEditingLivestock(null);
+                setLivestockResetToken(value => value + 1);
+              }}
+            >
+              <RefreshIcon />
+            </button>
           </div>
           <LivestockForm
             tank={tank}
             editingIndex={editingLivestock}
+            resetToken={livestockResetToken}
             onSubmit={(index, item) => {
               const wasEditing = index !== null;
               upsertLivestock(index, item);
               setEditingLivestock(null);
+              setLivestockResetToken(value => value + 1);
               if (!wasEditing) setView("dashboard"); // app.js:1485
             }}
-            onCancelEdit={() => setEditingLivestock(null)}
           />
         </section>
         <section className="panel">
           <div className="panel-heading">
             <h2>장비 상태</h2>
+            <button
+              className="surface-icon-button"
+              type="button"
+              aria-label="장비 입력 초기화"
+              onClick={() => {
+                setEditingEquipment(null);
+                setEquipmentResetToken(value => value + 1);
+              }}
+            >
+              <RefreshIcon />
+            </button>
           </div>
           <EquipmentForm
             tank={tank}
             editingIndex={editingEquipment}
+            resetToken={equipmentResetToken}
             onSubmit={(index, item) => {
               upsertEquipment(index, item);
               setEditingEquipment(null);
+              setEquipmentResetToken(value => value + 1);
             }}
-            onCancelEdit={() => setEditingEquipment(null)}
           />
           <div className="equipment-grid" id="equipmentGrid">
             {tank.equipment.map((item, index) => (
-              <article className="equipment-item" key={`${item.name}-${index}`}>
+              <article
+                className="equipment-item editable-card"
+                key={`${item.name}-${index}`}
+                tabIndex={0}
+                onClick={() => setEditingEquipment(index)}
+                onKeyDown={event => {
+                  if (event.key !== "Enter" && event.key !== " ") return;
+                  event.preventDefault();
+                  setEditingEquipment(index);
+                }}
+              >
+                <button
+                  className="surface-icon-button danger compact card-delete-button"
+                  type="button"
+                  aria-label="장비 삭제"
+                  onClick={event => {
+                    event.stopPropagation();
+                    if (!window.confirm(`${item.name} 장비를 삭제할까요?`)) return;
+                    deleteEquipment(index);
+                    setEditingEquipment(null);
+                  }}
+                >
+                  <TrashIcon />
+                </button>
                 <strong>{item.name || "장비명 없음"}</strong>
                 <small className="equipment-meta">
                   <span>{item.status || "상태 미입력"}</span>
                   <span>{item.cycle || "관리 주기 미입력"}</span>
                 </small>
-                <div className="row-actions">
-                  <button className="text-button compact-button" type="button" onClick={() => setEditingEquipment(index)}>
-                    수정
-                  </button>
-                  <button
-                    className="text-button compact-button danger"
-                    type="button"
-                    onClick={() => {
-                      if (!window.confirm(`${item.name} 장비를 삭제할까요?`)) return;
-                      deleteEquipment(index);
-                      setEditingEquipment(null);
-                    }}
-                  >
-                    삭제
-                  </button>
-                </div>
               </article>
             ))}
           </div>
@@ -89,7 +123,30 @@ export function LivestockView({ tank, active }: LivestockViewProps) {
         {tank.livestock.map((item, index) => {
           const asset = livestockImage(item, index, type);
           return (
-            <article className="creature-card" key={`${item.name}-${index}`}>
+            <article
+              className="creature-card editable-card"
+              key={`${item.name}-${index}`}
+              tabIndex={0}
+              onClick={() => setEditingLivestock(index)}
+              onKeyDown={event => {
+                if (event.key !== "Enter" && event.key !== " ") return;
+                event.preventDefault();
+                setEditingLivestock(index);
+              }}
+            >
+              <button
+                className="surface-icon-button danger compact card-delete-button"
+                type="button"
+                aria-label="생물 삭제"
+                onClick={event => {
+                  event.stopPropagation();
+                  if (!window.confirm(`${item.name} 생물을 삭제할까요?`)) return;
+                  deleteLivestock(index);
+                  setEditingLivestock(null);
+                }}
+              >
+                <TrashIcon />
+              </button>
               {asset ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img className="creature-image" src={asset} alt={item.name} />
@@ -100,22 +157,6 @@ export function LivestockView({ tank, active }: LivestockViewProps) {
                 {item.added || "투입일 미정"} 투입 · {item.status || "상태 미입력"}
               </p>
               <small>{item.memo || "메모 없음"}</small>
-              <div className="card-actions">
-                <button className="text-button compact-button" type="button" onClick={() => setEditingLivestock(index)}>
-                  수정
-                </button>
-                <button
-                  className="text-button compact-button danger"
-                  type="button"
-                  onClick={() => {
-                    if (!window.confirm(`${item.name} 생물을 삭제할까요?`)) return;
-                    deleteLivestock(index);
-                    setEditingLivestock(null);
-                  }}
-                >
-                  삭제
-                </button>
-              </div>
             </article>
           );
         })}
