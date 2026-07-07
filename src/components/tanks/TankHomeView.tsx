@@ -19,9 +19,11 @@ export function TankHomeView({ onOpenModal }: TankHomeViewProps) {
   const logout = useAppStore(state => state.logout);
   const authMode = useAppStore(state => state.authMode);
   const [createOpen, setCreateOpen] = useState(false);
+  const [openMenuTankId, setOpenMenuTankId] = useState<string | null>(null);
 
   function openTank(tankId: string) {
     switchTank(tankId);
+    setOpenMenuTankId(null);
     setView("dashboard");
   }
 
@@ -33,6 +35,7 @@ export function TankHomeView({ onOpenModal }: TankHomeViewProps) {
 
   function openSettings(tankId: string) {
     switchTank(tankId);
+    setOpenMenuTankId(null);
     onOpenModal("tankSettingsModal");
   }
 
@@ -40,6 +43,7 @@ export function TankHomeView({ onOpenModal }: TankHomeViewProps) {
     if (tanks.length <= 1) return;
     if (!window.confirm(`${tankName}을(를) 삭제할까요? 이 어항의 수질, 일정, 생물, 장비 기록이 함께 삭제됩니다.`)) return;
     switchTank(tankId);
+    setOpenMenuTankId(null);
     deleteActiveTank();
   }
 
@@ -85,19 +89,32 @@ export function TankHomeView({ onOpenModal }: TankHomeViewProps) {
                   <span>{tank.tasks.length} 일정</span>
                 </span>
               </button>
-              <div className="tank-card-actions" aria-label={`${tank.name} 관리`}>
-                <button className="tank-card-action" type="button" onClick={() => openSettings(tank.id)}>
-                  설정
-                </button>
+              <div className={`tank-card-menu ${openMenuTankId === tank.id ? "open" : ""}`} aria-label={`${tank.name} 관리`}>
                 <button
-                  className="tank-card-action danger"
+                  className="tank-card-menu-toggle"
                   type="button"
-                  disabled={!canDelete}
-                  title={canDelete ? "어항 삭제" : "어항은 최소 1개가 필요합니다."}
-                  onClick={() => deleteTank(tank.id, tank.name)}
+                  aria-expanded={openMenuTankId === tank.id}
+                  aria-label={`${tank.name} 메뉴`}
+                  onClick={() => setOpenMenuTankId(current => (current === tank.id ? null : tank.id))}
                 >
-                  삭제
+                  <span aria-hidden="true" />
+                  <span aria-hidden="true" />
+                  <span aria-hidden="true" />
                 </button>
+                <div className="tank-card-menu-panel">
+                  <button type="button" onClick={() => openSettings(tank.id)}>
+                    설정
+                  </button>
+                  <button
+                    className="danger"
+                    type="button"
+                    disabled={!canDelete}
+                    title={canDelete ? "어항 삭제" : "어항은 최소 1개가 필요합니다."}
+                    onClick={() => deleteTank(tank.id, tank.name)}
+                  >
+                    삭제
+                  </button>
+                </div>
               </div>
             </article>
           );
