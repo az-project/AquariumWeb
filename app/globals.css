@@ -266,7 +266,7 @@ h2 { margin:0; font-size: 19px; letter-spacing: 0; }
   background: #071921;
   box-shadow: 0 28px 70px rgba(8, 28, 36, .24);
   isolation: isolate;
-  cursor: default;
+  cursor: pointer;
 }
 #aquariumBackgroundImage {
   position: absolute;
@@ -275,11 +275,7 @@ h2 { margin:0; font-size: 19px; letter-spacing: 0; }
   height: 100%;
   object-fit: cover;
   transform: scale(1.02);
-  cursor: default;
-}
-.aquarium-stage.cursor-idle,
-.aquarium-stage.cursor-idle * {
-  cursor: none;
+  cursor: pointer;
 }
 .aquarium-stage::before {
   content: "";
@@ -289,25 +285,6 @@ h2 { margin:0; font-size: 19px; letter-spacing: 0; }
   background:
     linear-gradient(90deg, rgba(7, 20, 26, .54) 0%, rgba(7, 20, 26, .1) 42%, rgba(7, 20, 26, .28) 100%),
     linear-gradient(180deg, rgba(7, 20, 26, .08) 0%, rgba(7, 20, 26, .58) 100%);
-}
-.tank-stage-settings {
-  position: absolute;
-  right: 16px;
-  top: 16px;
-  z-index: 4;
-  min-height: 40px;
-  padding: 0 14px;
-  border: 1px solid rgba(255, 255, 255, .52);
-  border-radius: 999px;
-  background: rgba(255, 255, 255, .82);
-  color: var(--deep);
-  font-weight: 900;
-  box-shadow: 0 14px 32px rgba(6, 24, 31, .18);
-  backdrop-filter: blur(14px);
-}
-.tank-stage-settings:hover {
-  background: white;
-  transform: translateY(-1px);
 }
 .hero-copy {
   position: relative;
@@ -2256,14 +2233,6 @@ th {
   .aquarium-stage {
     min-height: 360px;
     border-radius: 8px;
-  }
-
-  .tank-stage-settings {
-    top: 12px;
-    right: 12px;
-    min-height: 40px;
-    padding: 0 14px;
-    font-size: 14px;
   }
 
   .status-rail {

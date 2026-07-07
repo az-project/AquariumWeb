@@ -3,7 +3,7 @@
 // app.js:625-735(시각화), 1332-1420(드래그·커서) 이식.
 // 드래그 중에는 리렌더 없이 DOM style을 직접 조작하고, 드래그 종료 시에만
 // store에 tankPosition을 커밋한다 (바닐라와 동일한 명령형 패턴).
-import { useEffect, useRef, type CSSProperties } from "react";
+import { useEffect, useRef, type CSSProperties, type MouseEvent } from "react";
 import { clamp, fishVariant, inhabitantKind, livestockImage, selectedAquariumBackground, tankAquariumType } from "@/lib/domain/derive";
 import type { Tank, TankPosition } from "@/lib/domain/types";
 import { useAppStore } from "@/lib/state/store";
@@ -184,8 +184,19 @@ export function AquariumVisual({ tank, onOpenTankSettings }: AquariumVisualProps
     selectLivestock(index);
   }
 
+  function handleStageClick(event: MouseEvent<HTMLDivElement>) {
+    if (Date.now() < suppressClickUntilRef.current) return;
+    if ((event.target as HTMLElement).closest("[data-livestock-index]")) return;
+    onOpenTankSettings();
+  }
+
   return (
-    <div className="aquarium-stage" aria-label="어항 시각화" ref={stageRef}>
+    <div
+      className="aquarium-stage"
+      aria-label="어항 배경 변경"
+      ref={stageRef}
+      onClick={handleStageClick}
+    >
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img id="aquariumBackgroundImage" src={background.src} alt={`${background.label} 어항 배경`} />
       <div className="tank-inhabitants" id="tankInhabitants" aria-label="투입된 생물 표시" ref={layerRef}>
@@ -230,9 +241,6 @@ export function AquariumVisual({ tank, onOpenTankSettings }: AquariumVisualProps
           );
         })}
       </div>
-      <button className="tank-stage-settings" type="button" onClick={onOpenTankSettings}>
-        설정
-      </button>
     </div>
   );
 }

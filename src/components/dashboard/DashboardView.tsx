@@ -65,7 +65,6 @@ export function DashboardView({ tank, active, onOpenModal }: DashboardViewProps)
           <div className="tank-settings-summary">
             <span>현재 배경</span>
             <strong id="currentBackgroundName">{background.label}</strong>
-            <small>어항 이미지 우상단 설정에서 변경</small>
           </div>
           <div className="tank-stat">
             <span className="stat-icon">°C</span>
@@ -96,7 +95,7 @@ export function DashboardView({ tank, active, onOpenModal }: DashboardViewProps)
             <small id="selectedCreatureMeta">
               {selectedItem
                 ? `${selectedItem.type} · ${selectedItem.status} · ${selectedItem.added} 투입${selectedItem.memo ? " · " + selectedItem.memo : ""}`
-                : "어항 안 생물을 누르면 투입일, 상태, 메모를 확인할 수 있습니다."}
+                : "선택 없음"}
             </small>
           </div>
           <button className="primary-button wide" onClick={() => onOpenModal("creatureModal")}>
