@@ -16,7 +16,7 @@ import type {
 import { readLocalState, writeLocalState } from "./local-backup";
 import { cancelScheduledSave, fetchSharedState, scheduleSharedStateSave } from "./sync";
 
-export type ViewId = "dashboard" | "water" | "livestock" | "library";
+export type ViewId = "home" | "dashboard" | "water" | "livestock" | "library";
 export type AuthStatus = "checking" | "locked" | "ready";
 
 interface AppStore {
@@ -108,7 +108,7 @@ export const useAppStore = create<AppStore>((set, get) => {
     authMode: "local",
     currentUser: null,
     sharedStateEnabled: false,
-    view: "dashboard",
+    view: "home",
     ...seedTanks(),
     selectedLivestockIndex: null,
 
@@ -143,7 +143,7 @@ export const useAppStore = create<AppStore>((set, get) => {
           set({ authStatus: "locked", sharedStateEnabled: false });
           return;
         }
-        set({ sharedStateEnabled: true, authStatus: "ready" });
+        set({ sharedStateEnabled: true, authStatus: "ready", view: "home" });
         if (data && typeof data === "object" && Object.keys(data).length) {
           hydrate(data);
         } else {
@@ -164,7 +164,7 @@ export const useAppStore = create<AppStore>((set, get) => {
         // 네트워크가 끊겨도 UI는 로그인 화면으로 돌아간다
       }
       cancelScheduledSave();
-      set({ currentUser: null, sharedStateEnabled: false, authStatus: "locked" });
+      set({ currentUser: null, sharedStateEnabled: false, authStatus: "locked", view: "home" });
     },
 
     // --- shell ---

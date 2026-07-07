@@ -9,6 +9,7 @@ import { LivestockView } from "@/components/livestock/LivestockView";
 import { AppModals, type ModalId } from "@/components/modals/AppModals";
 import { Sidebar } from "@/components/shell/Sidebar";
 import { TopBar } from "@/components/shell/TopBar";
+import { TankHomeView } from "@/components/tanks/TankHomeView";
 import { WaterView } from "@/components/water/WaterView";
 import { useNotifications } from "@/hooks/useNotifications";
 import { nextDueText } from "@/lib/domain/derive";
@@ -40,6 +41,23 @@ export default function Home() {
 
   if (authStatus === "locked") {
     return <AuthScreen />;
+  }
+
+  if (view === "home") {
+    return (
+      <>
+        <TankHomeView onOpenModal={setOpenModal} />
+        <AppModals
+          tank={activeTank}
+          openModal={openModal}
+          onClose={() => setOpenModal(null)}
+          notificationSettings={notifications.settings}
+          notificationStatusText={notifications.statusText}
+          onSaveNotificationSettings={notifications.saveSettings}
+          onTestNotification={() => notifications.showReminder(true)}
+        />
+      </>
+    );
   }
 
   return (
