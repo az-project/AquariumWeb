@@ -83,6 +83,11 @@ export function AppModals({
     onClose();
   }
 
+  function handleBackgroundSelect(backgroundId: string) {
+    setTankSettings({ aquariumBackground: backgroundId });
+    onClose();
+  }
+
   return (
     <>
       <Modal id="taskModal" open={openModal === "taskModal"} onClose={onClose}>
@@ -226,7 +231,7 @@ export function AppModals({
                   data-background-id={item.id}
                   type="button"
                   title={item.label}
-                  onClick={() => setTankSettings({ aquariumBackground: item.id })}
+                  onClick={() => handleBackgroundSelect(item.id)}
                 >
                   <span className="background-thumb" style={{ backgroundImage: `url('${item.src}')` }} />
                   <span className="background-label">{item.label}</span>

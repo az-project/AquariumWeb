@@ -3029,7 +3029,7 @@ th {
   place-items: center;
   width: 32px;
   height: 32px;
-  border: 1px solid rgba(255, 255, 255, .42);
+  border: 0;
   border-radius: 999px;
   background: rgba(7, 31, 39, .18);
   box-shadow: 0 8px 18px rgba(8, 35, 41, .12);
@@ -3042,16 +3042,15 @@ th {
 .tank-card-menu-toggle:hover,
 .tank-card-menu.open .tank-card-menu-toggle {
   background: rgba(255, 255, 255, .24);
-  border-color: rgba(255, 255, 255, .68);
   transform: translateY(-1px);
 }
 
 .tank-card-menu-toggle span {
   display: block;
-  width: 15px;
-  height: 2px;
-  margin: 1px 0;
-  border-radius: 2px;
+  width: 4px;
+  height: 4px;
+  margin: 0;
+  border-radius: 999px;
   background: currentColor;
 }
 
@@ -3146,7 +3145,7 @@ th {
   }
 
   .tank-card-menu-toggle span {
-    width: 14px;
+    width: 4px;
   }
 
   .tank-card-menu-panel {
