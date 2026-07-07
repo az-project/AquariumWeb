@@ -172,7 +172,7 @@ export function TankHomeView({ onOpenModal }: TankHomeViewProps) {
           aria-label="어항 추가"
           onClick={() => setCreateOpen(open => !open)}
         >
-          +
+          <span className="tank-create-plus" aria-hidden="true" />
         </button>
       </div>
     </main>
