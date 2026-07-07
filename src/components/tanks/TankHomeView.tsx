@@ -16,6 +16,7 @@ export function TankHomeView({ onOpenModal }: TankHomeViewProps) {
   const setView = useAppStore(state => state.setView);
   const addTank = useAppStore(state => state.addTank);
   const deleteActiveTank = useAppStore(state => state.deleteActiveTank);
+  const setTankSettings = useAppStore(state => state.setTankSettings);
   const logout = useAppStore(state => state.logout);
   const authMode = useAppStore(state => state.authMode);
   const [createOpen, setCreateOpen] = useState(false);
@@ -37,6 +38,14 @@ export function TankHomeView({ onOpenModal }: TankHomeViewProps) {
     switchTank(tankId);
     setOpenMenuTankId(null);
     onOpenModal("tankSettingsModal");
+  }
+
+  function renameTank(tankId: string, currentName: string) {
+    const nextName = window.prompt("어항 이름을 입력하세요.", currentName)?.trim();
+    if (!nextName) return;
+    switchTank(tankId);
+    setTankSettings({ name: nextName });
+    setOpenMenuTankId(null);
   }
 
   function deleteTank(tankId: string, tankName: string) {
@@ -102,6 +111,9 @@ export function TankHomeView({ onOpenModal }: TankHomeViewProps) {
                   <span aria-hidden="true" />
                 </button>
                 <div className="tank-card-menu-panel">
+                  <button type="button" onClick={() => renameTank(tank.id, tank.name)}>
+                    이름 변경
+                  </button>
                   <button type="button" onClick={() => openSettings(tank.id)}>
                     설정
                   </button>

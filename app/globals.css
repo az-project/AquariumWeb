@@ -3047,8 +3047,8 @@ th {
 
 .tank-card-menu-toggle span {
   display: block;
-  width: 3px;
-  height: 3px;
+  width: 1px;
+  height: 1px;
   margin: 0;
   border-radius: 999px;
   background: currentColor;
@@ -3145,7 +3145,7 @@ th {
   }
 
   .tank-card-menu-toggle span {
-    width: 3px;
+    width: 1px;
   }
 
   .tank-card-menu-panel {
