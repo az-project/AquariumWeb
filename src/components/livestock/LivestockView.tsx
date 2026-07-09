@@ -153,10 +153,20 @@ export function LivestockView({ tank, active }: LivestockViewProps) {
               ) : null}
               <span className="badge">{item.type || "생물"}</span>
               <h2>{item.name || "생물 이름 없음"}</h2>
-              <p>
-                {item.added || "투입일 미정"} 투입 · {item.status || "상태 미입력"}
-              </p>
-              <small>{item.memo || "메모 없음"}</small>
+              <dl className="creature-details">
+                <div>
+                  <dt>투입일</dt>
+                  <dd>{item.added || "미정"}</dd>
+                </div>
+                <div>
+                  <dt>상태</dt>
+                  <dd>{item.status || "미입력"}</dd>
+                </div>
+                <div className="creature-memo">
+                  <dt>메모</dt>
+                  <dd>{item.memo || "없음"}</dd>
+                </div>
+              </dl>
             </article>
           );
         })}

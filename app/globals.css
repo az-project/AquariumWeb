@@ -1138,14 +1138,48 @@ th { color:var(--muted); font-size:13px; }
 .creature-card .badge,
 .creature-card h2,
 .creature-card p,
-.creature-card small {
+.creature-card small,
+.creature-details {
   position: relative;
   z-index: 1;
 }
 .creature-card h2,
 .creature-card p,
-.creature-card small {
+.creature-card small,
+.creature-details {
   max-width: calc(100% - 96px);
+}
+.creature-details {
+  display: grid;
+  gap: 8px;
+  margin: 14px 0 0;
+}
+.creature-details > div {
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr);
+  align-items: start;
+  gap: 8px;
+  margin: 0;
+}
+.creature-details dt,
+.creature-details dd {
+  margin: 0;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+.creature-details dt {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+.creature-details dd {
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 600;
+}
+.creature-details .creature-memo {
+  padding-top: 8px;
+  border-top: 1px solid var(--line);
 }
 .badge { display:inline-flex; align-items:center; min-height:26px; padding:0 9px; border-radius:999px; background:#eaf4f2; color:#176b5a; font-size:12px; font-weight:800; }
 .equipment-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
