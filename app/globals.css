@@ -792,48 +792,76 @@ h2 { margin:0; font-size: 19px; letter-spacing: 0; }
   50% { margin-top: calc(var(--bob) * -1); }
 }
 @keyframes naturalSwim {
-  0%, 100% { margin-left: calc(var(--path) * -1); margin-top: 0; scale: .98; }
-  22% { margin-left: calc(var(--path) * -.18); margin-top: calc(var(--arc) * .55); scale: 1.01; }
-  47%, 53% { margin-left: var(--path); margin-top: calc(var(--bob) * -1); scale: .97; }
-  76% { margin-left: calc(var(--path) * -.08); margin-top: calc(var(--arc) * -.38); scale: 1.01; }
+  0%, 100% { margin-left: calc(var(--path) * -1); margin-top: 0; scale: .99; }
+  12% { margin-left: calc(var(--path) * -.72); margin-top: calc(var(--arc) * .28); scale: 1; }
+  28% { margin-left: calc(var(--path) * -.05); margin-top: calc(var(--arc) * .62); scale: 1.01; }
+  42% { margin-left: calc(var(--path) * .72); margin-top: calc(var(--bob) * -.85); scale: 1; }
+  48%, 52% { margin-left: var(--path); margin-top: calc(var(--bob) * -1); scale: .98; }
+  58% { margin-left: calc(var(--path) * .72); margin-top: calc(var(--bob) * -.7); scale: 1; }
+  74% { margin-left: calc(var(--path) * -.08); margin-top: calc(var(--arc) * -.38); scale: 1.01; }
+  90% { margin-left: calc(var(--path) * -.78); margin-top: calc(var(--arc) * -.12); scale: 1; }
 }
 @keyframes naturalSwimAlt {
-  0%, 100% { margin-left: calc(var(--path) * -.8); margin-top: calc(var(--bob) * -.25); scale: 1; }
-  24% { margin-left: calc(var(--path) * .05); margin-top: calc(var(--arc) * -.5); scale: .98; }
-  46%, 54% { margin-left: calc(var(--path) * .9); margin-top: calc(var(--arc) * .38); scale: 1.02; }
-  78% { margin-left: calc(var(--path) * -.12); margin-top: calc(var(--bob) * -1); scale: .99; }
+  0%, 100% { margin-left: calc(var(--path) * -.85); margin-top: calc(var(--bob) * -.2); scale: 1; }
+  15% { margin-left: calc(var(--path) * -.55); margin-top: calc(var(--arc) * -.35); scale: 1.01; }
+  30% { margin-left: calc(var(--path) * .15); margin-top: calc(var(--arc) * -.62); scale: 1; }
+  44% { margin-left: calc(var(--path) * .78); margin-top: calc(var(--arc) * .18); scale: .99; }
+  49%, 53% { margin-left: calc(var(--path) * .92); margin-top: calc(var(--arc) * .4); scale: .98; }
+  61% { margin-left: calc(var(--path) * .65); margin-top: calc(var(--arc) * .18); scale: 1; }
+  79% { margin-left: calc(var(--path) * -.18); margin-top: calc(var(--bob) * -1); scale: 1.01; }
+  92% { margin-left: calc(var(--path) * -.72); margin-top: calc(var(--bob) * -.42); scale: 1; }
 }
 @keyframes naturalSwimLazy {
-  0%, 100% { margin-left: calc(var(--path) * -.65); margin-top: 0; scale: .97; }
-  20% { margin-left: calc(var(--path) * -.05); margin-top: calc(var(--bob) * -.8); scale: 1; }
-  44%, 56% { margin-left: calc(var(--path) * .75); margin-top: calc(var(--arc) * .42); scale: 1.02; }
-  82% { margin-left: calc(var(--path) * -.18); margin-top: calc(var(--arc) * -.34); scale: .99; }
+  0%, 100% { margin-left: calc(var(--path) * -.7); margin-top: 0; scale: .98; }
+  18% { margin-left: calc(var(--path) * -.35); margin-top: calc(var(--bob) * -.75); scale: 1; }
+  35% { margin-left: calc(var(--path) * .28); margin-top: calc(var(--arc) * .18); scale: 1.01; }
+  46%, 55% { margin-left: calc(var(--path) * .78); margin-top: calc(var(--arc) * .44); scale: .99; }
+  68% { margin-left: calc(var(--path) * .32); margin-top: calc(var(--bob) * -1); scale: 1; }
+  86% { margin-left: calc(var(--path) * -.42); margin-top: calc(var(--arc) * -.24); scale: 1.01; }
 }
 @keyframes naturalSwimReverse {
-  0%, 100% { margin-left: var(--path); margin-top: 0; scale: .98; }
-  22% { margin-left: calc(var(--path) * .18); margin-top: calc(var(--arc) * .55); scale: 1.01; }
-  47%, 53% { margin-left: calc(var(--path) * -1); margin-top: calc(var(--bob) * -1); scale: .97; }
-  76% { margin-left: calc(var(--path) * .08); margin-top: calc(var(--arc) * -.38); scale: 1.01; }
+  0%, 100% { margin-left: var(--path); margin-top: 0; scale: .99; }
+  12% { margin-left: calc(var(--path) * .72); margin-top: calc(var(--arc) * .28); scale: 1; }
+  28% { margin-left: calc(var(--path) * .05); margin-top: calc(var(--arc) * .62); scale: 1.01; }
+  42% { margin-left: calc(var(--path) * -.72); margin-top: calc(var(--bob) * -.85); scale: 1; }
+  48%, 52% { margin-left: calc(var(--path) * -1); margin-top: calc(var(--bob) * -1); scale: .98; }
+  58% { margin-left: calc(var(--path) * -.72); margin-top: calc(var(--bob) * -.7); scale: 1; }
+  74% { margin-left: calc(var(--path) * .08); margin-top: calc(var(--arc) * -.38); scale: 1.01; }
+  90% { margin-left: calc(var(--path) * .78); margin-top: calc(var(--arc) * -.12); scale: 1; }
 }
 @keyframes naturalSwimReverseAlt {
-  0%, 100% { margin-left: calc(var(--path) * .8); margin-top: calc(var(--bob) * -.25); scale: 1; }
-  24% { margin-left: calc(var(--path) * -.05); margin-top: calc(var(--arc) * -.5); scale: .98; }
-  46%, 54% { margin-left: calc(var(--path) * -.9); margin-top: calc(var(--arc) * .38); scale: 1.02; }
-  78% { margin-left: calc(var(--path) * .12); margin-top: calc(var(--bob) * -1); scale: .99; }
+  0%, 100% { margin-left: calc(var(--path) * .85); margin-top: calc(var(--bob) * -.2); scale: 1; }
+  15% { margin-left: calc(var(--path) * .55); margin-top: calc(var(--arc) * -.35); scale: 1.01; }
+  30% { margin-left: calc(var(--path) * -.15); margin-top: calc(var(--arc) * -.62); scale: 1; }
+  44% { margin-left: calc(var(--path) * -.78); margin-top: calc(var(--arc) * .18); scale: .99; }
+  49%, 53% { margin-left: calc(var(--path) * -.92); margin-top: calc(var(--arc) * .4); scale: .98; }
+  61% { margin-left: calc(var(--path) * -.65); margin-top: calc(var(--arc) * .18); scale: 1; }
+  79% { margin-left: calc(var(--path) * .18); margin-top: calc(var(--bob) * -1); scale: 1.01; }
+  92% { margin-left: calc(var(--path) * .72); margin-top: calc(var(--bob) * -.42); scale: 1; }
 }
 @keyframes fishTurn {
-  0%, 45% { transform: scaleX(1) rotate(0deg); }
-  49% { transform: scaleX(.12) rotate(-2deg); }
-  53%, 94% { transform: scaleX(-1) rotate(0deg); }
-  98% { transform: scaleX(-.12) rotate(2deg); }
-  100% { transform: scaleX(1) rotate(0deg); }
+  0%, 42% { transform: scaleX(1) scaleY(1) rotate(0deg); }
+  46% { transform: scaleX(.72) scaleY(1.02) rotate(-1.5deg); }
+  49.9% { transform: scaleX(.34) scaleY(1.04) rotate(-2deg); }
+  50% { transform: scaleX(-.34) scaleY(1.04) rotate(2deg); }
+  54% { transform: scaleX(-.72) scaleY(1.02) rotate(1.5deg); }
+  58%, 92% { transform: scaleX(-1) scaleY(1) rotate(0deg); }
+  95% { transform: scaleX(-.68) scaleY(1.02) rotate(1.5deg); }
+  98.9% { transform: scaleX(-.34) scaleY(1.04) rotate(2deg); }
+  99% { transform: scaleX(.34) scaleY(1.04) rotate(-2deg); }
+  100% { transform: scaleX(1) scaleY(1) rotate(0deg); }
 }
 @keyframes fishTurnReverse {
-  0%, 45% { transform: scaleX(-1) rotate(0deg); }
-  49% { transform: scaleX(-.12) rotate(2deg); }
-  53%, 94% { transform: scaleX(1) rotate(0deg); }
-  98% { transform: scaleX(.12) rotate(-2deg); }
-  100% { transform: scaleX(-1) rotate(0deg); }
+  0%, 42% { transform: scaleX(-1) scaleY(1) rotate(0deg); }
+  46% { transform: scaleX(-.72) scaleY(1.02) rotate(1.5deg); }
+  49.9% { transform: scaleX(-.34) scaleY(1.04) rotate(2deg); }
+  50% { transform: scaleX(.34) scaleY(1.04) rotate(-2deg); }
+  54% { transform: scaleX(.72) scaleY(1.02) rotate(-1.5deg); }
+  58%, 92% { transform: scaleX(1) scaleY(1) rotate(0deg); }
+  95% { transform: scaleX(.68) scaleY(1.02) rotate(-1.5deg); }
+  98.9% { transform: scaleX(.34) scaleY(1.04) rotate(-2deg); }
+  99% { transform: scaleX(-.34) scaleY(1.04) rotate(2deg); }
+  100% { transform: scaleX(-1) scaleY(1) rotate(0deg); }
 }
 @keyframes fishTilt {
   0%, 100% { rotate: -1.5deg; }

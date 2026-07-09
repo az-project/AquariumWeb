@@ -214,10 +214,10 @@ export function AquariumVisual({ tank, onOpenTankSettings }: AquariumVisualProps
             "--y": pos.y,
             "--scale": pos.scale,
             "--delay": `${(index % 5) * -0.7}s`,
-            "--swim": `${12 + (index % 4) * 3}s`,
-            "--path": `${38 + (index % 3) * 7}px`,
-            "--arc": `${index % 3 === 0 ? -18 : index % 3 === 1 ? 14 : -10}px`,
-            "--bob": `${7 + (index % 3) * 2}px`,
+            "--swim": `${18 + (index % 4) * 4}s`,
+            "--path": `${52 + (index % 3) * 11}px`,
+            "--arc": `${index % 3 === 0 ? -14 : index % 3 === 1 ? 11 : -8}px`,
+            "--bob": `${4 + (index % 3) * 1.5}px`,
             "--fish-a": palette[0],
             "--fish-b": palette[1]
           } as CSSProperties;
