@@ -3168,6 +3168,20 @@ th {
   line-height: 1.25;
 }
 
+.tank-create-modal {
+  width: min(720px, calc(100vw - 28px));
+  max-height: min(86dvh, 820px);
+  overflow-y: auto;
+}
+
+.tank-create-modal .background-options {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.tank-create-modal .background-label {
+  max-width: calc(100% - 18px);
+}
+
 @media (max-width: 640px) {
   .tank-create-fab {
     right: max(14px, env(safe-area-inset-right));
@@ -3177,6 +3191,27 @@ th {
   .tank-create-button {
     width: 56px;
     height: 56px;
+  }
+
+  .tank-create-modal {
+    width: calc(100vw - 20px);
+    padding: 14px;
+  }
+
+  .tank-create-modal .background-options {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .tank-create-modal .background-thumb {
+    height: 88px;
+  }
+
+  .tank-create-modal .background-label {
+    right: 7px;
+    bottom: 7px;
+    left: 7px;
+    font-size: 11px;
   }
 }
 

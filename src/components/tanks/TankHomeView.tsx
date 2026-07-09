@@ -2,11 +2,12 @@
 
 import { useEffect, useState } from "react";
 
-import { aquariumTypes } from "@/lib/domain/constants";
+import { aquariumBackgrounds, aquariumTypes } from "@/lib/domain/constants";
 import { selectedAquariumBackground } from "@/lib/domain/derive";
 import type { AquariumTypeId } from "@/lib/domain/types";
 import { useAppStore } from "@/lib/state/store";
 import { BellIcon, CalendarPlusIcon, LogoutIcon } from "@/components/ui/ActionIcons";
+import { Modal } from "@/components/modals/Modal";
 
 interface TankHomeViewProps {
   onOpenModal: (modalId: "taskModal" | "notificationModal" | "tankSettingsModal") => void;
@@ -22,6 +23,9 @@ export function TankHomeView({ onOpenModal }: TankHomeViewProps) {
   const logout = useAppStore(state => state.logout);
   const authMode = useAppStore(state => state.authMode);
   const [createOpen, setCreateOpen] = useState(false);
+  const [createType, setCreateType] = useState<AquariumTypeId | null>(null);
+  const [createName, setCreateName] = useState("");
+  const [createBackground, setCreateBackground] = useState("");
   const [openMenuTankId, setOpenMenuTankId] = useState<string | null>(null);
 
   useEffect(() => {
@@ -42,11 +46,32 @@ export function TankHomeView({ onOpenModal }: TankHomeViewProps) {
     setView("dashboard");
   }
 
-  function createTank(type: AquariumTypeId) {
-    addTank(type);
+  function startCreateTank(type: AquariumTypeId) {
+    const sameTypeCount = tanks.filter(tank => tank.aquariumType === type).length + 1;
+    const defaultBackground =
+      aquariumBackgrounds.find(item => item.id === aquariumTypes[type].defaultBackground) ||
+      aquariumBackgrounds.find(item => item.type === (type === "freshwater" ? "담수" : "해수"));
+    setCreateType(type);
+    setCreateName(`${aquariumTypes[type].label} ${sameTypeCount}`);
+    setCreateBackground(defaultBackground?.id || "");
     setCreateOpen(false);
     setOpenMenuTankId(null);
-    setView("dashboard");
+  }
+
+  function closeCreateTank() {
+    setCreateType(null);
+    setCreateName("");
+    setCreateBackground("");
+  }
+
+  function createTank() {
+    if (!createType) return;
+    addTank(createType, {
+      name: createName,
+      aquariumBackground: createBackground
+    });
+    closeCreateTank();
+    setView("home");
   }
 
   function openSettings(tankId: string) {
@@ -173,11 +198,11 @@ export function TankHomeView({ onOpenModal }: TankHomeViewProps) {
 
       <div className={`tank-create-fab ${createOpen ? "open" : ""}`}>
         <div className="tank-create-menu" aria-label="추가할 어항 종류">
-          <button type="button" onClick={() => createTank("saltwater")}>
+          <button type="button" onClick={() => startCreateTank("saltwater")}>
             <span>해수</span>
             <small>산호와 해수어 관리</small>
           </button>
-          <button type="button" onClick={() => createTank("freshwater")}>
+          <button type="button" onClick={() => startCreateTank("freshwater")}>
             <span>담수</span>
             <small>수초와 담수어 관리</small>
           </button>
@@ -192,6 +217,59 @@ export function TankHomeView({ onOpenModal }: TankHomeViewProps) {
           <span className="tank-create-plus" aria-hidden="true" />
         </button>
       </div>
+
+      <Modal id="tankCreateModal" open={createType !== null} onClose={closeCreateTank}>
+        <form
+          className="modal-card tank-create-modal"
+          onSubmit={event => {
+            event.preventDefault();
+            createTank();
+          }}
+        >
+          <div className="panel-heading">
+            <div>
+              <h2>새 어항</h2>
+              <small>{createType ? aquariumTypes[createType].label : ""}</small>
+            </div>
+            <button className="icon-button" type="button" aria-label="닫기" onClick={closeCreateTank}>
+              ×
+            </button>
+          </div>
+          <label>
+            어항 이름
+            <input
+              name="tankName"
+              value={createName}
+              maxLength={30}
+              onChange={event => setCreateName(event.target.value)}
+            />
+          </label>
+          <div className="background-picker">
+            <div className="background-picker-heading">
+              <span>배경 선택</span>
+            </div>
+            <div className="background-options">
+              {aquariumBackgrounds
+                .filter(item => item.type === (createType === "freshwater" ? "담수" : "해수"))
+                .map(item => (
+                  <button
+                    key={item.id}
+                    className={item.id === createBackground ? "active" : ""}
+                    type="button"
+                    aria-pressed={item.id === createBackground}
+                    onClick={() => setCreateBackground(item.id)}
+                  >
+                    <span className="background-thumb" style={{ backgroundImage: `url('${item.src}')` }} />
+                    <span className="background-label">{item.label}</span>
+                  </button>
+                ))}
+            </div>
+          </div>
+          <button className="primary-button wide" type="submit">
+            생성
+          </button>
+        </form>
+      </Modal>
     </main>
   );
 }

@@ -38,7 +38,7 @@ interface AppStore {
   // --- shell ---
   setView: (view: ViewId) => void;
   switchTank: (tankId: string) => void;
-  addTank: (type: AquariumTypeId) => void;
+  addTank: (type: AquariumTypeId, settings?: { name?: string; aquariumBackground?: string }) => void;
   deleteActiveTank: () => void;
   selectLivestock: (index: number | null) => void;
 
@@ -181,10 +181,14 @@ export const useAppStore = create<AppStore>((set, get) => {
     },
 
     // app.js:541-553
-    addTank(type) {
+    addTank(type, settings) {
       const { tanks } = get();
       const sameTypeCount = tanks.filter(tank => tank.aquariumType === type).length + 1;
-      const tank = createTank(type, `${aquariumTypes[type].label} ${sameTypeCount}`);
+      const defaultName = `${aquariumTypes[type].label} ${sameTypeCount}`;
+      const tank = createTank(type, settings?.name?.trim() || defaultName);
+      if (settings?.aquariumBackground) {
+        tank.aquariumBackground = settings.aquariumBackground;
+      }
       set({ tanks: [...tanks, tank], activeTankId: tank.id });
       resetEditingState();
       persistSoon();
