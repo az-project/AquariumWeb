@@ -501,10 +501,24 @@ h2 { margin:0; font-size: 19px; letter-spacing: 0; }
   position: absolute;
   inset: 0;
   z-index: 2;
+  pointer-events: none;
   cursor: default;
   overflow: visible;
   touch-action: none;
   user-select: none;
+}
+.pixi-fish-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  overflow: hidden;
+  pointer-events: auto;
+}
+.pixi-fish-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
 }
 .inhabitant {
   --x: 50%;
