@@ -1128,7 +1128,7 @@ th { color:var(--muted); font-size:13px; }
 .creature-card::after { content: none; }
 .creature-image {
   position: absolute;
-  right: 30px;
+  right: clamp(42px, 14%, 64px);
   top: 48px;
   width: 96px;
   height: 78px;
