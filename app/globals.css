@@ -1128,7 +1128,7 @@ th { color:var(--muted); font-size:13px; }
 .creature-card::after { content: none; }
 .creature-image {
   position: absolute;
-  right: 10px;
+  right: 30px;
   top: 48px;
   width: 96px;
   height: 78px;
@@ -1179,7 +1179,6 @@ th { color:var(--muted); font-size:13px; }
 }
 .creature-details .creature-memo {
   padding-top: 8px;
-  border-top: 1px solid var(--line);
 }
 .badge { display:inline-flex; align-items:center; min-height:26px; padding:0 9px; border-radius:999px; background:#eaf4f2; color:#176b5a; font-size:12px; font-weight:800; }
 .equipment-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
