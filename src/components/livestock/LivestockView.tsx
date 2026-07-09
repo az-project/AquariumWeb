@@ -5,7 +5,8 @@ import { useState } from "react";
 import { livestockImage, tankAquariumType } from "@/lib/domain/derive";
 import type { Tank } from "@/lib/domain/types";
 import { useAppStore } from "@/lib/state/store";
-import { RefreshIcon, TrashIcon } from "@/components/ui/ActionIcons";
+import { PlusIcon, RefreshIcon, TrashIcon } from "@/components/ui/ActionIcons";
+import { Modal } from "@/components/modals/Modal";
 import { EquipmentForm, LivestockForm } from "./LivestockForms";
 
 interface LivestockViewProps {
@@ -24,8 +25,15 @@ export function LivestockView({ tank, active }: LivestockViewProps) {
   const [editingEquipment, setEditingEquipment] = useState<number | null>(null);
   const [livestockResetToken, setLivestockResetToken] = useState(0);
   const [equipmentResetToken, setEquipmentResetToken] = useState(0);
+  const [equipmentModalOpen, setEquipmentModalOpen] = useState(false);
 
   const type = tankAquariumType(tank);
+
+  function closeEquipmentModal() {
+    setEquipmentModalOpen(false);
+    setEditingEquipment(null);
+    setEquipmentResetToken(value => value + 1);
+  }
 
   return (
     <section className={`view ${active ? "active" : ""}`} id="livestock">
@@ -62,38 +70,33 @@ export function LivestockView({ tank, active }: LivestockViewProps) {
           <div className="panel-heading">
             <h2>장비 상태</h2>
             <button
-              className="surface-icon-button"
+              className="surface-icon-button primary"
               type="button"
-              aria-label="장비 입력 초기화"
+              aria-label="장비 추가"
               onClick={() => {
                 setEditingEquipment(null);
                 setEquipmentResetToken(value => value + 1);
+                setEquipmentModalOpen(true);
               }}
             >
-              <RefreshIcon />
+              <PlusIcon />
             </button>
           </div>
-          <EquipmentForm
-            tank={tank}
-            editingIndex={editingEquipment}
-            resetToken={equipmentResetToken}
-            onSubmit={(index, item) => {
-              upsertEquipment(index, item);
-              setEditingEquipment(null);
-              setEquipmentResetToken(value => value + 1);
-            }}
-          />
           <div className="equipment-grid" id="equipmentGrid">
             {tank.equipment.map((item, index) => (
               <article
                 className="equipment-item editable-card"
                 key={`${item.name}-${index}`}
                 tabIndex={0}
-                onClick={() => setEditingEquipment(index)}
+                onClick={() => {
+                  setEditingEquipment(index);
+                  setEquipmentModalOpen(true);
+                }}
                 onKeyDown={event => {
                   if (event.key !== "Enter" && event.key !== " ") return;
                   event.preventDefault();
                   setEditingEquipment(index);
+                  setEquipmentModalOpen(true);
                 }}
               >
                 <button
@@ -171,6 +174,25 @@ export function LivestockView({ tank, active }: LivestockViewProps) {
           );
         })}
       </section>
+      <Modal id="equipmentModal" open={equipmentModalOpen} onClose={closeEquipmentModal}>
+        <div className="modal-card">
+          <div className="panel-heading">
+            <h2>{editingEquipment === null ? "장비 등록" : "장비 수정"}</h2>
+            <button className="icon-button" type="button" aria-label="닫기" onClick={closeEquipmentModal}>
+              ×
+            </button>
+          </div>
+          <EquipmentForm
+            tank={tank}
+            editingIndex={editingEquipment}
+            resetToken={equipmentResetToken}
+            onSubmit={(index, item) => {
+              upsertEquipment(index, item);
+              closeEquipmentModal();
+            }}
+          />
+        </div>
+      </Modal>
     </section>
   );
 }
