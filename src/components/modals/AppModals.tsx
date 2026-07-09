@@ -1,7 +1,7 @@
 "use client";
 
 // index.html:297-380 + app.js:1549-1618 이식 — 모달 4종
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { aquariumBackgrounds, aquariumTypes } from "@/lib/domain/constants";
 import { selectedAquariumBackground, tankAquariumType } from "@/lib/domain/derive";
 import type { NotificationSettings, Tank } from "@/lib/domain/types";
@@ -40,12 +40,20 @@ export function AppModals({
   const setTankSettings = useAppStore(state => state.setTankSettings);
 
   const [quickSpecies, setQuickSpecies] = useState("");
+  const [settingsName, setSettingsName] = useState(tank.name);
+  const [settingsBackground, setSettingsBackground] = useState(selectedAquariumBackground(tank).id);
 
   const type = tankAquariumType(tank);
   const config = aquariumTypes[type];
   const typeLabel = type === "freshwater" ? "담수" : "해수";
   const backgroundOptions = aquariumBackgrounds.filter(item => item.type === typeLabel);
   const currentBackground = selectedAquariumBackground(tank);
+
+  useEffect(() => {
+    if (openModal !== "tankSettingsModal") return;
+    setSettingsName(tank.name || config.defaultName);
+    setSettingsBackground(currentBackground.id);
+  }, [openModal, tank.id, tank.name, config.defaultName, currentBackground.id]);
 
   // app.js:1554-1563
   function handleTaskSubmit(event: FormEvent<HTMLFormElement>) {
@@ -83,8 +91,12 @@ export function AppModals({
     onClose();
   }
 
-  function handleBackgroundSelect(backgroundId: string) {
-    setTankSettings({ aquariumBackground: backgroundId });
+  function handleTankSettingsSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setTankSettings({
+      name: settingsName.trim() || config.defaultName,
+      aquariumBackground: settingsBackground
+    });
     onClose();
   }
 
@@ -208,7 +220,7 @@ export function AppModals({
       </Modal>
 
       <Modal id="tankSettingsModal" open={openModal === "tankSettingsModal"} onClose={onClose}>
-        <form method="dialog" className="modal-card tank-settings-modal">
+        <form className="modal-card tank-settings-modal" onSubmit={handleTankSettingsSubmit}>
           <div className="panel-heading">
             <div>
               <h2>어항 설정</h2>
@@ -218,20 +230,29 @@ export function AppModals({
               ×
             </button>
           </div>
+          <label>
+            어항 이름
+            <input
+              name="tankName"
+              value={settingsName}
+              maxLength={30}
+              onChange={event => setSettingsName(event.target.value)}
+            />
+          </label>
           <div className="background-picker" aria-label="어항 배경 선택">
             <div className="background-picker-heading">
-              <span>배경 화면 변경</span>
-              <small>현재 어항 타입에 맞는 배경만 표시</small>
+              <span>배경 선택</span>
             </div>
             <div className="background-options" id="backgroundOptions">
               {backgroundOptions.map(item => (
                 <button
                   key={item.id}
-                  className={item.id === currentBackground.id ? "active" : ""}
+                  className={item.id === settingsBackground ? "active" : ""}
                   data-background-id={item.id}
                   type="button"
                   title={item.label}
-                  onClick={() => handleBackgroundSelect(item.id)}
+                  aria-pressed={item.id === settingsBackground}
+                  onClick={() => setSettingsBackground(item.id)}
                 >
                   <span className="background-thumb" style={{ backgroundImage: `url('${item.src}')` }} />
                   <span className="background-label">{item.label}</span>
@@ -240,6 +261,9 @@ export function AppModals({
               ))}
             </div>
           </div>
+          <button className="primary-button wide" type="submit">
+            저장
+          </button>
         </form>
       </Modal>
     </>
