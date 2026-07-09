@@ -537,21 +537,21 @@ h2 { margin:0; font-size: 19px; letter-spacing: 0; }
 }
 .inhabitant.fish {
   animation:
-    swimLoop var(--swim) cubic-bezier(.42, 0, .2, 1) infinite,
+    naturalSwim var(--swim) ease-in-out infinite,
     fishTilt 3.8s ease-in-out infinite;
   animation-delay: var(--delay), calc(var(--delay) * .4);
 }
 .inhabitant.fish.swim-1 {
-  animation-name: swimLoopAlt, fishTilt;
+  animation-name: naturalSwimAlt, fishTilt;
 }
 .inhabitant.fish.swim-2 {
-  animation-name: swimLoopLazy, fishTilt;
+  animation-name: naturalSwimLazy, fishTilt;
 }
 .inhabitant.fish.reverse {
-  animation-name: swimLoopReverse, fishTilt;
+  animation-name: naturalSwimReverse, fishTilt;
 }
 .inhabitant.fish.reverse.swim-1 {
-  animation-name: swimLoopReverseAlt, fishTilt;
+  animation-name: naturalSwimReverseAlt, fishTilt;
 }
 .inhabitant.coral,
 .inhabitant.invert {
@@ -568,6 +568,7 @@ h2 { margin:0; font-size: 19px; letter-spacing: 0; }
   cursor: grabbing;
   z-index: 8;
   transition: none;
+  animation-play-state: paused;
 }
 .inhabitant.dragging,
 .inhabitant.dragging .inhabitant-image {
@@ -594,11 +595,11 @@ h2 { margin:0; font-size: 19px; letter-spacing: 0; }
   inset: 0;
   display: block;
   transform-origin: 50% 50%;
-  animation: faceRightThenLeft var(--swim) cubic-bezier(.42, 0, .2, 1) infinite;
+  animation: fishTurn var(--swim) ease-in-out infinite;
   animation-delay: var(--delay);
 }
 .inhabitant.fish.reverse .fish-art {
-  animation-name: faceLeftThenRight;
+  animation-name: fishTurnReverse;
 }
 .fish-body {
   left: 9px;
@@ -750,6 +751,17 @@ h2 { margin:0; font-size: 19px; letter-spacing: 0; }
   display: block;
   pointer-events: none;
 }
+.inhabitant.fish.has-image .inhabitant-image {
+  transform-origin: 50% 50%;
+  animation: fishTurn var(--swim) ease-in-out infinite;
+  animation-delay: var(--delay);
+}
+.inhabitant.fish.has-image.reverse .inhabitant-image {
+  animation-name: fishTurnReverse;
+}
+.inhabitant.fish.dragging .inhabitant-image {
+  animation-play-state: paused;
+}
 .inhabitant.has-image.invert {
   width: 108px;
   height: 82px;
@@ -779,50 +791,49 @@ h2 { margin:0; font-size: 19px; letter-spacing: 0; }
   0%, 100% { margin-top: 0; }
   50% { margin-top: calc(var(--bob) * -1); }
 }
-@keyframes swimLoop {
-  0% { margin-left: calc(var(--path) * -1); margin-top: 0; scale: 1; }
-  18% { margin-left: calc(var(--path) * -.55); margin-top: calc(var(--arc) * .72); scale: 1.02; }
-  42% { margin-left: calc(var(--path) * .18); margin-top: calc(var(--bob) * -1); scale: .98; }
-  58% { margin-left: calc(var(--path) * .55); margin-top: calc(var(--arc) * -.35); scale: 1.01; }
-  78% { margin-left: var(--path); margin-top: calc(var(--bob) * -.25); scale: .97; }
-  100% { margin-left: calc(var(--path) * -1); margin-top: 0; scale: 1; }
+@keyframes naturalSwim {
+  0%, 100% { margin-left: calc(var(--path) * -1); margin-top: 0; scale: .98; }
+  22% { margin-left: calc(var(--path) * -.18); margin-top: calc(var(--arc) * .55); scale: 1.01; }
+  47%, 53% { margin-left: var(--path); margin-top: calc(var(--bob) * -1); scale: .97; }
+  76% { margin-left: calc(var(--path) * -.08); margin-top: calc(var(--arc) * -.38); scale: 1.01; }
 }
-@keyframes swimLoopAlt {
-  0% { margin-left: var(--path); margin-top: calc(var(--bob) * -.35); scale: .98; }
-  22% { margin-left: calc(var(--path) * .3); margin-top: calc(var(--arc) * .65); scale: 1.02; }
-  48% { margin-left: calc(var(--path) * -.45); margin-top: calc(var(--bob) * -1.2); scale: 1; }
-  70% { margin-left: calc(var(--path) * -.9); margin-top: calc(var(--arc) * -.25); scale: .97; }
-  100% { margin-left: var(--path); margin-top: calc(var(--bob) * -.35); scale: .98; }
+@keyframes naturalSwimAlt {
+  0%, 100% { margin-left: calc(var(--path) * -.8); margin-top: calc(var(--bob) * -.25); scale: 1; }
+  24% { margin-left: calc(var(--path) * .05); margin-top: calc(var(--arc) * -.5); scale: .98; }
+  46%, 54% { margin-left: calc(var(--path) * .9); margin-top: calc(var(--arc) * .38); scale: 1.02; }
+  78% { margin-left: calc(var(--path) * -.12); margin-top: calc(var(--bob) * -1); scale: .99; }
 }
-@keyframes swimLoopLazy {
-  0% { margin-left: calc(var(--path) * -.35); margin-top: 0; scale: .96; }
-  28% { margin-left: calc(var(--path) * .4); margin-top: calc(var(--arc) * .4); scale: 1; }
-  52% { margin-left: calc(var(--path) * .9); margin-top: calc(var(--bob) * -1.05); scale: 1.03; }
-  76% { margin-left: calc(var(--path) * .1); margin-top: calc(var(--arc) * -.55); scale: .99; }
-  100% { margin-left: calc(var(--path) * -.35); margin-top: 0; scale: .96; }
+@keyframes naturalSwimLazy {
+  0%, 100% { margin-left: calc(var(--path) * -.65); margin-top: 0; scale: .97; }
+  20% { margin-left: calc(var(--path) * -.05); margin-top: calc(var(--bob) * -.8); scale: 1; }
+  44%, 56% { margin-left: calc(var(--path) * .75); margin-top: calc(var(--arc) * .42); scale: 1.02; }
+  82% { margin-left: calc(var(--path) * -.18); margin-top: calc(var(--arc) * -.34); scale: .99; }
 }
-@keyframes swimLoopReverse {
-  0% { margin-left: var(--path); margin-top: 0; scale: 1; }
-  18% { margin-left: calc(var(--path) * .55); margin-top: calc(var(--arc) * .72); scale: 1.02; }
-  42% { margin-left: calc(var(--path) * -.18); margin-top: calc(var(--bob) * -1); scale: .98; }
-  58% { margin-left: calc(var(--path) * -.55); margin-top: calc(var(--arc) * -.35); scale: 1.01; }
-  78% { margin-left: calc(var(--path) * -1); margin-top: calc(var(--bob) * -.25); scale: .97; }
-  100% { margin-left: var(--path); margin-top: 0; scale: 1; }
+@keyframes naturalSwimReverse {
+  0%, 100% { margin-left: var(--path); margin-top: 0; scale: .98; }
+  22% { margin-left: calc(var(--path) * .18); margin-top: calc(var(--arc) * .55); scale: 1.01; }
+  47%, 53% { margin-left: calc(var(--path) * -1); margin-top: calc(var(--bob) * -1); scale: .97; }
+  76% { margin-left: calc(var(--path) * .08); margin-top: calc(var(--arc) * -.38); scale: 1.01; }
 }
-@keyframes swimLoopReverseAlt {
-  0% { margin-left: var(--path); margin-top: calc(var(--bob) * -.35); scale: .98; }
-  22% { margin-left: calc(var(--path) * .3); margin-top: calc(var(--arc) * .65); scale: 1.02; }
-  48% { margin-left: calc(var(--path) * -.45); margin-top: calc(var(--bob) * -1.2); scale: 1; }
-  70% { margin-left: calc(var(--path) * -.9); margin-top: calc(var(--arc) * -.25); scale: .97; }
-  100% { margin-left: var(--path); margin-top: calc(var(--bob) * -.35); scale: .98; }
+@keyframes naturalSwimReverseAlt {
+  0%, 100% { margin-left: calc(var(--path) * .8); margin-top: calc(var(--bob) * -.25); scale: 1; }
+  24% { margin-left: calc(var(--path) * -.05); margin-top: calc(var(--arc) * -.5); scale: .98; }
+  46%, 54% { margin-left: calc(var(--path) * -.9); margin-top: calc(var(--arc) * .38); scale: 1.02; }
+  78% { margin-left: calc(var(--path) * .12); margin-top: calc(var(--bob) * -1); scale: .99; }
 }
-@keyframes faceRightThenLeft {
-  0%, 76% { transform: scaleX(-1); }
-  80%, 100% { transform: scaleX(1); }
+@keyframes fishTurn {
+  0%, 45% { transform: scaleX(1) rotate(0deg); }
+  49% { transform: scaleX(.12) rotate(-2deg); }
+  53%, 94% { transform: scaleX(-1) rotate(0deg); }
+  98% { transform: scaleX(-.12) rotate(2deg); }
+  100% { transform: scaleX(1) rotate(0deg); }
 }
-@keyframes faceLeftThenRight {
-  0%, 76% { transform: scaleX(1); }
-  80%, 100% { transform: scaleX(-1); }
+@keyframes fishTurnReverse {
+  0%, 45% { transform: scaleX(-1) rotate(0deg); }
+  49% { transform: scaleX(-.12) rotate(2deg); }
+  53%, 94% { transform: scaleX(1) rotate(0deg); }
+  98% { transform: scaleX(.12) rotate(-2deg); }
+  100% { transform: scaleX(-1) rotate(0deg); }
 }
 @keyframes fishTilt {
   0%, 100% { rotate: -1.5deg; }
