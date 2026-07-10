@@ -124,7 +124,14 @@ export function selectedAquariumBackground(tank: Tank) {
 
 // app.js:817-820
 export function availableSpecies(type: AquariumTypeId): Species[] {
-  return species.filter(item => (item.habitat || "saltwater") === type);
+  const levelOrder: Record<string, number> = { 초급: 0, 중급: 1, 상급: 2 };
+  return species
+    .filter(item => (item.habitat || "saltwater") === type)
+    .sort((a, b) => {
+      const levelDiff = (levelOrder[a.level] ?? 99) - (levelOrder[b.level] ?? 99);
+      if (levelDiff !== 0) return levelDiff;
+      return a.name.localeCompare(b.name, "ko");
+    });
 }
 
 // app.js:674-700
