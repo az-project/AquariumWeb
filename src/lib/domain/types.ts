@@ -94,6 +94,9 @@ export interface WaterMetric {
   step: string;
   min: number;
   max: number;
+  idealMin?: number;
+  idealMax?: number;
+  idealNote?: string;
   color: string;
 }
 

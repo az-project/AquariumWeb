@@ -30,6 +30,20 @@ export function formatMetric(value: unknown, digits: number, unit: string): stri
   return hasNumber(value) ? `${formatNumber(value, digits)}${unit}` : "-";
 }
 
+export function idealRangeText(metric: WaterMetric): string {
+  if (!hasNumber(metric.idealMin) || !hasNumber(metric.idealMax)) return "";
+  const min = formatNumber(metric.idealMin, metric.digits);
+  const max = formatNumber(metric.idealMax, metric.digits);
+  const range = metric.idealMin === metric.idealMax ? `${min}${metric.unit}` : `${min}-${max}${metric.unit}`;
+  return metric.idealNote ? `적정범위 ${range} · ${metric.idealNote}` : `적정범위 ${range}`;
+}
+
+export function isWithinIdealRange(value: unknown, metric: WaterMetric): boolean {
+  if (!hasNumber(value) || !hasNumber(metric.idealMin) || !hasNumber(metric.idealMax)) return true;
+  const number = Number(value);
+  return number >= Number(metric.idealMin) && number <= Number(metric.idealMax);
+}
+
 export function formatInputValue(value: unknown, digits: number): string {
   const number = Number(value);
   return Number.isFinite(number) ? number.toFixed(digits) : "";
@@ -72,7 +86,7 @@ export function stabilityScore(log: WaterLog, type: AquariumTypeId): number | nu
     if (hasNumber(log.no2) && n(log.no2) > 0) score -= 20;
   } else {
     if (hasNumber(log.temp) && (n(log.temp) < 24.5 || n(log.temp) > 26.5)) score -= 15;
-    if (hasNumber(log.salinity) && (n(log.salinity) < 34 || n(log.salinity) > 36)) score -= 15;
+    if (hasNumber(log.salinity) && (n(log.salinity) < 1.023 || n(log.salinity) > 1.025)) score -= 15;
     if (hasNumber(log.kh) && (n(log.kh) < 7.5 || n(log.kh) > 9.5)) score -= 10;
     if (hasNumber(log.no3) && n(log.no3) > 15) score -= 15;
     if (hasNumber(log.nh3) && n(log.nh3) > 0) score -= 20;

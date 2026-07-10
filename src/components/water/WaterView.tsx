@@ -6,6 +6,9 @@ import {
   currentWaterMetrics,
   formatInputValue,
   formatNumber,
+  hasNumber,
+  idealRangeText,
+  isWithinIdealRange,
   optionalNumber,
   sortedTasks,
   tankAquariumType
@@ -163,9 +166,23 @@ export function WaterView({ tank, active, onOpenTaskModal }: WaterViewProps) {
                   onKeyDown={event => handleRowKeyDown(event, log.index)}
                 >
                   <td>{log.date || "날짜 미정"}</td>
-                  {metrics.map(item => (
-                    <td key={item.key}>{formatNumber(log[item.key], item.digits)}</td>
-                  ))}
+                  {metrics.map(item => {
+                    const value = log[item.key];
+                    const rangeText = idealRangeText(item);
+                    const isOutOfRange = hasNumber(value) && !isWithinIdealRange(value, item);
+                    const formattedValue = formatNumber(value, item.digits);
+                    return (
+                      <td key={item.key}>
+                        <span
+                          className={`water-log-value ${isOutOfRange ? "is-out-of-range" : ""}`}
+                          title={rangeText || undefined}
+                          aria-label={rangeText ? `${item.label} ${formattedValue}, ${rangeText}` : `${item.label} ${formattedValue}`}
+                        >
+                          {formattedValue}
+                        </span>
+                      </td>
+                    );
+                  })}
                   <td>
                     <div className="row-actions">
                       <button

@@ -1007,6 +1007,24 @@ th { color:var(--muted); font-size:13px; }
   background: rgba(32, 191, 160, .08);
 }
 
+.water-log-value {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  border-radius: 8px;
+  font-weight: 800;
+  color: var(--ink);
+  text-underline-offset: 3px;
+}
+
+.water-log-value[title]:not([title=""]) {
+  cursor: help;
+}
+
+.water-log-value.is-out-of-range {
+  color: #d8473f;
+}
+
 .surface-icon-button {
   display: inline-flex;
   align-items: center;
