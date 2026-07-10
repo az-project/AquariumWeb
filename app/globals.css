@@ -1012,7 +1012,6 @@ th { color:var(--muted); font-size:13px; }
   align-items: center;
   min-height: 28px;
   border-radius: 8px;
-  font-weight: 500;
   color: var(--ink);
   text-underline-offset: 3px;
 }
