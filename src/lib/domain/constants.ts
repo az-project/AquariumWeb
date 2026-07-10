@@ -85,21 +85,21 @@ export const aquariumBackgrounds: AquariumBackground[] = [
 
 export const waterMetricSets: Record<AquariumTypeId, WaterMetric[]> = {
   saltwater: [
-    { key: "temp", label: "수온", unit: "°C", digits: 1, step: "0.1", min: 22, max: 30, idealMin: 24, idealMax: 27, idealOkNote: "안정 범위입니다.", idealLowNote: "히터 설정을 확인하세요.", idealHighNote: "냉각과 조명을 확인하세요.", color: "#159fb7" },
-    { key: "salinity", label: "염도", unit: "sg", digits: 3, step: "0.001", min: 1.018, max: 1.03, idealMin: 1.023, idealMax: 1.025, idealOkNote: "권장 염도입니다.", idealLowNote: "증발수/보충수를 확인하세요.", idealHighNote: "고염 상태라 천천히 낮추세요.", color: "#0f7fb8" },
-    { key: "kh", label: "알칼리티", unit: "dKH", digits: 1, step: "0.1", min: 5, max: 12, idealMin: 7, idealMax: 9, idealOkNote: "안정 범위입니다.", idealLowNote: "KH 보충을 검토하세요.", idealHighNote: "급격한 보충을 피하세요.", color: "#20bfa0" },
-    { key: "no3", label: "질산염", unit: "ppm", digits: 1, step: "0.1", min: 0, max: 50, idealMin: 5, idealMax: 10, idealOkNote: "권장 범위입니다.", idealLowNote: "0에 가깝게 낮추지 마세요.", idealHighNote: "먹이량과 환수를 확인하세요.", color: "#ff7f73" },
-    { key: "nh3", label: "암모니아", unit: "ppm", digits: 1, step: "0.1", min: 0, max: 1, idealMin: 0, idealMax: 0, idealOkNote: "불검출 상태입니다.", idealLowNote: "불검출 상태입니다.", idealHighNote: "즉시 원인 확인이 필요합니다.", color: "#f0bd4f" },
-    { key: "po4", label: "인산염", unit: "ppm", digits: 2, step: "0.01", min: 0, max: 0.5, idealMin: 0.05, idealMax: 0.15, idealOkNote: "권장 범위입니다.", idealLowNote: "너무 낮으면 산호 상태를 보세요.", idealHighNote: "흡착제/환수를 검토하세요.", color: "#7c6fe8" }
+    { key: "temp", label: "수온", unit: "°C", digits: 1, step: "0.1", min: 22, max: 30, idealMin: 24, idealMax: 27, idealOkNote: "안정 범위입니다. 하루 변동폭을 1°C 이내로 유지하세요.", idealLowNote: "히터 설정과 센서 위치를 확인하고 천천히 올리세요.", idealHighNote: "조명 시간, 팬/냉각기, 실내 온도를 확인하세요.", color: "#159fb7" },
+    { key: "salinity", label: "염도", unit: "sg", digits: 3, step: "0.001", min: 1.018, max: 1.03, idealMin: 1.023, idealMax: 1.025, idealOkNote: "권장 염도입니다. 보충수는 담수로 천천히 맞추세요.", idealLowNote: "저염 상태입니다. 해수 보충은 천천히 나누어 진행하세요.", idealHighNote: "고염 상태입니다. 담수 보충으로 급변 없이 낮추세요.", color: "#0f7fb8" },
+    { key: "kh", label: "알칼리티", unit: "dKH", digits: 1, step: "0.1", min: 5, max: 12, idealMin: 7, idealMax: 9, idealOkNote: "안정 범위입니다. 산호항은 급격한 변동을 피하세요.", idealLowNote: "KH가 낮습니다. 보충제는 소량씩 나누어 올리세요.", idealHighNote: "KH가 높습니다. 보충을 멈추고 자연 하락을 관찰하세요.", color: "#20bfa0" },
+    { key: "no3", label: "질산염", unit: "ppm", digits: 1, step: "0.1", min: 0, max: 50, idealMin: 5, idealMax: 10, idealOkNote: "권장 범위입니다. 산호 색과 조류 상태를 함께 보세요.", idealLowNote: "너무 낮습니다. 먹이량/영양염 부족 여부를 확인하세요.", idealHighNote: "높습니다. 먹이량, 여과재, 환수 주기를 점검하세요.", color: "#ff7f73" },
+    { key: "nh3", label: "암모니아", unit: "ppm", digits: 1, step: "0.1", min: 0, max: 1, idealMin: 0, idealMax: 0, idealOkNote: "불검출 상태입니다. 현재 생물 안전성이 좋습니다.", idealLowNote: "불검출 상태입니다. 현재 생물 안전성이 좋습니다.", idealHighNote: "위험 신호입니다. 폐사체, 과급여, 여과 문제를 즉시 확인하세요.", color: "#f0bd4f" },
+    { key: "po4", label: "인산염", unit: "ppm", digits: 2, step: "0.01", min: 0, max: 0.5, idealMin: 0.05, idealMax: 0.15, idealOkNote: "권장 범위입니다. 질산염과 균형도 함께 확인하세요.", idealLowNote: "너무 낮습니다. 산호 위축이나 색 빠짐을 확인하세요.", idealHighNote: "높습니다. 먹이 찌꺼기, 흡착제, 환수 주기를 점검하세요.", color: "#7c6fe8" }
   ],
   freshwater: [
-    { key: "temp", label: "수온", unit: "°C", digits: 1, step: "0.1", min: 18, max: 30, idealMin: 22, idealMax: 28, idealOkNote: "열대어 권장 범위입니다.", idealLowNote: "히터 설정을 확인하세요.", idealHighNote: "냉각과 조명을 확인하세요.", color: "#159fb7" },
-    { key: "ph", label: "산도(pH)", unit: "", digits: 1, step: "0.1", min: 5.5, max: 8.5, idealMin: 6.2, idealMax: 7.8, idealOkNote: "안정 범위입니다.", idealLowNote: "산성 쪽으로 치우쳤습니다.", idealHighNote: "알칼리 쪽으로 치우쳤습니다.", color: "#0f7fb8" },
-    { key: "gh", label: "총경도(GH)", unit: "dGH", digits: 1, step: "0.1", min: 0, max: 20, idealMin: 3, idealMax: 14, idealOkNote: "대부분 어종에 무난합니다.", idealLowNote: "연수 환경입니다.", idealHighNote: "경수 환경입니다.", color: "#20bfa0" },
-    { key: "kh", label: "탄산경도(KH)", unit: "dKH", digits: 1, step: "0.1", min: 0, max: 15, idealMin: 2, idealMax: 10, idealOkNote: "pH 완충이 안정적입니다.", idealLowNote: "pH 변동에 주의하세요.", idealHighNote: "pH 상승을 확인하세요.", color: "#65b66a" },
-    { key: "nh3", label: "암모니아", unit: "ppm", digits: 1, step: "0.1", min: 0, max: 1, idealMin: 0, idealMax: 0, idealOkNote: "불검출 상태입니다.", idealLowNote: "불검출 상태입니다.", idealHighNote: "즉시 원인 확인이 필요합니다.", color: "#f0bd4f" },
-    { key: "no2", label: "아질산염", unit: "ppm", digits: 1, step: "0.1", min: 0, max: 5, idealMin: 0, idealMax: 0, idealOkNote: "불검출 상태입니다.", idealLowNote: "불검출 상태입니다.", idealHighNote: "여과 사이클을 확인하세요.", color: "#7c6fe8" },
-    { key: "no3", label: "질산염", unit: "ppm", digits: 1, step: "0.1", min: 0, max: 50, idealMin: 0, idealMax: 30, idealOkNote: "관리 범위입니다.", idealLowNote: "낮게 유지 중입니다.", idealHighNote: "환수와 먹이량을 확인하세요.", color: "#ff7f73" }
+    { key: "temp", label: "수온", unit: "°C", digits: 1, step: "0.1", min: 18, max: 30, idealMin: 22, idealMax: 28, idealOkNote: "열대어 권장 범위입니다. 급격한 변화만 피하세요.", idealLowNote: "히터 설정, 전원, 물 흐름 위치를 확인하세요.", idealHighNote: "조명 시간과 실내 온도, 냉각 방법을 확인하세요.", color: "#159fb7" },
+    { key: "ph", label: "산도(pH)", unit: "", digits: 1, step: "0.1", min: 5.5, max: 8.5, idealMin: 6.2, idealMax: 7.8, idealOkNote: "안정 범위입니다. 어종별 선호 pH만 추가 확인하세요.", idealLowNote: "산성 쪽입니다. 유목, 소일, CO2 영향을 확인하세요.", idealHighNote: "알칼리 쪽입니다. 돌/바닥재와 KH 상승 요인을 확인하세요.", color: "#0f7fb8" },
+    { key: "gh", label: "총경도(GH)", unit: "dGH", digits: 1, step: "0.1", min: 0, max: 20, idealMin: 3, idealMax: 14, idealOkNote: "대부분 어종에 무난합니다. 번식어는 별도 기준을 보세요.", idealLowNote: "연수 환경입니다. 몰리/구피류는 컨디션을 확인하세요.", idealHighNote: "경수 환경입니다. 연수 선호 어종은 스트레스를 볼 수 있습니다.", color: "#20bfa0" },
+    { key: "kh", label: "탄산경도(KH)", unit: "dKH", digits: 1, step: "0.1", min: 0, max: 15, idealMin: 2, idealMax: 10, idealOkNote: "pH 완충이 안정적입니다. 급변 없이 유지하세요.", idealLowNote: "완충력이 낮습니다. pH 급변 가능성을 확인하세요.", idealHighNote: "완충력이 높습니다. pH가 잘 내려가지 않을 수 있습니다.", color: "#65b66a" },
+    { key: "nh3", label: "암모니아", unit: "ppm", digits: 1, step: "0.1", min: 0, max: 1, idealMin: 0, idealMax: 0, idealOkNote: "불검출 상태입니다. 여과가 안정적으로 보입니다.", idealLowNote: "불검출 상태입니다. 여과가 안정적으로 보입니다.", idealHighNote: "위험 신호입니다. 과급여, 폐사체, 여과 문제를 즉시 확인하세요.", color: "#f0bd4f" },
+    { key: "no2", label: "아질산염", unit: "ppm", digits: 1, step: "0.1", min: 0, max: 5, idealMin: 0, idealMax: 0, idealOkNote: "불검출 상태입니다. 여과 사이클이 안정적입니다.", idealLowNote: "불검출 상태입니다. 여과 사이클이 안정적입니다.", idealHighNote: "여과 사이클 불안정 신호입니다. 환수와 여과 상태를 확인하세요.", color: "#7c6fe8" },
+    { key: "no3", label: "질산염", unit: "ppm", digits: 1, step: "0.1", min: 0, max: 50, idealMin: 0, idealMax: 30, idealOkNote: "관리 범위입니다. 수초항은 성장 상태도 함께 보세요.", idealLowNote: "낮게 유지 중입니다. 수초항은 영양 부족 여부를 확인하세요.", idealHighNote: "높습니다. 환수 주기, 먹이량, 바닥 찌꺼기를 점검하세요.", color: "#ff7f73" }
   ]
 };
 
