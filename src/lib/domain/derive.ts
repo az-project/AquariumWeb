@@ -176,6 +176,56 @@ export function livestockMotion(name: string): LivestockMotionPair | null {
   return livestockMotionMap.find(entry => entry.test.test(name))?.motion || null;
 }
 
+export type FishDirection = "left" | "right";
+
+export interface FishRouteState {
+  x: number;
+  y: number;
+  direction: FishDirection;
+  segmentsRemaining: number;
+}
+
+export interface FishWaypoint extends FishRouteState {
+  durationMs: number;
+}
+
+export function nextFishWaypoint(
+  current: FishRouteState,
+  random: () => number = Math.random
+): FishWaypoint {
+  let direction = current.direction;
+  let segmentsRemaining = current.segmentsRemaining;
+
+  if (segmentsRemaining <= 0) {
+    if (random() < 0.48) direction = direction === "right" ? "left" : "right";
+    segmentsRemaining = 2 + Math.floor(random() * 2);
+  }
+
+  const distance = 10 + random() * 14;
+  const sign = direction === "right" ? 1 : -1;
+  let x = current.x + distance * sign;
+
+  if (x < 18 || x > 82) {
+    direction = direction === "right" ? "left" : "right";
+    segmentsRemaining = 2 + Math.floor(random() * 2);
+    x = current.x + distance * (direction === "right" ? 1 : -1);
+  }
+
+  x = clamp(x, 18, 82);
+  const verticalRange = random() < 0.22 ? 18 : 10;
+  const y = clamp(current.y + (random() * 2 - 1) * verticalRange, 18, 80);
+  const travel = Math.hypot(x - current.x, (y - current.y) * 0.65);
+  const durationMs = Math.round(clamp(travel * (160 + random() * 60), 2800, 6500));
+
+  return {
+    x,
+    y,
+    direction,
+    segmentsRemaining: Math.max(0, segmentsRemaining - 1),
+    durationMs
+  };
+}
+
 // app.js:706-716
 export function inhabitantKind(type: string): "fish" | "coral" | "invert" {
   if (type === "산호") return "coral";

@@ -3,9 +3,20 @@
 // app.js:625-735(시각화), 1332-1420(드래그·커서) 이식.
 // 드래그 중에는 리렌더 없이 DOM style을 직접 조작하고, 드래그 종료 시에만
 // store에 tankPosition을 커밋한다 (바닐라와 동일한 명령형 패턴).
-import { useEffect, useRef, type CSSProperties, type MouseEvent } from "react";
-import { inhabitantKind, livestockImage, livestockMotion, selectedAquariumBackground, tankAquariumType } from "@/lib/domain/derive";
-import type { Tank } from "@/lib/domain/types";
+import { useEffect, useRef, useState, type CSSProperties, type MouseEvent } from "react";
+import {
+  clamp,
+  inhabitantKind,
+  livestockImage,
+  livestockMotion,
+  nextFishWaypoint,
+  selectedAquariumBackground,
+  tankAquariumType,
+  type FishRouteState,
+  type FishWaypoint
+} from "@/lib/domain/derive";
+import type { LivestockMotionPair } from "@/lib/domain/constants";
+import type { Livestock, Tank } from "@/lib/domain/types";
 import { useAppStore } from "@/lib/state/store";
 import { PixiFishLayer } from "./PixiFishLayer";
 
@@ -41,6 +52,86 @@ interface MotionFishLayerProps {
   onSelect: (index: number) => void;
 }
 
+interface MotionFishProps {
+  asset: string;
+  basePos: (typeof MOTION_FISH_POSITIONS)[number];
+  fishOrder: number;
+  index: number;
+  item: Livestock;
+  motion: LivestockMotionPair;
+  selected: boolean;
+  onSelect: (index: number) => void;
+}
+
+function percentNumber(value: string | undefined, fallback: string): number {
+  const parsed = Number.parseFloat(value || "");
+  return Number.isFinite(parsed) ? parsed : Number.parseFloat(fallback);
+}
+
+function MotionFish({ asset, basePos, fishOrder, index, item, motion, selected, onSelect }: MotionFishProps) {
+  const initialRoute: FishWaypoint = {
+    x: clamp(percentNumber(item.tankPosition?.x, basePos.x), 18, 82),
+    y: clamp(percentNumber(item.tankPosition?.y, basePos.y), 18, 80),
+    direction: fishOrder % 2 === 0 ? "right" : "left",
+    segmentsRemaining: 2 + (fishOrder % 2),
+    durationMs: 0
+  };
+  const [route, setRoute] = useState(initialRoute);
+  const routeRef = useRef<FishRouteState>(initialRoute);
+
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    let disposed = false;
+
+    const moveToNextWaypoint = () => {
+      if (disposed) return;
+      const next = nextFishWaypoint(routeRef.current);
+      routeRef.current = next;
+      setRoute(next);
+      timer = setTimeout(moveToNextWaypoint, next.durationMs);
+    };
+
+    timer = setTimeout(moveToNextWaypoint, 120 + fishOrder * 160);
+    return () => {
+      disposed = true;
+      if (timer) clearTimeout(timer);
+    };
+  }, [fishOrder]);
+
+  const style = {
+    left: `${route.x}%`,
+    top: `${route.y}%`,
+    "--scale": basePos.scale,
+    "--travel-duration": `${route.durationMs}ms`
+  } as CSSProperties;
+
+  return (
+    <button
+      className={`motion-fish direction-${route.direction} ${selected ? "selected" : ""}`}
+      data-livestock-index={index}
+      data-fish-direction={route.direction}
+      data-route-segments={route.segmentsRemaining}
+      type="button"
+      title={item.name}
+      aria-label={item.name}
+      style={style}
+      onClick={() => onSelect(index)}
+    >
+      <span className="motion-fish-facing motion-fish-facing-right" aria-hidden="true">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img className="motion-fish-fallback" src={asset} alt="" />
+        <video className="motion-fish-video" src={motion.right} poster={asset} autoPlay loop muted playsInline preload="metadata" />
+      </span>
+      <span className="motion-fish-facing motion-fish-facing-left" aria-hidden="true">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img className="motion-fish-fallback" src={asset} alt="" />
+        <video className="motion-fish-video" src={motion.left} poster={asset} autoPlay loop muted playsInline preload="metadata" />
+      </span>
+    </button>
+  );
+}
+
 function MotionFishLayer({ tank, selectedIndex, onSelect }: MotionFishLayerProps) {
   const type = tankAquariumType(tank);
   const fish = tank.livestock.flatMap((item, index) => {
@@ -56,41 +147,19 @@ function MotionFishLayer({ tank, selectedIndex, onSelect }: MotionFishLayerProps
     <div className="motion-fish-layer" aria-label="영상으로 유영 중인 물고기">
       {fish.map(({ item, index, motion }, fishOrder) => {
         const basePos = MOTION_FISH_POSITIONS[fishOrder % MOTION_FISH_POSITIONS.length];
-        const pos = item.tankPosition ? { ...basePos, ...item.tankPosition } : basePos;
         const asset = livestockImage(item, index, type);
-        const style = {
-          "--x": pos.x,
-          "--y": pos.y,
-          "--scale": pos.scale,
-          "--delay": `${(fishOrder % 5) * -0.7}s`,
-          "--swim": `${10 + (fishOrder % 4) * 2.5}s`,
-          "--path": `${52 + (fishOrder % 3) * 10}px`,
-          "--arc": `${fishOrder % 3 === 0 ? -18 : fishOrder % 3 === 1 ? 14 : -10}px`,
-          "--bob": `${7 + (fishOrder % 3) * 2}px`
-        } as CSSProperties;
-
         return (
-          <button
-            key={`${item.name}-${index}`}
-            className={`motion-fish motion-swim-${fishOrder % 3} ${fishOrder % 2 === 1 ? "reverse" : ""} ${selectedIndex === index ? "selected" : ""}`}
-            data-livestock-index={index}
-            type="button"
-            title={item.name}
-            aria-label={item.name}
-            style={style}
-            onClick={() => onSelect(index)}
-          >
-            <span className="motion-fish-facing motion-fish-facing-right" aria-hidden="true">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img className="motion-fish-fallback" src={asset} alt="" />
-              <video className="motion-fish-video" src={motion.right} poster={asset} autoPlay loop muted playsInline preload="metadata" />
-            </span>
-            <span className="motion-fish-facing motion-fish-facing-left" aria-hidden="true">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img className="motion-fish-fallback" src={asset} alt="" />
-              <video className="motion-fish-video" src={motion.left} poster={asset} autoPlay loop muted playsInline preload="metadata" />
-            </span>
-          </button>
+          <MotionFish
+            key={`${tank.id}-${item.name}-${index}`}
+            asset={asset}
+            basePos={basePos}
+            fishOrder={fishOrder}
+            index={index}
+            item={item}
+            motion={motion}
+            selected={selectedIndex === index}
+            onSelect={onSelect}
+          />
         );
       })}
     </div>

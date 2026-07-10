@@ -528,17 +528,11 @@ h2 { margin:0; font-size: 19px; letter-spacing: 0; }
   pointer-events: none;
 }
 .motion-fish {
-  --x: 50%;
-  --y: 50%;
-  --delay: 0s;
   --scale: 1;
-  --swim: 10s;
-  --path: 52px;
-  --arc: -18px;
-  --bob: 7px;
+  --travel-duration: 0ms;
   position: absolute;
-  left: var(--x);
-  top: var(--y);
+  left: 50%;
+  top: 50%;
   width: 150px;
   height: 108px;
   border: 0;
@@ -548,14 +542,12 @@ h2 { margin:0; font-size: 19px; letter-spacing: 0; }
   filter: drop-shadow(0 14px 18px rgba(4, 20, 29, .3));
   pointer-events: auto;
   cursor: pointer;
-  transition: transform .18s ease, filter .18s ease;
-  animation:
-    motionFishSwim var(--swim) cubic-bezier(.42, 0, .2, 1) infinite,
-    motionFishTilt 4.6s ease-in-out infinite;
-  animation-delay: var(--delay), calc(var(--delay) * .4);
-}
-.motion-fish.reverse {
-  animation-name: motionFishSwimReverse, motionFishTilt;
+  will-change: left, top;
+  transition:
+    left var(--travel-duration) cubic-bezier(.4, .05, .22, 1),
+    top var(--travel-duration) cubic-bezier(.4, .05, .22, 1),
+    transform .18s ease,
+    filter .18s ease;
 }
 .motion-fish:hover,
 .motion-fish.selected {
@@ -567,21 +559,22 @@ h2 { margin:0; font-size: 19px; letter-spacing: 0; }
   inset: 0;
   display: block;
   pointer-events: none;
-  will-change: opacity;
 }
 .motion-fish-facing-right {
-  animation: motionFishShowRight var(--swim) steps(1, end) infinite;
-  animation-delay: var(--delay);
+  opacity: 1;
+  visibility: visible;
 }
 .motion-fish-facing-left {
-  animation: motionFishShowLeft var(--swim) steps(1, end) infinite;
-  animation-delay: var(--delay);
+  opacity: 0;
+  visibility: hidden;
 }
-.motion-fish.reverse .motion-fish-facing-right {
-  animation-name: motionFishShowLeft;
+.motion-fish.direction-left .motion-fish-facing-right {
+  opacity: 0;
+  visibility: hidden;
 }
-.motion-fish.reverse .motion-fish-facing-left {
-  animation-name: motionFishShowRight;
+.motion-fish.direction-left .motion-fish-facing-left {
+  opacity: 1;
+  visibility: visible;
 }
 .motion-fish-video,
 .motion-fish-fallback {
@@ -599,33 +592,6 @@ h2 { margin:0; font-size: 19px; letter-spacing: 0; }
 .motion-fish-facing-left .motion-fish-fallback {
   transform: scaleX(-1);
 }
-@keyframes motionFishSwim {
-  0% { margin-left: calc(var(--path) * -1); margin-top: 0; }
-  18% { margin-left: calc(var(--path) * -.42); margin-top: calc(var(--arc) * .7); }
-  46%, 50% { margin-left: var(--path); margin-top: calc(var(--bob) * -.35); }
-  70% { margin-left: calc(var(--path) * .28); margin-top: calc(var(--arc) * -.45); }
-  96%, 100% { margin-left: calc(var(--path) * -1); margin-top: 0; }
-}
-@keyframes motionFishSwimReverse {
-  0% { margin-left: var(--path); margin-top: 0; }
-  18% { margin-left: calc(var(--path) * .42); margin-top: calc(var(--arc) * .7); }
-  46%, 50% { margin-left: calc(var(--path) * -1); margin-top: calc(var(--bob) * -.35); }
-  70% { margin-left: calc(var(--path) * -.28); margin-top: calc(var(--arc) * -.45); }
-  96%, 100% { margin-left: var(--path); margin-top: 0; }
-}
-@keyframes motionFishShowRight {
-  0%, 49.99% { opacity: 1; visibility: visible; }
-  50%, 100% { opacity: 0; visibility: hidden; }
-}
-@keyframes motionFishShowLeft {
-  0%, 49.99% { opacity: 0; visibility: hidden; }
-  50%, 100% { opacity: 1; visibility: visible; }
-}
-@keyframes motionFishTilt {
-  0%, 100% { rotate: -1.5deg; }
-  35% { rotate: 2.2deg; }
-  65% { rotate: -.4deg; }
-}
 @media (max-width: 720px) {
   .motion-fish {
     width: 112px;
@@ -633,11 +599,9 @@ h2 { margin:0; font-size: 19px; letter-spacing: 0; }
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .motion-fish,
-  .motion-fish-facing {
-    animation: none !important;
+  .motion-fish {
+    transition: none !important;
   }
-  .motion-fish-facing-left,
   .motion-fish-video {
     display: none;
   }
