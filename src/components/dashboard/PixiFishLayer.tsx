@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { inhabitantKind, livestockImage, tankAquariumType } from "@/lib/domain/derive";
+import { inhabitantKind, livestockImage, livestockMotion, tankAquariumType } from "@/lib/domain/derive";
 import type { Tank } from "@/lib/domain/types";
 
 const FISH_POSITIONS = [
@@ -59,7 +59,7 @@ export function PixiFishLayer({ tank, selectedIndex, onSelect }: PixiFishLayerPr
       const type = tankAquariumType(tank);
       const fishItems = tank.livestock
         .map((item, index) => ({ item, index }))
-        .filter(({ item }) => inhabitantKind(item.type) === "fish");
+        .filter(({ item }) => inhabitantKind(item.type) === "fish" && !livestockMotion(item.name));
 
       const swimmers = await Promise.all(
         fishItems.map(async ({ item, index }, fishOrder) => {
@@ -110,7 +110,6 @@ export function PixiFishLayer({ tank, selectedIndex, onSelect }: PixiFishLayerPr
           const phase = (elapsed / swimmer.duration) * Math.PI * 2 + swimmer.phaseOffset;
           const velocity = Math.cos(phase);
           const direction = velocity >= 0 ? 1 : -1;
-          const turnWidth = 0.38 + Math.min(1, Math.abs(velocity) * 3.2) * 0.62;
           const selectedScale = selectedIndexRef.current === swimmer.index ? 1.1 : 1;
 
           swimmer.mesh.x = (swimmer.centerX / 100) * app.screen.width + Math.sin(phase) * swimmer.path;
@@ -119,7 +118,7 @@ export function PixiFishLayer({ tank, selectedIndex, onSelect }: PixiFishLayerPr
             Math.sin(phase * 2 + swimmer.phaseOffset * 0.4) * swimmer.arc +
             Math.sin(elapsed * 0.72 + swimmer.phaseOffset) * 2.2;
           swimmer.mesh.scale.set(
-            direction * swimmer.baseScale * turnWidth * selectedScale,
+            direction * swimmer.baseScale * selectedScale,
             swimmer.baseScale * selectedScale
           );
           swimmer.mesh.rotation = Math.sin(phase * 2 + swimmer.phaseOffset * 0.4) * 0.035;

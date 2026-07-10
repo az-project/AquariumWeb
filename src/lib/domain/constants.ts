@@ -119,6 +119,23 @@ export const livestockAssetMap: { test: RegExp; src: string }[] = [
   { test: /산호|coral/i, src: "assets/livestock/bubble-coral.png" }
 ];
 
+export interface LivestockMotionPair {
+  left: string;
+  right: string;
+}
+
+// Higgsfield에서 만든 짧은 무음 루프. 새 어종 클립은 이 목록에만 추가하면
+// AquariumVisual이 방향별 영상을 자동으로 선택하고, 미등록 어종은 PNG로 폴백한다.
+export const livestockMotionMap: { test: RegExp; motion: LivestockMotionPair }[] = [
+  {
+    test: /니모|클라운|퍼큘라|clown/i,
+    motion: {
+      left: "assets/livestock/motion/clownfish-left.webm",
+      right: "assets/livestock/motion/clownfish-right.webm"
+    }
+  }
+];
+
 export const tankDataKeys = [
   "name",
   "aquariumType",

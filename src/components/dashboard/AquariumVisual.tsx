@@ -4,7 +4,7 @@
 // 드래그 중에는 리렌더 없이 DOM style을 직접 조작하고, 드래그 종료 시에만
 // store에 tankPosition을 커밋한다 (바닐라와 동일한 명령형 패턴).
 import { useEffect, useRef, type CSSProperties, type MouseEvent } from "react";
-import { inhabitantKind, livestockImage, selectedAquariumBackground, tankAquariumType } from "@/lib/domain/derive";
+import { inhabitantKind, livestockImage, livestockMotion, selectedAquariumBackground, tankAquariumType } from "@/lib/domain/derive";
 import type { Tank } from "@/lib/domain/types";
 import { useAppStore } from "@/lib/state/store";
 import { PixiFishLayer } from "./PixiFishLayer";
@@ -17,6 +17,16 @@ const REEF_POSITIONS = [
   { x: "48%", y: "75%", scale: ".6" },
   { x: "86%", y: "70%", scale: ".58" }
 ];
+const MOTION_FISH_POSITIONS = [
+  { x: "62%", y: "42%", scale: ".96" },
+  { x: "73%", y: "55%", scale: ".82" },
+  { x: "52%", y: "31%", scale: ".72" },
+  { x: "39%", y: "46%", scale: ".88" },
+  { x: "83%", y: "36%", scale: ".66" },
+  { x: "47%", y: "52%", scale: ".78" },
+  { x: "68%", y: "25%", scale: ".62" },
+  { x: "58%", y: "38%", scale: ".7" }
+];
 const PALETTES: [string, string][] = [
   ["#ffcf68", "#ff7f73"],
   ["#6ee7ff", "#159fb7"],
@@ -24,6 +34,68 @@ const PALETTES: [string, string][] = [
   ["#b9a8ff", "#5fc6ff"],
   ["#7ff0d4", "#20bfa0"]
 ];
+
+interface MotionFishLayerProps {
+  tank: Tank;
+  selectedIndex: number | null;
+  onSelect: (index: number) => void;
+}
+
+function MotionFishLayer({ tank, selectedIndex, onSelect }: MotionFishLayerProps) {
+  const type = tankAquariumType(tank);
+  const fish = tank.livestock.flatMap((item, index) => {
+    if (inhabitantKind(item.type) !== "fish") return [];
+    const motion = livestockMotion(item.name);
+    if (!motion) return [];
+    return [{ item, index, motion }];
+  });
+
+  if (!fish.length) return null;
+
+  return (
+    <div className="motion-fish-layer" aria-label="영상으로 유영 중인 물고기">
+      {fish.map(({ item, index, motion }, fishOrder) => {
+        const basePos = MOTION_FISH_POSITIONS[fishOrder % MOTION_FISH_POSITIONS.length];
+        const pos = item.tankPosition ? { ...basePos, ...item.tankPosition } : basePos;
+        const asset = livestockImage(item, index, type);
+        const style = {
+          "--x": pos.x,
+          "--y": pos.y,
+          "--scale": pos.scale,
+          "--delay": `${(fishOrder % 5) * -0.7}s`,
+          "--swim": `${10 + (fishOrder % 4) * 2.5}s`,
+          "--path": `${52 + (fishOrder % 3) * 10}px`,
+          "--arc": `${fishOrder % 3 === 0 ? -18 : fishOrder % 3 === 1 ? 14 : -10}px`,
+          "--bob": `${7 + (fishOrder % 3) * 2}px`
+        } as CSSProperties;
+
+        return (
+          <button
+            key={`${item.name}-${index}`}
+            className={`motion-fish motion-swim-${fishOrder % 3} ${fishOrder % 2 === 1 ? "reverse" : ""} ${selectedIndex === index ? "selected" : ""}`}
+            data-livestock-index={index}
+            type="button"
+            title={item.name}
+            aria-label={item.name}
+            style={style}
+            onClick={() => onSelect(index)}
+          >
+            <span className="motion-fish-facing motion-fish-facing-right" aria-hidden="true">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img className="motion-fish-fallback" src={asset} alt="" />
+              <video className="motion-fish-video" src={motion.right} poster={asset} autoPlay loop muted playsInline preload="metadata" />
+            </span>
+            <span className="motion-fish-facing motion-fish-facing-left" aria-hidden="true">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img className="motion-fish-fallback" src={asset} alt="" />
+              <video className="motion-fish-video" src={motion.left} poster={asset} autoPlay loop muted playsInline preload="metadata" />
+            </span>
+          </button>
+        );
+      })}
+    </div>
+  );
+}
 
 interface AquariumVisualProps {
   tank: Tank;
@@ -92,6 +164,7 @@ export function AquariumVisual({ tank, onOpenTankSettings }: AquariumVisualProps
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img id="aquariumBackgroundImage" src={background.src} alt={`${background.label} 어항 배경`} />
       <PixiFishLayer tank={tank} selectedIndex={selectedLivestockIndex} onSelect={handleInhabitantClick} />
+      <MotionFishLayer tank={tank} selectedIndex={selectedLivestockIndex} onSelect={handleInhabitantClick} />
       <div className="tank-inhabitants" id="tankInhabitants" aria-label="투입된 산호와 무척추생물 표시">
         {tank.livestock.map((item, index) => {
           const kind = inhabitantKind(item.type);

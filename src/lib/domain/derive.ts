@@ -1,6 +1,15 @@
 // app.js 파생/포맷 헬퍼 이식 (360-361, 496, 594-720, 842-881, 1252-1286).
 // 바닐라의 전역 state 의존을 제거하고 tank/type을 인자로 받는다.
-import { aquariumBackgrounds, aquariumTypes, livestockAssetMap, species, todayIso, waterMetricSets } from "./constants";
+import {
+  aquariumBackgrounds,
+  aquariumTypes,
+  livestockAssetMap,
+  livestockMotionMap,
+  species,
+  todayIso,
+  waterMetricSets,
+  type LivestockMotionPair
+} from "./constants";
 import type { AquariumTypeId, Livestock, Species, Tank, Task, WaterLog, WaterMetric } from "./types";
 
 export const daysBetween = (a: string, b: string): number =>
@@ -161,6 +170,10 @@ export function livestockImage(item: Livestock, index = 0, type: AquariumTypeId 
     "assets/livestock/flame-angelfish.png"
   ];
   return fallbacks[index % fallbacks.length];
+}
+
+export function livestockMotion(name: string): LivestockMotionPair | null {
+  return livestockMotionMap.find(entry => entry.test.test(name))?.motion || null;
 }
 
 // app.js:706-716
