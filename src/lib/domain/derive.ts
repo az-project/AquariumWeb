@@ -22,8 +22,9 @@ export function optionalNumber(value: unknown): number | null {
 }
 
 export function formatNumber(value: unknown, digits: number): string {
+  if (!hasNumber(value)) return "-";
   const number = Number(value);
-  return Number.isFinite(number) ? number.toFixed(digits) : "-";
+  return number.toFixed(digits);
 }
 
 export function formatMetric(value: unknown, digits: number, unit: string): string {
@@ -45,8 +46,9 @@ export function isWithinIdealRange(value: unknown, metric: WaterMetric): boolean
 }
 
 export function formatInputValue(value: unknown, digits: number): string {
+  if (!hasNumber(value)) return "";
   const number = Number(value);
-  return Number.isFinite(number) ? number.toFixed(digits) : "";
+  return number.toFixed(digits);
 }
 
 export const sortedLogs = (waterLogs: WaterLog[]): WaterLog[] =>

@@ -167,9 +167,10 @@ export function WaterView({ tank, active, onOpenTaskModal }: WaterViewProps) {
                 >
                   <td>{log.date || "날짜 미정"}</td>
                   {metrics.map(item => {
-                    const value = log[item.key];
+                    const rawValue = log[item.key];
+                    const value = hasNumber(rawValue) ? Number(rawValue) : null;
                     const rangeText = idealRangeText(item);
-                    const isOutOfRange = hasNumber(value) && !isWithinIdealRange(value, item);
+                    const isOutOfRange = value !== null && !isWithinIdealRange(value, item);
                     const formattedValue = formatNumber(value, item.digits);
                     return (
                       <td key={item.key}>
