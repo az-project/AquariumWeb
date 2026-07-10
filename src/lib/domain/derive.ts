@@ -35,8 +35,15 @@ export function idealRangeText(metric: WaterMetric): string {
   if (!hasNumber(metric.idealMin) || !hasNumber(metric.idealMax)) return "";
   const min = formatNumber(metric.idealMin, metric.digits);
   const max = formatNumber(metric.idealMax, metric.digits);
-  const range = metric.idealMin === metric.idealMax ? `${min}${metric.unit}` : `${min}-${max}${metric.unit}`;
-  return metric.idealNote ? `적정범위 ${range} · ${metric.idealNote}` : `적정범위 ${range}`;
+  return metric.idealMin === metric.idealMax ? `${min}${metric.unit}` : `${min}-${max}${metric.unit}`;
+}
+
+export function idealRangeNote(value: unknown, metric: WaterMetric): string {
+  if (!hasNumber(value) || !hasNumber(metric.idealMin) || !hasNumber(metric.idealMax)) return metric.idealNote || "";
+  const number = Number(value);
+  if (number < Number(metric.idealMin)) return metric.idealLowNote || metric.idealNote || "권장 범위보다 낮습니다.";
+  if (number > Number(metric.idealMax)) return metric.idealHighNote || metric.idealNote || "권장 범위보다 높습니다.";
+  return metric.idealOkNote || metric.idealNote || "권장 범위입니다.";
 }
 
 export function isWithinIdealRange(value: unknown, metric: WaterMetric): boolean {

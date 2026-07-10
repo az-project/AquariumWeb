@@ -97,6 +97,9 @@ export interface WaterMetric {
   idealMin?: number;
   idealMax?: number;
   idealNote?: string;
+  idealOkNote?: string;
+  idealLowNote?: string;
+  idealHighNote?: string;
   color: string;
 }
 

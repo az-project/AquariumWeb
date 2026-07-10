@@ -7,6 +7,7 @@ import {
   formatInputValue,
   formatNumber,
   hasNumber,
+  idealRangeNote,
   idealRangeText,
   isWithinIdealRange,
   optionalNumber,
@@ -170,16 +171,32 @@ export function WaterView({ tank, active, onOpenTaskModal }: WaterViewProps) {
                     const rawValue = log[item.key];
                     const value = hasNumber(rawValue) ? Number(rawValue) : null;
                     const rangeText = idealRangeText(item);
+                    const rangeNote = idealRangeNote(value, item);
                     const isOutOfRange = value !== null && !isWithinIdealRange(value, item);
                     const formattedValue = formatNumber(value, item.digits);
                     return (
                       <td key={item.key}>
                         <span
-                          className={`water-log-value ${isOutOfRange ? "is-out-of-range" : ""}`}
-                          title={rangeText || undefined}
-                          aria-label={rangeText ? `${item.label} ${formattedValue}, ${rangeText}` : `${item.label} ${formattedValue}`}
+                          className={`water-log-value ${isOutOfRange ? "is-out-of-range" : ""} ${rangeText ? "has-range-tip" : ""}`}
+                          aria-label={
+                            rangeText
+                              ? `${item.label} ${formattedValue}, 적정범위 ${rangeText}, 참고내용 ${rangeNote}`
+                              : `${item.label} ${formattedValue}`
+                          }
                         >
                           {formattedValue}
+                          {rangeText ? (
+                            <span className="water-range-tooltip" role="tooltip">
+                              <span>
+                                <strong>적정범위</strong>
+                                <em>{rangeText}</em>
+                              </span>
+                              <span>
+                                <strong>참고내용</strong>
+                                <em>{rangeNote}</em>
+                              </span>
+                            </span>
+                          ) : null}
                         </span>
                       </td>
                     );

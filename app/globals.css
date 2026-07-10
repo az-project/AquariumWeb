@@ -1010,18 +1010,69 @@ th { color:var(--muted); font-size:13px; }
 .water-log-value {
   display: inline-flex;
   align-items: center;
+  position: relative;
   min-height: 28px;
   border-radius: 8px;
   color: var(--ink);
   text-underline-offset: 3px;
 }
 
-.water-log-value[title]:not([title=""]) {
+.water-log-value.has-range-tip {
   cursor: help;
 }
 
 .water-log-value.is-out-of-range {
   color: #d8473f;
+}
+
+.water-range-tooltip {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 10px);
+  z-index: 8;
+  display: grid;
+  gap: 7px;
+  min-width: 190px;
+  max-width: 240px;
+  padding: 10px 12px;
+  border: 1px solid rgba(29, 55, 63, .12);
+  border-radius: 8px;
+  color: var(--ink);
+  background: rgba(255, 255, 255, .96);
+  box-shadow: 0 14px 30px rgba(13, 35, 42, .16);
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, 4px);
+  transition: opacity .12s ease, transform .12s ease;
+  backdrop-filter: blur(14px);
+}
+
+.water-range-tooltip span {
+  display: grid;
+  grid-template-columns: 58px minmax(0, 1fr);
+  gap: 8px;
+  align-items: start;
+}
+
+.water-range-tooltip strong {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.35;
+  font-weight: 600;
+}
+
+.water-range-tooltip em {
+  color: var(--ink);
+  font-size: 12px;
+  line-height: 1.35;
+  font-style: normal;
+  word-break: keep-all;
+}
+
+.water-log-value:hover .water-range-tooltip,
+.water-log-value:focus-visible .water-range-tooltip {
+  opacity: 1;
+  transform: translate(-50%, 0);
 }
 
 .surface-icon-button {
