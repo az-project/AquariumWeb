@@ -85,21 +85,21 @@ export const aquariumBackgrounds: AquariumBackground[] = [
 
 export const waterMetricSets: Record<AquariumTypeId, WaterMetric[]> = {
   saltwater: [
-    { key: "temp", label: "수온", unit: "°C", digits: 1, step: "0.1", min: 22, max: 30, idealMin: 24, idealMax: 27, idealNote: "관리 범위 내에서 변화 폭을 최소화해야 함", color: "#159fb7" },
-    { key: "salinity", label: "염도", unit: "sg", digits: 3, step: "0.001", min: 1.018, max: 1.03, idealMin: 1.023, idealMax: 1.025, idealNote: "1.025 이상의 고염은 전문적인 경험과 관리가 필요", color: "#0f7fb8" },
-    { key: "kh", label: "알칼리티", unit: "dKH", digits: 1, step: "0.1", min: 5, max: 12, idealMin: 7, idealMax: 9, idealNote: "관리 범위 내에서 변화 폭을 최소화해야 함", color: "#20bfa0" },
-    { key: "no3", label: "질산염", unit: "ppm", digits: 1, step: "0.1", min: 0, max: 50, idealMin: 5, idealMax: 10, idealNote: "인산염에 비해서는 상대적으로 낮은 수준이나 0이 되지는 않게 관리", color: "#ff7f73" },
-    { key: "nh3", label: "암모니아", unit: "ppm", digits: 1, step: "0.1", min: 0, max: 1, idealMin: 0, idealMax: 0, idealNote: "암모니아는 검출되지 않는 상태가 가장 안전함", color: "#f0bd4f" },
-    { key: "po4", label: "인산염", unit: "ppm", digits: 2, step: "0.01", min: 0, max: 0.5, idealMin: 0.05, idealMax: 0.15, idealNote: "생각보다 높은 것이 수조 관리에 유리함", color: "#7c6fe8" }
+    { key: "temp", label: "수온", unit: "°C", digits: 1, step: "0.1", min: 22, max: 30, idealMin: 24, idealMax: 27, idealNote: "변화 폭 최소화", color: "#159fb7" },
+    { key: "salinity", label: "염도", unit: "sg", digits: 3, step: "0.001", min: 1.018, max: 1.03, idealMin: 1.023, idealMax: 1.025, idealNote: "고염 주의", color: "#0f7fb8" },
+    { key: "kh", label: "알칼리티", unit: "dKH", digits: 1, step: "0.1", min: 5, max: 12, idealMin: 7, idealMax: 9, idealNote: "변화 폭 최소화", color: "#20bfa0" },
+    { key: "no3", label: "질산염", unit: "ppm", digits: 1, step: "0.1", min: 0, max: 50, idealMin: 5, idealMax: 10, idealNote: "0은 피하기", color: "#ff7f73" },
+    { key: "nh3", label: "암모니아", unit: "ppm", digits: 1, step: "0.1", min: 0, max: 1, idealMin: 0, idealMax: 0, idealNote: "불검출 권장", color: "#f0bd4f" },
+    { key: "po4", label: "인산염", unit: "ppm", digits: 2, step: "0.01", min: 0, max: 0.5, idealMin: 0.05, idealMax: 0.15, idealNote: "낮거나 높음 주의", color: "#7c6fe8" }
   ],
   freshwater: [
-    { key: "temp", label: "수온", unit: "°C", digits: 1, step: "0.1", min: 18, max: 30, idealMin: 22, idealMax: 28, idealNote: "대부분의 열대 담수어가 안정적으로 적응하는 범위", color: "#159fb7" },
-    { key: "ph", label: "산도(pH)", unit: "", digits: 1, step: "0.1", min: 5.5, max: 8.5, idealMin: 6.2, idealMax: 7.8, idealNote: "급격한 변화 없이 안정적으로 유지하는 것이 중요", color: "#0f7fb8" },
-    { key: "gh", label: "총경도(GH)", unit: "dGH", digits: 1, step: "0.1", min: 0, max: 20, idealMin: 3, idealMax: 14, idealNote: "어종별 선호 경도 차이가 있어 급변을 피해야 함", color: "#20bfa0" },
-    { key: "kh", label: "탄산경도(KH)", unit: "dKH", digits: 1, step: "0.1", min: 0, max: 15, idealMin: 2, idealMax: 10, idealNote: "pH 완충에 영향을 주므로 낮거나 높은 상태를 오래 방치하지 않음", color: "#65b66a" },
-    { key: "nh3", label: "암모니아", unit: "ppm", digits: 1, step: "0.1", min: 0, max: 1, idealMin: 0, idealMax: 0, idealNote: "암모니아는 검출되지 않는 상태가 가장 안전함", color: "#f0bd4f" },
-    { key: "no2", label: "아질산염", unit: "ppm", digits: 1, step: "0.1", min: 0, max: 5, idealMin: 0, idealMax: 0, idealNote: "아질산염은 검출되지 않는 상태가 가장 안전함", color: "#7c6fe8" },
-    { key: "no3", label: "질산염", unit: "ppm", digits: 1, step: "0.1", min: 0, max: 50, idealMin: 0, idealMax: 30, idealNote: "낮게 유지하되 수초항은 수초 상태도 함께 확인", color: "#ff7f73" }
+    { key: "temp", label: "수온", unit: "°C", digits: 1, step: "0.1", min: 18, max: 30, idealMin: 22, idealMax: 28, idealNote: "열대어 권장", color: "#159fb7" },
+    { key: "ph", label: "산도(pH)", unit: "", digits: 1, step: "0.1", min: 5.5, max: 8.5, idealMin: 6.2, idealMax: 7.8, idealNote: "급변 주의", color: "#0f7fb8" },
+    { key: "gh", label: "총경도(GH)", unit: "dGH", digits: 1, step: "0.1", min: 0, max: 20, idealMin: 3, idealMax: 14, idealNote: "어종별 차이 있음", color: "#20bfa0" },
+    { key: "kh", label: "탄산경도(KH)", unit: "dKH", digits: 1, step: "0.1", min: 0, max: 15, idealMin: 2, idealMax: 10, idealNote: "pH 완충 확인", color: "#65b66a" },
+    { key: "nh3", label: "암모니아", unit: "ppm", digits: 1, step: "0.1", min: 0, max: 1, idealMin: 0, idealMax: 0, idealNote: "불검출 권장", color: "#f0bd4f" },
+    { key: "no2", label: "아질산염", unit: "ppm", digits: 1, step: "0.1", min: 0, max: 5, idealMin: 0, idealMax: 0, idealNote: "불검출 권장", color: "#7c6fe8" },
+    { key: "no3", label: "질산염", unit: "ppm", digits: 1, step: "0.1", min: 0, max: 50, idealMin: 0, idealMax: 30, idealNote: "낮게 유지", color: "#ff7f73" }
   ]
 };
 
