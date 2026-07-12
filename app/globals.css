@@ -589,6 +589,9 @@ h2 { margin:0; font-size: 19px; letter-spacing: 0; }
 .motion-fish-fallback {
   display: none;
 }
+.motion-fish.static-alpha-fallback .motion-fish-fallback {
+  display: block;
+}
 .motion-fish-facing-left .motion-fish-fallback {
   transform: scaleX(-1);
 }

@@ -17,6 +17,7 @@ import {
 } from "@/lib/domain/derive";
 import type { LivestockMotionPair } from "@/lib/domain/constants";
 import type { Livestock, Tank } from "@/lib/domain/types";
+import { needsStaticAlphaVideoFallback } from "@/lib/media/capabilities";
 import { useAppStore } from "@/lib/state/store";
 import { PixiFishLayer } from "./PixiFishLayer";
 
@@ -77,7 +78,19 @@ function MotionFish({ asset, basePos, fishOrder, index, item, motion, selected, 
     durationMs: 0
   };
   const [route, setRoute] = useState(initialRoute);
+  // SSR와 첫 페인트는 안전한 PNG를 사용한다. 지원 브라우저만 영상으로 전환한다.
+  const [useStaticAlphaFallback, setUseStaticAlphaFallback] = useState(true);
   const routeRef = useRef<FishRouteState>(initialRoute);
+
+  useEffect(() => {
+    setUseStaticAlphaFallback(
+      needsStaticAlphaVideoFallback({
+        userAgent: navigator.userAgent,
+        platform: navigator.platform,
+        maxTouchPoints: navigator.maxTouchPoints
+      })
+    );
+  }, []);
 
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
@@ -108,7 +121,7 @@ function MotionFish({ asset, basePos, fishOrder, index, item, motion, selected, 
 
   return (
     <button
-      className={`motion-fish direction-${route.direction} ${selected ? "selected" : ""}`}
+      className={`motion-fish direction-${route.direction} ${useStaticAlphaFallback ? "static-alpha-fallback" : ""} ${selected ? "selected" : ""}`}
       data-livestock-index={index}
       data-fish-direction={route.direction}
       data-route-segments={route.segmentsRemaining}
@@ -121,12 +134,16 @@ function MotionFish({ asset, basePos, fishOrder, index, item, motion, selected, 
       <span className="motion-fish-facing motion-fish-facing-right" aria-hidden="true">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img className="motion-fish-fallback" src={asset} alt="" />
-        <video className="motion-fish-video" src={motion.right} poster={asset} autoPlay loop muted playsInline preload="metadata" />
+        {!useStaticAlphaFallback ? (
+          <video className="motion-fish-video" src={motion.right} poster={asset} autoPlay loop muted playsInline preload="metadata" />
+        ) : null}
       </span>
       <span className="motion-fish-facing motion-fish-facing-left" aria-hidden="true">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img className="motion-fish-fallback" src={asset} alt="" />
-        <video className="motion-fish-video" src={motion.left} poster={asset} autoPlay loop muted playsInline preload="metadata" />
+        {!useStaticAlphaFallback ? (
+          <video className="motion-fish-video" src={motion.left} poster={asset} autoPlay loop muted playsInline preload="metadata" />
+        ) : null}
       </span>
     </button>
   );
