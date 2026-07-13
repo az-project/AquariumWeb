@@ -26,6 +26,7 @@ const ALL_WATER_FIELDS: { key: keyof Omit<WaterLog, "date">; digits: number }[] 
   { key: "salinity", digits: 3 },
   { key: "kh", digits: 1 },
   { key: "no3", digits: 1 },
+  { key: "no2", digits: 2 },
   { key: "nh3", digits: 1 },
   { key: "po4", digits: 2 }
 ];
@@ -60,6 +61,7 @@ export function WaterView({ tank, active, onOpenTaskModal }: WaterViewProps) {
       salinity: optionalNumber(data.salinity),
       kh: optionalNumber(data.kh),
       no3: optionalNumber(data.no3),
+      no2: optionalNumber(data.no2),
       nh3: optionalNumber(data.nh3),
       po4: optionalNumber(data.po4)
     };
