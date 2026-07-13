@@ -20,16 +20,6 @@ import { useAppStore } from "@/lib/state/store";
 import { TaskListItems } from "@/components/dashboard/TaskListItems";
 import { PlusIcon, RefreshIcon, TrashIcon } from "@/components/ui/ActionIcons";
 
-// index.html:195-203 — 필드 정의 (data-water-field 라벨은 metric에서 유도)
-const ALL_WATER_FIELDS: { key: keyof Omit<WaterLog, "date">; digits: number }[] = [
-  { key: "temp", digits: 1 },
-  { key: "salinity", digits: 3 },
-  { key: "kh", digits: 1 },
-  { key: "no3", digits: 1 },
-  { key: "nh3", digits: 1 },
-  { key: "po4", digits: 2 }
-];
-
 interface WaterViewProps {
   tank: Tank;
   active: boolean;
@@ -46,7 +36,6 @@ export function WaterView({ tank, active, onOpenTaskModal }: WaterViewProps) {
   const type = tankAquariumType(tank);
   const today = todayIso();
   const metrics = currentWaterMetrics(type);
-  const enabledKeys = new Set(metrics.map(item => item.key));
   const editingLog = editingIndex !== null ? tank.waterLogs[editingIndex] : null;
 
   // app.js:1288-1302 waterLogFromForm
@@ -54,15 +43,13 @@ export function WaterView({ tank, active, onOpenTaskModal }: WaterViewProps) {
     event.preventDefault();
     const form = event.currentTarget;
     const data = Object.fromEntries([...new FormData(form)].map(([k, v]) => [k, String(v ?? "").trim()]));
-    const log: WaterLog = {
-      date: data.date,
-      temp: optionalNumber(data.temp),
-      salinity: optionalNumber(data.salinity),
-      kh: optionalNumber(data.kh),
-      no3: optionalNumber(data.no3),
-      nh3: optionalNumber(data.nh3),
-      po4: optionalNumber(data.po4)
-    };
+    const log = metrics.reduce<WaterLog>(
+      (nextLog, metric) => ({
+        ...nextLog,
+        [metric.key]: optionalNumber(data[metric.key])
+      }),
+      { date: data.date }
+    );
     upsertWaterLog(editingIndex, log);
     setEditingIndex(null);
     setFormKey(key => key + 1);
@@ -104,17 +91,15 @@ export function WaterView({ tank, active, onOpenTaskModal }: WaterViewProps) {
               날짜
               <input type="date" name="date" defaultValue={editingLog?.date || today} />
             </label>
-            {ALL_WATER_FIELDS.map(field => {
-              const metric = metrics.find(item => item.key === field.key);
+            {metrics.map(metric => {
               return (
-                <label key={field.key} data-water-field={field.key} hidden={!enabledKeys.has(field.key)}>
-                  {metric ? `${metric.label}${metric.unit ? ` ${metric.unit}` : ""}` : field.key}
+                <label key={metric.key} data-water-field={metric.key}>
+                  {`${metric.label}${metric.unit ? ` ${metric.unit}` : ""}`}
                   <input
                     type="number"
-                    step={metric?.step || "0.1"}
-                    name={field.key}
-                    disabled={!enabledKeys.has(field.key)}
-                    defaultValue={editingLog ? formatInputValue(editingLog[field.key], metric?.digits ?? field.digits) : ""}
+                    step={metric.step || "0.1"}
+                    name={metric.key}
+                    defaultValue={editingLog ? formatInputValue(editingLog[metric.key], metric.digits) : ""}
                   />
                 </label>
               );
