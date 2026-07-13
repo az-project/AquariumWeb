@@ -119,19 +119,33 @@ export const livestockAssetMap: { test: RegExp; src: string }[] = [
   { test: /산호|coral/i, src: "assets/livestock/bubble-coral.png" }
 ];
 
+export interface LivestockMotionSources {
+  // Safari는 VP9 WebM의 알파를 합성하지 못하므로 HEVC+알파(.mov, hvc1)를 함께 제공한다.
+  webm: string;
+  hevc: string;
+}
+
 export interface LivestockMotionPair {
-  left: string;
-  right: string;
+  left: LivestockMotionSources;
+  right: LivestockMotionSources;
 }
 
 // Higgsfield에서 만든 짧은 무음 루프. 새 어종 클립은 이 목록에만 추가하면
 // AquariumVisual이 방향별 영상을 자동으로 선택하고, 미등록 어종은 PNG로 폴백한다.
+// .mov 생성: ffmpeg -c:v libvpx-vp9 -i in.webm -c:v hevc_videotoolbox -allow_sw 1 \
+//   -alpha_quality 0.9 -q:v 60 -vtag hvc1 -movflags +faststart out.mov
 export const livestockMotionMap: { test: RegExp; motion: LivestockMotionPair }[] = [
   {
     test: /니모|클라운|퍼큘라|clown/i,
     motion: {
-      left: "assets/livestock/motion/clownfish-left.webm",
-      right: "assets/livestock/motion/clownfish-right.webm"
+      left: {
+        webm: "assets/livestock/motion/clownfish-left.webm",
+        hevc: "assets/livestock/motion/clownfish-left.mov"
+      },
+      right: {
+        webm: "assets/livestock/motion/clownfish-right.webm",
+        hevc: "assets/livestock/motion/clownfish-right.mov"
+      }
     }
   }
 ];

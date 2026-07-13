@@ -7,10 +7,16 @@ function randomSequence(...values: number[]) {
 }
 
 describe("livestockMotion", () => {
-  it("Higgsfield 수영 클립이 있는 클라운피시는 좌우 영상을 모두 반환한다", () => {
+  it("Higgsfield 수영 클립이 있는 클라운피시는 좌우·코덱별 영상을 모두 반환한다", () => {
     expect(livestockMotion("퍼큘라 클라운")).toEqual({
-      left: "assets/livestock/motion/clownfish-left.webm",
-      right: "assets/livestock/motion/clownfish-right.webm"
+      left: {
+        webm: "assets/livestock/motion/clownfish-left.webm",
+        hevc: "assets/livestock/motion/clownfish-left.mov"
+      },
+      right: {
+        webm: "assets/livestock/motion/clownfish-right.webm",
+        hevc: "assets/livestock/motion/clownfish-right.mov"
+      }
     });
   });
 
