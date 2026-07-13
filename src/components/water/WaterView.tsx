@@ -25,12 +25,9 @@ const ALL_WATER_FIELDS: { key: keyof Omit<WaterLog, "date">; digits: number }[] 
   { key: "temp", digits: 1 },
   { key: "salinity", digits: 3 },
   { key: "kh", digits: 1 },
-  { key: "ph", digits: 1 },
-  { key: "gh", digits: 1 },
   { key: "no3", digits: 1 },
   { key: "nh3", digits: 1 },
-  { key: "po4", digits: 2 },
-  { key: "no2", digits: 1 }
+  { key: "po4", digits: 2 }
 ];
 
 interface WaterViewProps {
@@ -62,12 +59,9 @@ export function WaterView({ tank, active, onOpenTaskModal }: WaterViewProps) {
       temp: optionalNumber(data.temp),
       salinity: optionalNumber(data.salinity),
       kh: optionalNumber(data.kh),
-      ph: optionalNumber(data.ph),
-      gh: optionalNumber(data.gh),
       no3: optionalNumber(data.no3),
       nh3: optionalNumber(data.nh3),
-      po4: optionalNumber(data.po4),
-      no2: optionalNumber(data.no2)
+      po4: optionalNumber(data.po4)
     };
     upsertWaterLog(editingIndex, log);
     setEditingIndex(null);

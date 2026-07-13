@@ -850,7 +850,8 @@ h2 { margin:0; font-size: 19px; letter-spacing: 0; }
 .inhabitant.has-image::after {
   display: none;
 }
-.inhabitant-image {
+.inhabitant-image,
+.inhabitant-motion-video {
   width: 100%;
   height: 100%;
   object-fit: contain;
@@ -878,7 +879,8 @@ h2 { margin:0; font-size: 19px; letter-spacing: 0; }
   transform-origin: 50% 85%;
   filter: none;
 }
-.inhabitant.has-image.coral .inhabitant-image {
+.inhabitant.has-image.coral .inhabitant-image,
+.inhabitant.has-image.coral .inhabitant-motion-video {
   transform: none;
 }
 .inhabitant.invert::before,
