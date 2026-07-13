@@ -137,6 +137,13 @@ export const livestockMotionMap: { test: RegExp; motion: LivestockMotionPair }[]
       left: "assets/livestock/motion/green-star-polyp.mp4",
       right: "assets/livestock/motion/green-star-polyp.mp4"
     }
+  },
+  {
+    test: /로열|그라마|gramma/i,
+    motion: {
+      left: "assets/livestock/motion/royal-gramma.mp4",
+      right: "assets/livestock/motion/royal-gramma.mp4"
+    }
   }
 ];
 
