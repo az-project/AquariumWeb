@@ -130,6 +130,13 @@ export const livestockMotionMap: { test: RegExp; motion: LivestockMotionPair }[]
       left: "assets/livestock/motion/clownfish-left.webm",
       right: "assets/livestock/motion/clownfish-right.webm"
     }
+  },
+  {
+    test: /그린\s?스타폴립|green star|polyp/i,
+    motion: {
+      left: "assets/livestock/motion/green-star-polyp.mp4",
+      right: "assets/livestock/motion/green-star-polyp.mp4"
+    }
   }
 ];
 
