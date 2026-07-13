@@ -64,7 +64,7 @@ export const aquariumTypes: Record<AquariumTypeId, AquariumTypeConfig> = {
     defaultName: "나의 담수어항",
     defaultBackground: "freshwater-rocks",
     livestockHelp: "물고기/수초/무척추",
-    secondaryMetric: "ph"
+    secondaryMetric: "no3"
   }
 };
 
@@ -94,11 +94,8 @@ export const waterMetricSets: Record<AquariumTypeId, WaterMetric[]> = {
   ],
   freshwater: [
     { key: "temp", label: "수온", unit: "°C", digits: 1, step: "0.1", min: 18, max: 30, idealMin: 22, idealMax: 28, idealOkNote: "열대어 권장 범위입니다. 급격한 변화만 피하세요.", idealLowNote: "히터 설정, 전원, 물 흐름 위치를 확인하세요.", idealHighNote: "조명 시간과 실내 온도, 냉각 방법을 확인하세요.", color: "#159fb7" },
-    { key: "ph", label: "산도(pH)", unit: "", digits: 1, step: "0.1", min: 5.5, max: 8.5, idealMin: 6.2, idealMax: 7.8, idealOkNote: "안정 범위입니다. 어종별 선호 pH만 추가 확인하세요.", idealLowNote: "산성 쪽입니다. 유목, 소일, CO2 영향을 확인하세요.", idealHighNote: "알칼리 쪽입니다. 돌/바닥재와 KH 상승 요인을 확인하세요.", color: "#0f7fb8" },
-    { key: "gh", label: "총경도(GH)", unit: "dGH", digits: 1, step: "0.1", min: 0, max: 20, idealMin: 3, idealMax: 14, idealOkNote: "대부분 어종에 무난합니다. 번식어는 별도 기준을 보세요.", idealLowNote: "연수 환경입니다. 몰리/구피류는 컨디션을 확인하세요.", idealHighNote: "경수 환경입니다. 연수 선호 어종은 스트레스를 볼 수 있습니다.", color: "#20bfa0" },
     { key: "kh", label: "탄산경도(KH)", unit: "dKH", digits: 1, step: "0.1", min: 0, max: 15, idealMin: 2, idealMax: 10, idealOkNote: "pH 완충이 안정적입니다. 급변 없이 유지하세요.", idealLowNote: "완충력이 낮습니다. pH 급변 가능성을 확인하세요.", idealHighNote: "완충력이 높습니다. pH가 잘 내려가지 않을 수 있습니다.", color: "#65b66a" },
     { key: "nh3", label: "암모니아", unit: "ppm", digits: 1, step: "0.1", min: 0, max: 1, idealMin: 0, idealMax: 0, idealOkNote: "불검출 상태입니다. 여과가 안정적으로 보입니다.", idealLowNote: "불검출 상태입니다. 여과가 안정적으로 보입니다.", idealHighNote: "위험 신호입니다. 과급여, 폐사체, 여과 문제를 즉시 확인하세요.", color: "#f0bd4f" },
-    { key: "no2", label: "아질산염", unit: "ppm", digits: 1, step: "0.1", min: 0, max: 5, idealMin: 0, idealMax: 0, idealOkNote: "불검출 상태입니다. 여과 사이클이 안정적입니다.", idealLowNote: "불검출 상태입니다. 여과 사이클이 안정적입니다.", idealHighNote: "여과 사이클 불안정 신호입니다. 환수와 여과 상태를 확인하세요.", color: "#7c6fe8" },
     { key: "no3", label: "질산염", unit: "ppm", digits: 1, step: "0.1", min: 0, max: 50, idealMin: 0, idealMax: 30, idealOkNote: "관리 범위입니다. 수초항은 성장 상태도 함께 보세요.", idealLowNote: "낮게 유지 중입니다. 수초항은 영양 부족 여부를 확인하세요.", idealHighNote: "높습니다. 환수 주기, 먹이량, 바닥 찌꺼기를 점검하세요.", color: "#ff7f73" }
   ]
 };
