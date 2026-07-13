@@ -69,19 +69,10 @@ function percentNumber(value: string | undefined, fallback: string): number {
   return Number.isFinite(parsed) ? parsed : Number.parseFloat(fallback);
 }
 
-function MotionFish({ asset, basePos, fishOrder, index, item, motion, selected, onSelect }: MotionFishProps) {
-  const initialRoute: FishWaypoint = {
-    x: clamp(percentNumber(item.tankPosition?.x, basePos.x), 18, 82),
-    y: clamp(percentNumber(item.tankPosition?.y, basePos.y), 18, 80),
-    direction: fishOrder % 2 === 0 ? "right" : "left",
-    segmentsRemaining: 2 + (fishOrder % 2),
-    durationMs: 0
-  };
-  const [route, setRoute] = useState(initialRoute);
-  // SSR와 첫 페인트는 안전한 PNG를 사용한다. 마운트 후 브라우저 계열에 맞는
-  // 알파 코덱(WebKit=HEVC, 그 외=WebM)의 영상으로 전환한다.
+// SSR와 첫 페인트는 안전한 PNG를 사용한다. 마운트 후 브라우저 계열에 맞는
+// 알파 코덱(WebKit=HEVC, 그 외=WebM)의 영상으로 전환한다.
+function useAlphaVideoFormat(): AlphaVideoFormat | null {
   const [videoFormat, setVideoFormat] = useState<AlphaVideoFormat | null>(null);
-  const routeRef = useRef<FishRouteState>(initialRoute);
 
   useEffect(() => {
     setVideoFormat(
@@ -92,6 +83,21 @@ function MotionFish({ asset, basePos, fishOrder, index, item, motion, selected, 
       })
     );
   }, []);
+
+  return videoFormat;
+}
+
+function MotionFish({ asset, basePos, fishOrder, index, item, motion, selected, onSelect }: MotionFishProps) {
+  const initialRoute: FishWaypoint = {
+    x: clamp(percentNumber(item.tankPosition?.x, basePos.x), 18, 82),
+    y: clamp(percentNumber(item.tankPosition?.y, basePos.y), 18, 80),
+    direction: fishOrder % 2 === 0 ? "right" : "left",
+    segmentsRemaining: 2 + (fishOrder % 2),
+    durationMs: 0
+  };
+  const [route, setRoute] = useState(initialRoute);
+  const videoFormat = useAlphaVideoFormat();
+  const routeRef = useRef<FishRouteState>(initialRoute);
 
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
@@ -195,6 +201,7 @@ export function AquariumVisual({ tank, onOpenTankSettings }: AquariumVisualProps
 
   const stageRef = useRef<HTMLDivElement>(null);
   const suppressClickUntilRef = useRef(0);
+  const videoFormat = useAlphaVideoFormat();
 
   const type = tankAquariumType(tank);
   const background = selectedAquariumBackground(tank);
@@ -280,8 +287,8 @@ export function AquariumVisual({ tank, onOpenTankSettings }: AquariumVisualProps
               style={style}
               onClick={() => handleInhabitantClick(index)}
             >
-              {motion ? (
-                <video className="inhabitant-motion-video" src={motion.right} poster={asset} autoPlay loop muted playsInline preload="metadata" />
+              {motion && videoFormat !== null ? (
+                <video className="inhabitant-motion-video" src={motion.right[videoFormat]} poster={asset} autoPlay loop muted playsInline preload="metadata" />
               ) : asset ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img className="inhabitant-image" src={asset} alt={item.name} />
