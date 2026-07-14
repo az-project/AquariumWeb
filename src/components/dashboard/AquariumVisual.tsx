@@ -128,6 +128,9 @@ function MotionFish({ asset, basePos, fishOrder, index, item, motion, selected, 
     "--scale": basePos.scale,
     "--travel-duration": `${route.durationMs}ms`
   } as CSSProperties;
+  const maskStyle = {
+    "--sprite-mask": `url(${asset})`
+  } as CSSProperties;
 
   return (
     <button
@@ -145,14 +148,14 @@ function MotionFish({ asset, basePos, fishOrder, index, item, motion, selected, 
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img className="motion-fish-fallback" src={asset} alt="" />
         {videoFormat !== null ? (
-          <video className="motion-fish-video" src={motion.right[videoFormat]} poster={asset} autoPlay loop muted playsInline preload="metadata" />
+          <video className="motion-fish-video sprite-masked-video" src={motion.right[videoFormat]} poster={asset} style={maskStyle} autoPlay loop muted playsInline preload="metadata" />
         ) : null}
       </span>
       <span className="motion-fish-facing motion-fish-facing-left" aria-hidden="true">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img className="motion-fish-fallback" src={asset} alt="" />
         {videoFormat !== null ? (
-          <video className="motion-fish-video" src={motion.left[videoFormat]} poster={asset} autoPlay loop muted playsInline preload="metadata" />
+          <video className="motion-fish-video sprite-masked-video" src={motion.left[videoFormat]} poster={asset} style={maskStyle} autoPlay loop muted playsInline preload="metadata" />
         ) : null}
       </span>
     </button>
@@ -272,6 +275,9 @@ export function AquariumVisual({ tank, onOpenTankSettings }: AquariumVisualProps
           const pos = item.tankPosition ? { ...basePos, ...item.tankPosition } : basePos;
           const palette = PALETTES[index % PALETTES.length];
           const asset = livestockImage(item, index, type);
+          const maskStyle = {
+            "--sprite-mask": `url(${asset})`
+          } as CSSProperties;
           const style = {
             "--x": pos.x,
             "--y": pos.y,
@@ -292,7 +298,7 @@ export function AquariumVisual({ tank, onOpenTankSettings }: AquariumVisualProps
               onClick={() => handleInhabitantClick(index)}
             >
               {motion ? (
-                <video className="inhabitant-image" src={motion.right.webm} poster={asset} autoPlay loop muted playsInline preload="metadata" />
+                <video className="inhabitant-image sprite-masked-video" src={motion.right.webm} poster={asset} style={maskStyle} autoPlay loop muted playsInline preload="metadata" />
               ) : asset ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img className="inhabitant-image" src={asset} alt={item.name} />

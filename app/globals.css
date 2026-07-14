@@ -586,6 +586,17 @@ h2 { margin:0; font-size: 19px; letter-spacing: 0; }
 .motion-fish-video {
   display: block;
 }
+.sprite-masked-video {
+  background: transparent;
+  -webkit-mask-image: var(--sprite-mask);
+  mask-image: var(--sprite-mask);
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+}
 .motion-fish-fallback {
   display: none;
 }
