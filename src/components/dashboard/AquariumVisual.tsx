@@ -10,6 +10,7 @@ import {
   livestockImage,
   livestockMotion,
   nextFishWaypoint,
+  nextInvertebrateWaypoint,
   selectedAquariumBackground,
   tankAquariumType,
   type FishRouteState,
@@ -39,6 +40,12 @@ const MOTION_FISH_POSITIONS = [
   { x: "68%", y: "25%", scale: ".62" },
   { x: "58%", y: "38%", scale: ".7" }
 ];
+const MOTION_INVERTEBRATE_POSITIONS = [
+  { x: "58%", y: "74%", scale: ".66" },
+  { x: "42%", y: "78%", scale: ".6" },
+  { x: "70%", y: "71%", scale: ".58" },
+  { x: "30%", y: "76%", scale: ".62" }
+];
 const PALETTES: [string, string][] = [
   ["#ffcf68", "#ff7f73"],
   ["#6ee7ff", "#159fb7"],
@@ -55,7 +62,7 @@ interface MotionFishLayerProps {
 
 interface MotionFishProps {
   asset: string;
-  basePos: (typeof MOTION_FISH_POSITIONS)[number];
+  basePos: (typeof MOTION_FISH_POSITIONS)[number] | (typeof MOTION_INVERTEBRATE_POSITIONS)[number];
   fishOrder: number;
   index: number;
   item: Livestock;
@@ -88,9 +95,12 @@ function useAlphaVideoFormat(): AlphaVideoFormat | null {
 }
 
 function MotionFish({ asset, basePos, fishOrder, index, item, motion, selected, onSelect }: MotionFishProps) {
+  const kind = inhabitantKind(item.type);
   const initialRoute: FishWaypoint = {
     x: clamp(percentNumber(item.tankPosition?.x, basePos.x), 18, 82),
-    y: clamp(percentNumber(item.tankPosition?.y, basePos.y), 18, 80),
+    y: kind === "invert"
+      ? clamp(percentNumber(item.tankPosition?.y, basePos.y), 65, 82)
+      : clamp(percentNumber(item.tankPosition?.y, basePos.y), 18, 80),
     direction: fishOrder % 2 === 0 ? "right" : "left",
     segmentsRemaining: 2 + (fishOrder % 2),
     durationMs: 0
@@ -109,7 +119,7 @@ function MotionFish({ asset, basePos, fishOrder, index, item, motion, selected, 
 
     const moveToNextWaypoint = () => {
       if (disposed) return;
-      const next = nextFishWaypoint(routeRef.current);
+      const next = kind === "invert" ? nextInvertebrateWaypoint(routeRef.current) : nextFishWaypoint(routeRef.current);
       routeRef.current = next;
       setRoute(next);
       timer = setTimeout(moveToNextWaypoint, next.durationMs);
@@ -120,7 +130,7 @@ function MotionFish({ asset, basePos, fishOrder, index, item, motion, selected, 
       disposed = true;
       if (timer) clearTimeout(timer);
     };
-  }, [fishOrder]);
+  }, [fishOrder, kind]);
 
   const style = {
     left: `${route.x}%`,
@@ -176,7 +186,9 @@ function MotionFishLayer({ tank, selectedIndex, onSelect }: MotionFishLayerProps
   return (
     <div className="motion-fish-layer" aria-label="영상으로 유영 중인 물고기">
       {fish.map(({ item, index, motion }, fishOrder) => {
-        const basePos = MOTION_FISH_POSITIONS[fishOrder % MOTION_FISH_POSITIONS.length];
+        const kind = inhabitantKind(item.type);
+        const basePositions = kind === "invert" ? MOTION_INVERTEBRATE_POSITIONS : MOTION_FISH_POSITIONS;
+        const basePos = basePositions[fishOrder % basePositions.length];
         const asset = livestockImage(item, index, type);
         return (
           <MotionFish

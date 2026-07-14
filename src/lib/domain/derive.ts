@@ -225,6 +225,41 @@ export function nextFishWaypoint(
   };
 }
 
+export function nextInvertebrateWaypoint(
+  current: FishRouteState,
+  random: () => number = Math.random
+): FishWaypoint {
+  let direction = current.direction;
+  let segmentsRemaining = current.segmentsRemaining;
+
+  if (segmentsRemaining <= 0) {
+    if (random() < 0.38) direction = direction === "right" ? "left" : "right";
+    segmentsRemaining = 2 + Math.floor(random() * 2);
+  }
+
+  const distance = 5 + random() * 9;
+  let x = current.x + distance * (direction === "right" ? 1 : -1);
+
+  if (x < 18 || x > 82) {
+    direction = direction === "right" ? "left" : "right";
+    segmentsRemaining = 2 + Math.floor(random() * 2);
+    x = current.x + distance * (direction === "right" ? 1 : -1);
+  }
+
+  x = clamp(x, 18, 82);
+  const y = clamp(current.y + (random() * 2 - 1) * 5, 65, 82);
+  const travel = Math.hypot(x - current.x, (y - current.y) * 0.8);
+  const durationMs = Math.round(clamp(travel * (300 + random() * 80), 3600, 8200));
+
+  return {
+    x,
+    y,
+    direction,
+    segmentsRemaining: Math.max(0, segmentsRemaining - 1),
+    durationMs
+  };
+}
+
 // app.js:706-716
 export function inhabitantKind(type: string): "fish" | "coral" | "invert" {
   if (type === "산호") return "coral";
