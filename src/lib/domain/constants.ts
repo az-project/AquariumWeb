@@ -172,6 +172,19 @@ export const livestockMotionMap: { test: RegExp; motion: LivestockMotionPair }[]
         hevc: "assets/livestock/motion/royal-gramma-right.mov"
       }
     }
+  },
+  {
+    test: /클리너|쉬림프|cleaner|shrimp/i,
+    motion: {
+      left: {
+        webm: "assets/livestock/motion/cleaner-shrimp-right.mp4",
+        hevc: "assets/livestock/motion/cleaner-shrimp-right.mp4"
+      },
+      right: {
+        webm: "assets/livestock/motion/cleaner-shrimp-right.mp4",
+        hevc: "assets/livestock/motion/cleaner-shrimp-right.mp4"
+      }
+    }
   }
 ];
 

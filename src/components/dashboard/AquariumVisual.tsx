@@ -162,7 +162,6 @@ function MotionFish({ asset, basePos, fishOrder, index, item, motion, selected, 
 function MotionFishLayer({ tank, selectedIndex, onSelect }: MotionFishLayerProps) {
   const type = tankAquariumType(tank);
   const fish = tank.livestock.flatMap((item, index) => {
-    if (inhabitantKind(item.type) !== "fish") return [];
     const motion = livestockMotion(item.name);
     if (!motion) return [];
     return [{ item, index, motion }];
@@ -266,6 +265,7 @@ export function AquariumVisual({ tank, onOpenTankSettings }: AquariumVisualProps
         {tank.livestock.map((item, index) => {
           const kind = inhabitantKind(item.type);
           if (kind === "fish") return null;
+          if (livestockMotion(item.name)) return null;
           const basePos = REEF_POSITIONS[index % REEF_POSITIONS.length];
           const pos = item.tankPosition ? { ...basePos, ...item.tankPosition } : basePos;
           const palette = PALETTES[index % PALETTES.length];
