@@ -267,7 +267,6 @@ export function AquariumVisual({ tank, onOpenTankSettings }: AquariumVisualProps
           const pos = item.tankPosition ? { ...basePos, ...item.tankPosition } : basePos;
           const palette = PALETTES[index % PALETTES.length];
           const asset = livestockImage(item, index, type);
-          const motion = livestockMotion(item.name);
           const style = {
             "--x": pos.x,
             "--y": pos.y,
@@ -287,9 +286,7 @@ export function AquariumVisual({ tank, onOpenTankSettings }: AquariumVisualProps
               style={style}
               onClick={() => handleInhabitantClick(index)}
             >
-              {motion && videoFormat !== null ? (
-                <video className="inhabitant-motion-video" src={motion.right[videoFormat]} poster={asset} autoPlay loop muted playsInline preload="metadata" />
-              ) : asset ? (
+              {asset ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img className="inhabitant-image" src={asset} alt={item.name} />
               ) : null}

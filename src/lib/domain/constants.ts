@@ -148,19 +148,6 @@ export const livestockMotionMap: { test: RegExp; motion: LivestockMotionPair }[]
     }
   },
   {
-    test: /그린\s?스타폴립|green star|polyp/i,
-    motion: {
-      left: {
-        webm: "assets/livestock/motion/green-star-polyp.webm",
-        hevc: "assets/livestock/motion/green-star-polyp.mov"
-      },
-      right: {
-        webm: "assets/livestock/motion/green-star-polyp.webm",
-        hevc: "assets/livestock/motion/green-star-polyp.mov"
-      }
-    }
-  },
-  {
     test: /로열|그라마|gramma/i,
     motion: {
       left: {
