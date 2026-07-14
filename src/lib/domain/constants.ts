@@ -211,6 +211,19 @@ export const livestockMotionMap: { test: RegExp; motion: LivestockMotionPair }[]
         hevc: "assets/livestock/motion/anemone.mp4"
       }
     }
+  },
+  {
+    test: /블루\s?탱|blue\s?tang|blue/i,
+    motion: {
+      left: {
+        webm: "assets/livestock/motion/blue-tang-right.mp4",
+        hevc: "assets/livestock/motion/blue-tang-right.mp4"
+      },
+      right: {
+        webm: "assets/livestock/motion/blue-tang-right.mp4",
+        hevc: "assets/livestock/motion/blue-tang-right.mp4"
+      }
+    }
   }
 ];
 
