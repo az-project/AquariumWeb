@@ -19,7 +19,6 @@ export function LivestockView({ tank, active }: LivestockViewProps) {
   const deleteLivestock = useAppStore(state => state.deleteLivestock);
   const upsertEquipment = useAppStore(state => state.upsertEquipment);
   const deleteEquipment = useAppStore(state => state.deleteEquipment);
-  const setView = useAppStore(state => state.setView);
 
   const [editingLivestock, setEditingLivestock] = useState<number | null>(null);
   const [editingEquipment, setEditingEquipment] = useState<number | null>(null);
@@ -58,11 +57,9 @@ export function LivestockView({ tank, active }: LivestockViewProps) {
             editingIndex={editingLivestock}
             resetToken={livestockResetToken}
             onSubmit={(index, item) => {
-              const wasEditing = index !== null;
               upsertLivestock(index, item);
               setEditingLivestock(null);
               setLivestockResetToken(value => value + 1);
-              if (!wasEditing) setView("dashboard"); // app.js:1485
             }}
           />
         </section>
