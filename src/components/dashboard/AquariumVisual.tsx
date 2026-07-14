@@ -98,6 +98,9 @@ function MotionFish({ asset, basePos, fishOrder, index, item, motion, selected, 
   const [route, setRoute] = useState(initialRoute);
   const videoFormat = useAlphaVideoFormat();
   const routeRef = useRef<FishRouteState>(initialRoute);
+  const usesSharedMotion =
+    motion.left.webm === motion.right.webm &&
+    motion.left.hevc === motion.right.hevc;
 
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
@@ -128,7 +131,7 @@ function MotionFish({ asset, basePos, fishOrder, index, item, motion, selected, 
 
   return (
     <button
-      className={`motion-fish direction-${route.direction} ${videoFormat === null ? "static-alpha-fallback" : ""} ${selected ? "selected" : ""}`}
+      className={`motion-fish direction-${route.direction} ${usesSharedMotion ? "shared-motion" : ""} ${videoFormat === null ? "static-alpha-fallback" : ""} ${selected ? "selected" : ""}`}
       data-livestock-index={index}
       data-fish-direction={route.direction}
       data-route-segments={route.segmentsRemaining}

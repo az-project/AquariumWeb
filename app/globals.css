@@ -595,6 +595,9 @@ h2 { margin:0; font-size: 19px; letter-spacing: 0; }
 .motion-fish-facing-left .motion-fish-fallback {
   transform: scaleX(-1);
 }
+.motion-fish.shared-motion .motion-fish-facing-left .motion-fish-video {
+  transform: scaleX(-1);
+}
 @media (max-width: 720px) {
   .motion-fish {
     width: 112px;

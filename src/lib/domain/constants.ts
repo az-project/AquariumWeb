@@ -148,6 +148,19 @@ export const livestockMotionMap: { test: RegExp; motion: LivestockMotionPair }[]
     }
   },
   {
+    test: /파이어|firefish|고비|goby/i,
+    motion: {
+      left: {
+        webm: "assets/livestock/motion/firefish-goby-right.mp4",
+        hevc: "assets/livestock/motion/firefish-goby-right.mp4"
+      },
+      right: {
+        webm: "assets/livestock/motion/firefish-goby-right.mp4",
+        hevc: "assets/livestock/motion/firefish-goby-right.mp4"
+      }
+    }
+  },
+  {
     test: /로열|그라마|gramma/i,
     motion: {
       left: {
