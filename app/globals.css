@@ -588,8 +588,6 @@ h2 { margin:0; font-size: 19px; letter-spacing: 0; }
 }
 .sprite-masked-video {
   background: transparent;
-  -webkit-mask-image: var(--sprite-mask);
-  mask-image: var(--sprite-mask);
   -webkit-mask-repeat: no-repeat;
   mask-repeat: no-repeat;
   -webkit-mask-position: center;

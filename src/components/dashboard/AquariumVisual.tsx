@@ -76,6 +76,10 @@ function percentNumber(value: string | undefined, fallback: string): number {
   return Number.isFinite(parsed) ? parsed : Number.parseFloat(fallback);
 }
 
+function assetUrl(path: string): string {
+  return path.startsWith("/") ? path : `/${path}`;
+}
+
 // SSR와 첫 페인트는 안전한 PNG를 사용한다. 마운트 후 브라우저 계열에 맞는
 // 알파 코덱(WebKit=HEVC, 그 외=WebM)의 영상으로 전환한다.
 function useAlphaVideoFormat(): AlphaVideoFormat | null {
@@ -139,7 +143,8 @@ function MotionFish({ asset, basePos, fishOrder, index, item, motion, selected, 
     "--travel-duration": `${route.durationMs}ms`
   } as CSSProperties;
   const maskStyle = {
-    "--sprite-mask": `url(${asset})`
+    WebkitMaskImage: `url("${assetUrl(asset)}")`,
+    maskImage: `url("${assetUrl(asset)}")`
   } as CSSProperties;
 
   return (
@@ -288,7 +293,8 @@ export function AquariumVisual({ tank, onOpenTankSettings }: AquariumVisualProps
           const palette = PALETTES[index % PALETTES.length];
           const asset = livestockImage(item, index, type);
           const maskStyle = {
-            "--sprite-mask": `url(${asset})`
+            WebkitMaskImage: `url("${assetUrl(asset)}")`,
+            maskImage: `url("${assetUrl(asset)}")`
           } as CSSProperties;
           const style = {
             "--x": pos.x,
