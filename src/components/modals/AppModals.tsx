@@ -2,7 +2,7 @@
 
 // index.html:297-380 + app.js:1549-1618 이식 — 모달 4종
 import { useEffect, useState, type FormEvent } from "react";
-import { aquariumBackgrounds, aquariumTypes } from "@/lib/domain/constants";
+import { aquariumBackgrounds, aquariumTypes, todayIso } from "@/lib/domain/constants";
 import { selectedAquariumBackground, tankAquariumType } from "@/lib/domain/derive";
 import type { NotificationSettings, Tank } from "@/lib/domain/types";
 import { useAppStore } from "@/lib/state/store";
@@ -44,6 +44,7 @@ export function AppModals({
   const [settingsBackground, setSettingsBackground] = useState(selectedAquariumBackground(tank).id);
 
   const type = tankAquariumType(tank);
+  const today = todayIso();
   const config = aquariumTypes[type];
   const typeLabel = type === "freshwater" ? "담수" : "해수";
   const backgroundOptions = aquariumBackgrounds.filter(item => item.type === typeLabel);
@@ -149,7 +150,7 @@ export function AppModals({
           <SpeciesSelect aquariumType={type} value={quickSpecies} onChange={setQuickSpecies} />
           <label>
             투입일
-            <input type="date" name="added" />
+            <input type="date" name="added" defaultValue={today} />
           </label>
           <label>
             상태

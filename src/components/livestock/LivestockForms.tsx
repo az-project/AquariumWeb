@@ -2,6 +2,7 @@
 
 // app.js:737-807 이식 — 생물 등록/수정 폼과 장비 폼 (uncontrolled + FormData 패턴 유지)
 import { useEffect, useState, type FormEvent } from "react";
+import { todayIso } from "@/lib/domain/constants";
 import { availableSpecies, livestockImage, tankAquariumType } from "@/lib/domain/derive";
 import type { Equipment, Livestock, Tank } from "@/lib/domain/types";
 import { SpeciesSelect } from "./SpeciesSelect";
@@ -44,6 +45,7 @@ interface LivestockFormProps {
 export function LivestockForm({ tank, editingIndex, resetToken, onSubmit }: LivestockFormProps) {
   const isEditing = editingIndex !== null;
   const editingItem = isEditing ? tank.livestock[editingIndex] : null;
+  const today = todayIso();
   const [speciesName, setSpeciesName] = useState("");
 
   // 수정 진입/탱크 전환 시 폼 값 동기화 (fillLivestockForm 대응)
@@ -66,7 +68,7 @@ export function LivestockForm({ tank, editingIndex, resetToken, onSubmit }: Live
       <SpeciesSelect aquariumType={tankAquariumType(tank)} value={speciesName} onChange={setSpeciesName} />
       <label>
         투입일
-        <input type="date" name="added" defaultValue={editingItem?.added || ""} />
+        <input type="date" name="added" defaultValue={editingItem?.added || today} />
       </label>
       <label>
         상태
