@@ -22,7 +22,7 @@ export const saltwaterSpecies: Species[] = [
   { name: "퍼큘라 클라운", type: "물고기", level: "초급", nature: "온순", note: "말미잘 없이도 적응이 빠르고 먹이 반응이 좋음", image: "assets/livestock/clownfish.png" },
   { name: "블루탱", type: "물고기", level: "중급", nature: "활동적", note: "넓은 수조와 안정적인 수질이 중요", image: "assets/livestock/blue-tang.png" },
   { name: "옐로우탱", type: "물고기", level: "중급", nature: "영역성", note: "비슷한 체형의 탱류와 합사 시 주의", image: "assets/livestock/yellow-tang.png" },
-  { name: "식스라인 래스", type: "물고기", level: "중급", nature: "재빠름", note: "작은 해충 제어에 도움, 소형어 괴롭힘 주의", image: "assets/livestock/firefish-goby.png" },
+  { name: "식스라인 래스", type: "물고기", level: "중급", nature: "재빠름", note: "작은 해충 제어에 도움, 소형어 괴롭힘 주의", image: "assets/livestock/sixline-wrasse.png" },
   { name: "버블 코랄", type: "산호", level: "중급", nature: "야간 촉수", note: "주변 산호와 간격 필요", image: "assets/livestock/bubble-coral.png" },
   { name: "클리너 쉬림프", type: "무척추", level: "초급", nature: "온순", note: "물고기 청소 행동을 보이며 구리 약품에 취약", image: "assets/livestock/cleaner-shrimp-v2.png" },
   { name: "로열 그라마", type: "물고기", level: "초급", nature: "은신 선호", note: "보라색과 노란색 대비가 예쁜 소형어", image: "assets/livestock/royal-gramma.png" },
@@ -107,7 +107,8 @@ export const livestockAssetMap: { test: RegExp; src: string }[] = [
   { test: /옐로우|yellow/i, src: "assets/livestock/yellow-tang.png" },
   { test: /쉬림프|shrimp/i, src: "assets/livestock/cleaner-shrimp-v2.png" },
   { test: /로열|그라마|gramma/i, src: "assets/livestock/royal-gramma.png" },
-  { test: /파이어|firefish|고비|goby|래스|wrasse/i, src: "assets/livestock/firefish-goby.png" },
+  { test: /식스|six|래스|wrasse/i, src: "assets/livestock/sixline-wrasse.png" },
+  { test: /파이어|firefish|고비|goby/i, src: "assets/livestock/firefish-goby.png" },
   { test: /만다린|mandarin|드래고넷/i, src: "assets/livestock/mandarin-dragonet.png" },
   { test: /플레임|엔젤|flame|angel/i, src: "assets/livestock/flame-angelfish.png" },
   { test: /블루|blue/i, src: "assets/livestock/blue-tang.png" },
@@ -222,6 +223,19 @@ export const livestockMotionMap: { test: RegExp; motion: LivestockMotionPair }[]
       right: {
         webm: "assets/livestock/motion/blue-tang-right.mp4",
         hevc: "assets/livestock/motion/blue-tang-right.mp4"
+      }
+    }
+  },
+  {
+    test: /식스|six|래스|wrasse/i,
+    motion: {
+      left: {
+        webm: "assets/livestock/motion/sixline-wrasse-right.mp4",
+        hevc: "assets/livestock/motion/sixline-wrasse-right.mp4"
+      },
+      right: {
+        webm: "assets/livestock/motion/sixline-wrasse-right.mp4",
+        hevc: "assets/livestock/motion/sixline-wrasse-right.mp4"
       }
     }
   }
