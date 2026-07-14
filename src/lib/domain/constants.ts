@@ -185,6 +185,19 @@ export const livestockMotionMap: { test: RegExp; motion: LivestockMotionPair }[]
         hevc: "assets/livestock/motion/cleaner-shrimp-right.mp4"
       }
     }
+  },
+  {
+    test: /버블\s?코랄|bubble/i,
+    motion: {
+      left: {
+        webm: "assets/livestock/motion/bubble-coral.mp4",
+        hevc: "assets/livestock/motion/bubble-coral.mp4"
+      },
+      right: {
+        webm: "assets/livestock/motion/bubble-coral.mp4",
+        hevc: "assets/livestock/motion/bubble-coral.mp4"
+      }
+    }
   }
 ];
 
