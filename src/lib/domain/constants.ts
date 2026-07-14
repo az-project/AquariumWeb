@@ -198,6 +198,19 @@ export const livestockMotionMap: { test: RegExp; motion: LivestockMotionPair }[]
         hevc: "assets/livestock/motion/bubble-coral.mp4"
       }
     }
+  },
+  {
+    test: /말미잘|anemone|버블팁/i,
+    motion: {
+      left: {
+        webm: "assets/livestock/motion/anemone.mp4",
+        hevc: "assets/livestock/motion/anemone.mp4"
+      },
+      right: {
+        webm: "assets/livestock/motion/anemone.mp4",
+        hevc: "assets/livestock/motion/anemone.mp4"
+      }
+    }
   }
 ];
 
