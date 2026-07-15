@@ -329,6 +329,19 @@ export const livestockMotionMap: { test: RegExp; motion: LivestockMotionPair }[]
         hevc: "assets/livestock/motion/betta-left.mp4"
       }
     }
+  },
+  {
+    test: /\uBE14\uB799|\uBAB0\uB9AC|black|molly/i,
+    motion: {
+      left: {
+        webm: "assets/livestock/motion/black-molly-left.mp4",
+        hevc: "assets/livestock/motion/black-molly-left.mp4"
+      },
+      right: {
+        webm: "assets/livestock/motion/black-molly-left.mp4",
+        hevc: "assets/livestock/motion/black-molly-left.mp4"
+      }
+    }
   }
 ];
 

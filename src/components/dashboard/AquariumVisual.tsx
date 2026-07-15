@@ -88,8 +88,9 @@ function isEdgeWhiteBackground(data: Uint8ClampedArray, pixelIndex: number): boo
   const blue = data[offset + 2] || 0;
   const max = Math.max(red, green, blue);
   const min = Math.min(red, green, blue);
+  const isChromaGreen = green > 45 && green > red * 1.25 && green > blue * 1.15 && green - red > 18;
 
-  return min > 210 && (max - min < 54 || min > 238);
+  return isChromaGreen || (min > 210 && (max - min < 54 || min > 238));
 }
 
 function removeEdgeWhiteBackground(imageData: ImageData): ImageData {
