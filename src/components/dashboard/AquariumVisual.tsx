@@ -76,6 +76,116 @@ function percentNumber(value: string | undefined, fallback: string): number {
   return Number.isFinite(parsed) ? parsed : Number.parseFloat(fallback);
 }
 
+function isMp4(src: string): boolean {
+  return src.toLowerCase().endsWith(".mp4");
+}
+
+function isEdgeWhiteBackground(data: Uint8ClampedArray, pixelIndex: number): boolean {
+  const offset = pixelIndex * 4;
+  const red = data[offset] || 0;
+  const green = data[offset + 1] || 0;
+  const blue = data[offset + 2] || 0;
+  const max = Math.max(red, green, blue);
+  const min = Math.min(red, green, blue);
+
+  return min > 210 && (max - min < 54 || min > 238);
+}
+
+function removeEdgeWhiteBackground(imageData: ImageData): ImageData {
+  const { data, width, height } = imageData;
+  const total = width * height;
+  const visited = new Uint8Array(total);
+  const stack = new Int32Array(total);
+  let stackSize = 0;
+
+  const push = (index: number) => {
+    if (index < 0 || index >= total || visited[index] || !isEdgeWhiteBackground(data, index)) return;
+    visited[index] = 1;
+    stack[stackSize] = index;
+    stackSize += 1;
+  };
+
+  for (let x = 0; x < width; x += 1) {
+    push(x);
+    push((height - 1) * width + x);
+  }
+  for (let y = 1; y < height - 1; y += 1) {
+    push(y * width);
+    push(y * width + width - 1);
+  }
+
+  while (stackSize > 0) {
+    stackSize -= 1;
+    const index = stack[stackSize] || 0;
+    data[index * 4 + 3] = 0;
+    const x = index % width;
+
+    if (x > 0) push(index - 1);
+    if (x < width - 1) push(index + 1);
+    if (index >= width) push(index - width);
+    if (index < total - width) push(index + width);
+  }
+
+  return imageData;
+}
+
+function ChromaKeyVideo({ className, poster, src }: { className: string; poster: string; src: string }) {
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    const canvas = canvasRef.current;
+    const context = canvas?.getContext("2d", { willReadFrequently: true });
+    if (!video || !canvas || !context) return;
+
+    let frameId = 0;
+    let disposed = false;
+
+    const render = () => {
+      if (disposed) return;
+      if (video.videoWidth > 0 && video.videoHeight > 0 && video.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) {
+        if (canvas.width !== video.videoWidth || canvas.height !== video.videoHeight) {
+          canvas.width = video.videoWidth;
+          canvas.height = video.videoHeight;
+        }
+        context.drawImage(video, 0, 0, canvas.width, canvas.height);
+        const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+        context.putImageData(removeEdgeWhiteBackground(imageData), 0, 0);
+      }
+      frameId = window.requestAnimationFrame(render);
+    };
+
+    const start = () => {
+      void video.play().catch(() => undefined);
+      if (!frameId) frameId = window.requestAnimationFrame(render);
+    };
+
+    video.addEventListener("loadeddata", start);
+    video.addEventListener("play", start);
+    start();
+
+    return () => {
+      disposed = true;
+      if (frameId) window.cancelAnimationFrame(frameId);
+      video.removeEventListener("loadeddata", start);
+      video.removeEventListener("play", start);
+    };
+  }, [src]);
+
+  return (
+    <>
+      <video ref={videoRef} className="chroma-source-video" src={src} poster={poster} autoPlay loop muted playsInline preload="auto" />
+      <canvas ref={canvasRef} className={className} aria-hidden="true" />
+    </>
+  );
+}
+
+function MotionVideo({ className, poster, src }: { className: string; poster: string; src: string }) {
+  if (isMp4(src)) return <ChromaKeyVideo className={className} poster={poster} src={src} />;
+  return <video className={className} src={src} poster={poster} autoPlay loop muted playsInline preload="metadata" />;
+}
+
 // SSR와 첫 페인트는 안전한 PNG를 사용한다. 마운트 후 브라우저 계열에 맞는
 // 알파 코덱(WebKit=HEVC, 그 외=WebM)의 영상으로 전환한다.
 function useAlphaVideoFormat(): AlphaVideoFormat | null {
@@ -157,14 +267,14 @@ function MotionFish({ asset, basePos, fishOrder, index, item, motion, selected, 
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img className="motion-fish-fallback" src={asset} alt="" />
         {videoFormat !== null ? (
-          <video className="motion-fish-video" src={rightMotionSrc} poster={asset} autoPlay loop muted playsInline preload="metadata" />
+          <MotionVideo className="motion-fish-video" src={rightMotionSrc} poster={asset} />
         ) : null}
       </span>
       <span className="motion-fish-facing motion-fish-facing-left" aria-hidden="true">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img className="motion-fish-fallback" src={asset} alt="" />
         {videoFormat !== null ? (
-          <video className="motion-fish-video" src={leftMotionSrc} poster={asset} autoPlay loop muted playsInline preload="metadata" />
+          <MotionVideo className="motion-fish-video" src={leftMotionSrc} poster={asset} />
         ) : null}
       </span>
     </button>
@@ -307,7 +417,7 @@ export function AquariumVisual({ tank, onOpenTankSettings }: AquariumVisualProps
               onClick={() => handleInhabitantClick(index)}
             >
               {motion ? (
-                <video className="inhabitant-image" src={motionSrc} poster={asset} autoPlay loop muted playsInline preload="metadata" />
+                <MotionVideo className="inhabitant-image" src={motionSrc} poster={asset} />
               ) : asset ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img className="inhabitant-image" src={asset} alt={item.name} />
