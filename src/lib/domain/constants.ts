@@ -264,6 +264,19 @@ export const livestockMotionMap: { test: RegExp; motion: LivestockMotionPair }[]
         hevc: "assets/livestock/motion/yellow-tang-cutout.mp4"
       }
     }
+  },
+  {
+    test: /\uD50C\uB808\uC784|\uC5D4\uC824|flame|angel/i,
+    motion: {
+      left: {
+        webm: "assets/livestock/motion/flame-angelfish-cutout.mp4",
+        hevc: "assets/livestock/motion/flame-angelfish-cutout.mp4"
+      },
+      right: {
+        webm: "assets/livestock/motion/flame-angelfish-cutout.mp4",
+        hevc: "assets/livestock/motion/flame-angelfish-cutout.mp4"
+      }
+    }
   }
 ];
 
