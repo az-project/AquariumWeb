@@ -316,6 +316,19 @@ export const livestockMotionMap: { test: RegExp; motion: LivestockMotionPair }[]
         hevc: "assets/livestock/motion/neon-tetra-right.mp4"
       }
     }
+  },
+  {
+    test: /\uBCA0\uD0C0|betta/i,
+    motion: {
+      left: {
+        webm: "assets/livestock/motion/betta-right.mp4",
+        hevc: "assets/livestock/motion/betta-right.mp4"
+      },
+      right: {
+        webm: "assets/livestock/motion/betta-right.mp4",
+        hevc: "assets/livestock/motion/betta-right.mp4"
+      }
+    }
   }
 ];
 
