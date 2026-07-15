@@ -13,6 +13,7 @@ import {
   nextInvertebrateWaypoint,
   selectedAquariumBackground,
   tankAquariumType,
+  type FishMotionProfile,
   type FishRouteState,
   type FishWaypoint
 } from "@/lib/domain/derive";
@@ -131,7 +132,7 @@ function removeEdgeWhiteBackground(imageData: ImageData): ImageData {
   return imageData;
 }
 
-function ChromaKeyVideo({ className, poster, src }: { className: string; poster: string; src: string }) {
+function ChromaKeyVideo({ className, playbackRate = 1, poster, src }: { className: string; playbackRate?: number; poster: string; src: string }) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
@@ -177,6 +178,7 @@ function ChromaKeyVideo({ className, poster, src }: { className: string; poster:
     };
 
     const start = () => {
+      video.playbackRate = playbackRate;
       void video.play().catch(() => undefined);
       if (!frameId && !timeoutId) scheduleFrame();
     };
@@ -192,7 +194,7 @@ function ChromaKeyVideo({ className, poster, src }: { className: string; poster:
       video.removeEventListener("loadeddata", start);
       video.removeEventListener("play", start);
     };
-  }, [src]);
+  }, [playbackRate, src]);
 
   return (
     <>
@@ -202,14 +204,26 @@ function ChromaKeyVideo({ className, poster, src }: { className: string; poster:
   );
 }
 
-function MotionVideo({ className, poster, src }: { className: string; poster: string; src: string }) {
-  if (isMp4(src)) return <ChromaKeyVideo className={className} poster={poster} src={src} />;
+function MotionVideo({ className, playbackRate = 1, poster, src }: { className: string; playbackRate?: number; poster: string; src: string }) {
+  if (isMp4(src)) return <ChromaKeyVideo className={className} playbackRate={playbackRate} poster={poster} src={src} />;
   return <video className={className} src={src} poster={poster} autoPlay loop muted playsInline preload="metadata" />;
 }
 
 function sharedMotionFacing(motion: LivestockMotionPair): "left" | "right" {
   const source = motion.right.webm || motion.right.hevc || motion.left.webm || motion.left.hevc;
   return /-left\.(mp4|webm|mov)$/i.test(source) ? "left" : "right";
+}
+
+function speciesMotionProfile(name: string, aquariumType: string): FishMotionProfile {
+  if (/\uBE14\uB799|\uBAB0\uB9AC|black|molly/i.test(name)) return "steady";
+  if (/\uC81C\uBE0C\uB77C|\uB2E4\uB2C8\uC624|zebra|danio/i.test(name)) return "active";
+  return aquariumType === "freshwater" ? "gentle" : "default";
+}
+
+function speciesVideoRate(name: string): number {
+  if (/\uBE14\uB799|\uBAB0\uB9AC|black|molly/i.test(name)) return 0.82;
+  if (/\uC81C\uBE0C\uB77C|\uB2E4\uB2C8\uC624|zebra|danio/i.test(name)) return 0.9;
+  return 1;
 }
 
 // SSR와 첫 페인트는 안전한 PNG를 사용한다. 마운트 후 브라우저 계열에 맞는
@@ -248,6 +262,8 @@ function MotionFish({ asset, aquariumType, basePos, fishOrder, index, item, moti
     motion.left.webm === motion.right.webm &&
     motion.left.hevc === motion.right.hevc;
   const sourceFacing = usesSharedMotion ? sharedMotionFacing(motion) : "right";
+  const motionProfile = speciesMotionProfile(item.name, aquariumType);
+  const videoRate = speciesVideoRate(item.name);
 
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
@@ -258,7 +274,7 @@ function MotionFish({ asset, aquariumType, basePos, fishOrder, index, item, moti
       if (disposed) return;
       const next = kind === "invert"
         ? nextInvertebrateWaypoint(routeRef.current)
-        : nextFishWaypoint(routeRef.current, Math.random, aquariumType === "freshwater" ? "gentle" : "default");
+        : nextFishWaypoint(routeRef.current, Math.random, motionProfile);
       routeRef.current = next;
       setRoute(next);
       timer = setTimeout(moveToNextWaypoint, next.durationMs);
@@ -269,7 +285,7 @@ function MotionFish({ asset, aquariumType, basePos, fishOrder, index, item, moti
       disposed = true;
       if (timer) clearTimeout(timer);
     };
-  }, [aquariumType, fishOrder, kind]);
+  }, [aquariumType, fishOrder, kind, motionProfile]);
 
   const style = {
     left: `${route.x}%`,
@@ -296,14 +312,14 @@ function MotionFish({ asset, aquariumType, basePos, fishOrder, index, item, moti
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img className="motion-fish-fallback" src={asset} alt="" />
         {videoFormat !== null ? (
-          <MotionVideo className="motion-fish-video" src={rightMotionSrc} poster={asset} />
+          <MotionVideo className="motion-fish-video" playbackRate={videoRate} src={rightMotionSrc} poster={asset} />
         ) : null}
       </span>
       <span className="motion-fish-facing motion-fish-facing-left" aria-hidden="true">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img className="motion-fish-fallback" src={asset} alt="" />
         {videoFormat !== null ? (
-          <MotionVideo className="motion-fish-video" src={leftMotionSrc} poster={asset} />
+          <MotionVideo className="motion-fish-video" playbackRate={videoRate} src={leftMotionSrc} poster={asset} />
         ) : null}
       </span>
     </button>

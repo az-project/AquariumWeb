@@ -188,35 +188,61 @@ export interface FishWaypoint extends FishRouteState {
   durationMs: number;
 }
 
+export type FishMotionProfile = "default" | "gentle" | "steady" | "active";
+
 export function nextFishWaypoint(
   current: FishRouteState,
   random: () => number = Math.random,
-  profile: "default" | "gentle" = "default"
+  profile: FishMotionProfile = "default"
 ): FishWaypoint {
   let direction = current.direction;
   let segmentsRemaining = current.segmentsRemaining;
 
   if (segmentsRemaining <= 0) {
-    if (random() < 0.48) direction = direction === "right" ? "left" : "right";
-    segmentsRemaining = 2 + Math.floor(random() * 2);
+    const turnChance = profile === "steady" ? 0.28 : profile === "active" ? 0.34 : 0.48;
+    if (random() < turnChance) direction = direction === "right" ? "left" : "right";
+    segmentsRemaining = profile === "steady" ? 3 + Math.floor(random() * 3) : 2 + Math.floor(random() * 2);
   }
 
-  const distance = profile === "gentle" ? 8 + random() * 9 : 10 + random() * 14;
+  const distance =
+    profile === "steady"
+      ? 7 + random() * 7
+      : profile === "active"
+        ? 12 + random() * 8
+        : profile === "gentle"
+          ? 8 + random() * 9
+          : 10 + random() * 14;
   const sign = direction === "right" ? 1 : -1;
   let x = current.x + distance * sign;
 
   if (x < 18 || x > 82) {
     direction = direction === "right" ? "left" : "right";
-    segmentsRemaining = 2 + Math.floor(random() * 2);
+    segmentsRemaining = profile === "steady" ? 3 + Math.floor(random() * 2) : 2 + Math.floor(random() * 2);
     x = current.x + distance * (direction === "right" ? 1 : -1);
   }
 
   x = clamp(x, 18, 82);
-  const verticalRange = profile === "gentle" ? (random() < 0.16 ? 8 : 4) : (random() < 0.22 ? 18 : 10);
+  const verticalRange =
+    profile === "steady"
+      ? (random() < 0.12 ? 5 : 2.8)
+      : profile === "active"
+        ? (random() < 0.18 ? 7 : 3.5)
+        : profile === "gentle"
+          ? (random() < 0.16 ? 8 : 4)
+          : (random() < 0.22 ? 18 : 10);
   const y = clamp(current.y + (random() * 2 - 1) * verticalRange, 18, 80);
   const travel = Math.hypot(x - current.x, (y - current.y) * 0.65);
-  const speed = profile === "gentle" ? 180 + random() * 55 : 160 + random() * 60;
-  const durationMs = Math.round(clamp(travel * speed, profile === "gentle" ? 2400 : 2800, profile === "gentle" ? 5400 : 6500));
+  const speed =
+    profile === "steady"
+      ? 235 + random() * 65
+      : profile === "active"
+        ? 135 + random() * 45
+        : profile === "gentle"
+          ? 180 + random() * 55
+          : 160 + random() * 60;
+  const minDuration = profile === "active" ? 1700 : profile === "gentle" ? 2400 : 2800;
+  const maxDuration = profile === "steady" ? 6200 : profile === "active" ? 3900 : profile === "gentle" ? 5400 : 6500;
+  const durationMs = Math.round(clamp(travel * speed, minDuration, maxDuration));
 
   return {
     x,
