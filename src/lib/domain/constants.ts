@@ -303,6 +303,19 @@ export const livestockMotionMap: { test: RegExp; motion: LivestockMotionPair }[]
         hevc: "assets/livestock/motion/guppy-right.mp4"
       }
     }
+  },
+  {
+    test: /\uB124\uC628|\uD14C\uD2B8\uB77C|neon|tetra/i,
+    motion: {
+      left: {
+        webm: "assets/livestock/motion/neon-tetra-right.mp4",
+        hevc: "assets/livestock/motion/neon-tetra-right.mp4"
+      },
+      right: {
+        webm: "assets/livestock/motion/neon-tetra-right.mp4",
+        hevc: "assets/livestock/motion/neon-tetra-right.mp4"
+      }
+    }
   }
 ];
 
