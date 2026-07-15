@@ -238,6 +238,19 @@ export const livestockMotionMap: { test: RegExp; motion: LivestockMotionPair }[]
         hevc: "assets/livestock/motion/sixline-wrasse-right.mp4"
       }
     }
+  },
+  {
+    test: /옐로우\s?탱|yellow\s?tang|yellow/i,
+    motion: {
+      left: {
+        webm: "assets/livestock/motion/yellow-tang-right.mp4",
+        hevc: "assets/livestock/motion/yellow-tang-right.mp4"
+      },
+      right: {
+        webm: "assets/livestock/motion/yellow-tang-right.mp4",
+        hevc: "assets/livestock/motion/yellow-tang-right.mp4"
+      }
+    }
   }
 ];
 
