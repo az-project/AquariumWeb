@@ -152,12 +152,12 @@ export const livestockMotionMap: { test: RegExp; motion: LivestockMotionPair }[]
     test: /파이어|firefish|고비|goby/i,
     motion: {
       left: {
-        webm: "assets/livestock/motion/firefish-goby-right.mp4",
-        hevc: "assets/livestock/motion/firefish-goby-right.mp4"
+        webm: "assets/livestock/motion/firefish-goby-left.webm",
+        hevc: "assets/livestock/motion/firefish-goby-left.mov"
       },
       right: {
-        webm: "assets/livestock/motion/firefish-goby-right.mp4",
-        hevc: "assets/livestock/motion/firefish-goby-right.mp4"
+        webm: "assets/livestock/motion/firefish-goby-right.webm",
+        hevc: "assets/livestock/motion/firefish-goby-right.mov"
       }
     }
   },
@@ -178,12 +178,12 @@ export const livestockMotionMap: { test: RegExp; motion: LivestockMotionPair }[]
     test: /클리너|쉬림프|cleaner|shrimp/i,
     motion: {
       left: {
-        webm: "assets/livestock/motion/cleaner-shrimp-right.mp4",
-        hevc: "assets/livestock/motion/cleaner-shrimp-right.mp4"
+        webm: "assets/livestock/motion/cleaner-shrimp-left.webm",
+        hevc: "assets/livestock/motion/cleaner-shrimp-left.mov"
       },
       right: {
-        webm: "assets/livestock/motion/cleaner-shrimp-right.mp4",
-        hevc: "assets/livestock/motion/cleaner-shrimp-right.mp4"
+        webm: "assets/livestock/motion/cleaner-shrimp-right.webm",
+        hevc: "assets/livestock/motion/cleaner-shrimp-right.mov"
       }
     }
   },
@@ -191,12 +191,12 @@ export const livestockMotionMap: { test: RegExp; motion: LivestockMotionPair }[]
     test: /버블\s?코랄|bubble/i,
     motion: {
       left: {
-        webm: "assets/livestock/motion/bubble-coral.mp4",
-        hevc: "assets/livestock/motion/bubble-coral.mp4"
+        webm: "assets/livestock/motion/bubble-coral.webm",
+        hevc: "assets/livestock/motion/bubble-coral.mov"
       },
       right: {
-        webm: "assets/livestock/motion/bubble-coral.mp4",
-        hevc: "assets/livestock/motion/bubble-coral.mp4"
+        webm: "assets/livestock/motion/bubble-coral.webm",
+        hevc: "assets/livestock/motion/bubble-coral.mov"
       }
     }
   },
@@ -204,12 +204,12 @@ export const livestockMotionMap: { test: RegExp; motion: LivestockMotionPair }[]
     test: /\uD1A0\uCE58|torch/i,
     motion: {
       left: {
-        webm: "assets/livestock/motion/torch-coral.mp4",
-        hevc: "assets/livestock/motion/torch-coral.mp4"
+        webm: "assets/livestock/motion/torch-coral.webm",
+        hevc: "assets/livestock/motion/torch-coral.mov"
       },
       right: {
-        webm: "assets/livestock/motion/torch-coral.mp4",
-        hevc: "assets/livestock/motion/torch-coral.mp4"
+        webm: "assets/livestock/motion/torch-coral.webm",
+        hevc: "assets/livestock/motion/torch-coral.mov"
       }
     }
   },
@@ -217,12 +217,12 @@ export const livestockMotionMap: { test: RegExp; motion: LivestockMotionPair }[]
     test: /말미잘|anemone|버블팁/i,
     motion: {
       left: {
-        webm: "assets/livestock/motion/anemone.mp4",
-        hevc: "assets/livestock/motion/anemone.mp4"
+        webm: "assets/livestock/motion/anemone.webm",
+        hevc: "assets/livestock/motion/anemone.mov"
       },
       right: {
-        webm: "assets/livestock/motion/anemone.mp4",
-        hevc: "assets/livestock/motion/anemone.mp4"
+        webm: "assets/livestock/motion/anemone.webm",
+        hevc: "assets/livestock/motion/anemone.mov"
       }
     }
   },
@@ -230,12 +230,12 @@ export const livestockMotionMap: { test: RegExp; motion: LivestockMotionPair }[]
     test: /블루\s?탱|blue\s?tang|blue/i,
     motion: {
       left: {
-        webm: "assets/livestock/motion/blue-tang-right.mp4",
-        hevc: "assets/livestock/motion/blue-tang-right.mp4"
+        webm: "assets/livestock/motion/blue-tang-left.webm",
+        hevc: "assets/livestock/motion/blue-tang-left.mov"
       },
       right: {
-        webm: "assets/livestock/motion/blue-tang-right.mp4",
-        hevc: "assets/livestock/motion/blue-tang-right.mp4"
+        webm: "assets/livestock/motion/blue-tang-right.webm",
+        hevc: "assets/livestock/motion/blue-tang-right.mov"
       }
     }
   },
@@ -243,12 +243,12 @@ export const livestockMotionMap: { test: RegExp; motion: LivestockMotionPair }[]
     test: /식스|six|래스|wrasse/i,
     motion: {
       left: {
-        webm: "assets/livestock/motion/sixline-wrasse-right.mp4",
-        hevc: "assets/livestock/motion/sixline-wrasse-right.mp4"
+        webm: "assets/livestock/motion/sixline-wrasse-left.webm",
+        hevc: "assets/livestock/motion/sixline-wrasse-left.mov"
       },
       right: {
-        webm: "assets/livestock/motion/sixline-wrasse-right.mp4",
-        hevc: "assets/livestock/motion/sixline-wrasse-right.mp4"
+        webm: "assets/livestock/motion/sixline-wrasse-right.webm",
+        hevc: "assets/livestock/motion/sixline-wrasse-right.mov"
       }
     }
   },
@@ -256,12 +256,12 @@ export const livestockMotionMap: { test: RegExp; motion: LivestockMotionPair }[]
     test: /옐로우\s?탱|yellow\s?tang|yellow/i,
     motion: {
       left: {
-        webm: "assets/livestock/motion/yellow-tang-right.mp4",
-        hevc: "assets/livestock/motion/yellow-tang-right.mp4"
+        webm: "assets/livestock/motion/yellow-tang-left.webm",
+        hevc: "assets/livestock/motion/yellow-tang-left.mov"
       },
       right: {
-        webm: "assets/livestock/motion/yellow-tang-right.mp4",
-        hevc: "assets/livestock/motion/yellow-tang-right.mp4"
+        webm: "assets/livestock/motion/yellow-tang-right.webm",
+        hevc: "assets/livestock/motion/yellow-tang-right.mov"
       }
     }
   },
@@ -269,12 +269,12 @@ export const livestockMotionMap: { test: RegExp; motion: LivestockMotionPair }[]
     test: /\uD50C\uB808\uC784|\uC5D4\uC824|flame|angel/i,
     motion: {
       left: {
-        webm: "assets/livestock/motion/flame-angelfish-right.mp4",
-        hevc: "assets/livestock/motion/flame-angelfish-right.mp4"
+        webm: "assets/livestock/motion/flame-angelfish-left.webm",
+        hevc: "assets/livestock/motion/flame-angelfish-left.mov"
       },
       right: {
-        webm: "assets/livestock/motion/flame-angelfish-right.mp4",
-        hevc: "assets/livestock/motion/flame-angelfish-right.mp4"
+        webm: "assets/livestock/motion/flame-angelfish-right.webm",
+        hevc: "assets/livestock/motion/flame-angelfish-right.mov"
       }
     }
   },
@@ -282,12 +282,12 @@ export const livestockMotionMap: { test: RegExp; motion: LivestockMotionPair }[]
     test: /\uB9CC\uB2E4\uB9B0|\uB4DC\uB798\uACE0\uB137|mandarin|dragonet/i,
     motion: {
       left: {
-        webm: "assets/livestock/motion/mandarin-dragonet-right.mp4",
-        hevc: "assets/livestock/motion/mandarin-dragonet-right.mp4"
+        webm: "assets/livestock/motion/mandarin-dragonet-left.webm",
+        hevc: "assets/livestock/motion/mandarin-dragonet-left.mov"
       },
       right: {
-        webm: "assets/livestock/motion/mandarin-dragonet-right.mp4",
-        hevc: "assets/livestock/motion/mandarin-dragonet-right.mp4"
+        webm: "assets/livestock/motion/mandarin-dragonet-right.webm",
+        hevc: "assets/livestock/motion/mandarin-dragonet-right.mov"
       }
     }
   }

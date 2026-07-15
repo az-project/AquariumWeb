@@ -21,7 +21,7 @@ describe("livestockMotion", () => {
   });
 
   it("영상이 준비되지 않은 어종은 정적 이미지 폴백을 사용한다", () => {
-    expect(livestockMotion("블루탱")).toBeNull();
+    expect(livestockMotion("네온 테트라")).toBeNull();
   });
 });
 
