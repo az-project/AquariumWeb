@@ -295,12 +295,12 @@ export const livestockMotionMap: { test: RegExp; motion: LivestockMotionPair }[]
     test: /\uAD6C\uD53C|guppy/i,
     motion: {
       left: {
-        webm: "assets/livestock/motion/guppy-right.mp4",
-        hevc: "assets/livestock/motion/guppy-right.mp4"
+        webm: "assets/livestock/motion/guppy-left.mp4",
+        hevc: "assets/livestock/motion/guppy-left.mp4"
       },
       right: {
-        webm: "assets/livestock/motion/guppy-right.mp4",
-        hevc: "assets/livestock/motion/guppy-right.mp4"
+        webm: "assets/livestock/motion/guppy-left.mp4",
+        hevc: "assets/livestock/motion/guppy-left.mp4"
       }
     }
   },
@@ -308,12 +308,12 @@ export const livestockMotionMap: { test: RegExp; motion: LivestockMotionPair }[]
     test: /\uB124\uC628|\uD14C\uD2B8\uB77C|neon|tetra/i,
     motion: {
       left: {
-        webm: "assets/livestock/motion/neon-tetra-right.mp4",
-        hevc: "assets/livestock/motion/neon-tetra-right.mp4"
+        webm: "assets/livestock/motion/neon-tetra-left.mp4",
+        hevc: "assets/livestock/motion/neon-tetra-left.mp4"
       },
       right: {
-        webm: "assets/livestock/motion/neon-tetra-right.mp4",
-        hevc: "assets/livestock/motion/neon-tetra-right.mp4"
+        webm: "assets/livestock/motion/neon-tetra-left.mp4",
+        hevc: "assets/livestock/motion/neon-tetra-left.mp4"
       }
     }
   },
@@ -321,12 +321,12 @@ export const livestockMotionMap: { test: RegExp; motion: LivestockMotionPair }[]
     test: /\uBCA0\uD0C0|betta/i,
     motion: {
       left: {
-        webm: "assets/livestock/motion/betta-right.mp4",
-        hevc: "assets/livestock/motion/betta-right.mp4"
+        webm: "assets/livestock/motion/betta-left.mp4",
+        hevc: "assets/livestock/motion/betta-left.mp4"
       },
       right: {
-        webm: "assets/livestock/motion/betta-right.mp4",
-        hevc: "assets/livestock/motion/betta-right.mp4"
+        webm: "assets/livestock/motion/betta-left.mp4",
+        hevc: "assets/livestock/motion/betta-left.mp4"
       }
     }
   }

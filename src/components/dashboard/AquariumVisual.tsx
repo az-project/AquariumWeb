@@ -62,6 +62,7 @@ interface MotionFishLayerProps {
 
 interface MotionFishProps {
   asset: string;
+  aquariumType: string;
   basePos: (typeof MOTION_FISH_POSITIONS)[number] | (typeof MOTION_INVERTEBRATE_POSITIONS)[number];
   fishOrder: number;
   index: number;
@@ -186,6 +187,11 @@ function MotionVideo({ className, poster, src }: { className: string; poster: st
   return <video className={className} src={src} poster={poster} autoPlay loop muted playsInline preload="metadata" />;
 }
 
+function sharedMotionFacing(motion: LivestockMotionPair): "left" | "right" {
+  const source = motion.right.webm || motion.right.hevc || motion.left.webm || motion.left.hevc;
+  return /-left\.(mp4|webm|mov)$/i.test(source) ? "left" : "right";
+}
+
 // SSR와 첫 페인트는 안전한 PNG를 사용한다. 마운트 후 브라우저 계열에 맞는
 // 알파 코덱(WebKit=HEVC, 그 외=WebM)의 영상으로 전환한다.
 function useAlphaVideoFormat(): AlphaVideoFormat | null {
@@ -204,7 +210,7 @@ function useAlphaVideoFormat(): AlphaVideoFormat | null {
   return videoFormat;
 }
 
-function MotionFish({ asset, basePos, fishOrder, index, item, motion, selected, onSelect }: MotionFishProps) {
+function MotionFish({ asset, aquariumType, basePos, fishOrder, index, item, motion, selected, onSelect }: MotionFishProps) {
   const kind = inhabitantKind(item.type);
   const initialRoute: FishWaypoint = {
     x: clamp(percentNumber(item.tankPosition?.x, basePos.x), 18, 82),
@@ -221,6 +227,7 @@ function MotionFish({ asset, basePos, fishOrder, index, item, motion, selected, 
   const usesSharedMotion =
     motion.left.webm === motion.right.webm &&
     motion.left.hevc === motion.right.hevc;
+  const sourceFacing = usesSharedMotion ? sharedMotionFacing(motion) : "right";
 
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
@@ -229,7 +236,9 @@ function MotionFish({ asset, basePos, fishOrder, index, item, motion, selected, 
 
     const moveToNextWaypoint = () => {
       if (disposed) return;
-      const next = kind === "invert" ? nextInvertebrateWaypoint(routeRef.current) : nextFishWaypoint(routeRef.current);
+      const next = kind === "invert"
+        ? nextInvertebrateWaypoint(routeRef.current)
+        : nextFishWaypoint(routeRef.current, Math.random, aquariumType === "freshwater" ? "gentle" : "default");
       routeRef.current = next;
       setRoute(next);
       timer = setTimeout(moveToNextWaypoint, next.durationMs);
@@ -253,7 +262,7 @@ function MotionFish({ asset, basePos, fishOrder, index, item, motion, selected, 
 
   return (
     <button
-      className={`motion-fish direction-${route.direction} ${usesSharedMotion ? "shared-motion" : ""} ${videoFormat === null ? "static-alpha-fallback" : ""} ${selected ? "selected" : ""}`}
+      className={`motion-fish direction-${route.direction} ${usesSharedMotion ? `shared-motion shared-source-${sourceFacing}` : ""} ${videoFormat === null ? "static-alpha-fallback" : ""} ${selected ? "selected" : ""}`}
       data-livestock-index={index}
       data-fish-direction={route.direction}
       data-route-segments={route.segmentsRemaining}
@@ -304,6 +313,7 @@ function MotionFishLayer({ tank, selectedIndex, onSelect }: MotionFishLayerProps
             key={`${tank.id}-${item.name}-${index}`}
             asset={asset}
             basePos={basePos}
+            aquariumType={type}
             fishOrder={fishOrder}
             index={index}
             item={item}
