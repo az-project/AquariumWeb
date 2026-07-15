@@ -140,26 +140,44 @@ function ChromaKeyVideo({ className, poster, src }: { className: string; poster:
     const context = canvas?.getContext("2d", { willReadFrequently: true });
     if (!video || !canvas || !context) return;
 
+    const frameVideo = video as HTMLVideoElement & {
+      requestVideoFrameCallback?: (callback: () => void) => number;
+      cancelVideoFrameCallback?: (handle: number) => void;
+    };
+    const maxCanvasSize = 260;
     let frameId = 0;
+    let timeoutId: ReturnType<typeof setTimeout> | undefined;
     let disposed = false;
 
     const render = () => {
       if (disposed) return;
       if (video.videoWidth > 0 && video.videoHeight > 0 && video.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) {
-        if (canvas.width !== video.videoWidth || canvas.height !== video.videoHeight) {
-          canvas.width = video.videoWidth;
-          canvas.height = video.videoHeight;
+        const scale = Math.min(1, maxCanvasSize / Math.max(video.videoWidth, video.videoHeight));
+        const width = Math.max(1, Math.round(video.videoWidth * scale));
+        const height = Math.max(1, Math.round(video.videoHeight * scale));
+        if (canvas.width !== width || canvas.height !== height) {
+          canvas.width = width;
+          canvas.height = height;
         }
         context.drawImage(video, 0, 0, canvas.width, canvas.height);
         const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
         context.putImageData(removeEdgeWhiteBackground(imageData), 0, 0);
       }
-      frameId = window.requestAnimationFrame(render);
+      scheduleFrame();
+    };
+
+    const scheduleFrame = () => {
+      if (disposed) return;
+      if (frameVideo.requestVideoFrameCallback) {
+        frameId = frameVideo.requestVideoFrameCallback(render);
+      } else {
+        timeoutId = setTimeout(render, 40);
+      }
     };
 
     const start = () => {
       void video.play().catch(() => undefined);
-      if (!frameId) frameId = window.requestAnimationFrame(render);
+      if (!frameId && !timeoutId) scheduleFrame();
     };
 
     video.addEventListener("loadeddata", start);
@@ -168,7 +186,8 @@ function ChromaKeyVideo({ className, poster, src }: { className: string; poster:
 
     return () => {
       disposed = true;
-      if (frameId) window.cancelAnimationFrame(frameId);
+      if (frameId && frameVideo.cancelVideoFrameCallback) frameVideo.cancelVideoFrameCallback(frameId);
+      if (timeoutId) clearTimeout(timeoutId);
       video.removeEventListener("loadeddata", start);
       video.removeEventListener("play", start);
     };
@@ -249,7 +268,7 @@ function MotionFish({ asset, aquariumType, basePos, fishOrder, index, item, moti
       disposed = true;
       if (timer) clearTimeout(timer);
     };
-  }, [fishOrder, kind]);
+  }, [aquariumType, fishOrder, kind]);
 
   const style = {
     left: `${route.x}%`,

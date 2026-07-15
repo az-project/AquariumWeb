@@ -201,7 +201,7 @@ export function nextFishWaypoint(
     segmentsRemaining = 2 + Math.floor(random() * 2);
   }
 
-  const distance = profile === "gentle" ? 6 + random() * 8 : 10 + random() * 14;
+  const distance = profile === "gentle" ? 8 + random() * 9 : 10 + random() * 14;
   const sign = direction === "right" ? 1 : -1;
   let x = current.x + distance * sign;
 
@@ -212,11 +212,11 @@ export function nextFishWaypoint(
   }
 
   x = clamp(x, 18, 82);
-  const verticalRange = profile === "gentle" ? (random() < 0.18 ? 9 : 5) : (random() < 0.22 ? 18 : 10);
+  const verticalRange = profile === "gentle" ? (random() < 0.16 ? 8 : 4) : (random() < 0.22 ? 18 : 10);
   const y = clamp(current.y + (random() * 2 - 1) * verticalRange, 18, 80);
   const travel = Math.hypot(x - current.x, (y - current.y) * 0.65);
-  const speed = profile === "gentle" ? 230 + random() * 80 : 160 + random() * 60;
-  const durationMs = Math.round(clamp(travel * speed, profile === "gentle" ? 3600 : 2800, profile === "gentle" ? 7600 : 6500));
+  const speed = profile === "gentle" ? 180 + random() * 55 : 160 + random() * 60;
+  const durationMs = Math.round(clamp(travel * speed, profile === "gentle" ? 2400 : 2800, profile === "gentle" ? 5400 : 6500));
 
   return {
     x,
