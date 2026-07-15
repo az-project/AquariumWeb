@@ -277,6 +277,19 @@ export const livestockMotionMap: { test: RegExp; motion: LivestockMotionPair }[]
         hevc: "assets/livestock/motion/flame-angelfish-right.mp4"
       }
     }
+  },
+  {
+    test: /\uB9CC\uB2E4\uB9B0|\uB4DC\uB798\uACE0\uB137|mandarin|dragonet/i,
+    motion: {
+      left: {
+        webm: "assets/livestock/motion/mandarin-dragonet-right.mp4",
+        hevc: "assets/livestock/motion/mandarin-dragonet-right.mp4"
+      },
+      right: {
+        webm: "assets/livestock/motion/mandarin-dragonet-right.mp4",
+        hevc: "assets/livestock/motion/mandarin-dragonet-right.mp4"
+      }
+    }
   }
 ];
 
