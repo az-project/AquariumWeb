@@ -290,6 +290,19 @@ export const livestockMotionMap: { test: RegExp; motion: LivestockMotionPair }[]
         hevc: "assets/livestock/motion/mandarin-dragonet-right.mov"
       }
     }
+  },
+  {
+    test: /\uAD6C\uD53C|guppy/i,
+    motion: {
+      left: {
+        webm: "assets/livestock/motion/guppy-right.mp4",
+        hevc: "assets/livestock/motion/guppy-right.mp4"
+      },
+      right: {
+        webm: "assets/livestock/motion/guppy-right.mp4",
+        hevc: "assets/livestock/motion/guppy-right.mp4"
+      }
+    }
   }
 ];
 
