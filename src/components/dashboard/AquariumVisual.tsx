@@ -76,10 +76,6 @@ function percentNumber(value: string | undefined, fallback: string): number {
   return Number.isFinite(parsed) ? parsed : Number.parseFloat(fallback);
 }
 
-function motionVideoClassName(baseClassName: string, src: string): string {
-  return src.toLowerCase().endsWith(".mp4") ? `${baseClassName} motion-video-chroma-blend` : baseClassName;
-}
-
 // SSR와 첫 페인트는 안전한 PNG를 사용한다. 마운트 후 브라우저 계열에 맞는
 // 알파 코덱(WebKit=HEVC, 그 외=WebM)의 영상으로 전환한다.
 function useAlphaVideoFormat(): AlphaVideoFormat | null {
@@ -161,14 +157,14 @@ function MotionFish({ asset, basePos, fishOrder, index, item, motion, selected, 
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img className="motion-fish-fallback" src={asset} alt="" />
         {videoFormat !== null ? (
-          <video className={motionVideoClassName("motion-fish-video", rightMotionSrc)} src={rightMotionSrc} poster={asset} autoPlay loop muted playsInline preload="metadata" />
+          <video className="motion-fish-video" src={rightMotionSrc} poster={asset} autoPlay loop muted playsInline preload="metadata" />
         ) : null}
       </span>
       <span className="motion-fish-facing motion-fish-facing-left" aria-hidden="true">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img className="motion-fish-fallback" src={asset} alt="" />
         {videoFormat !== null ? (
-          <video className={motionVideoClassName("motion-fish-video", leftMotionSrc)} src={leftMotionSrc} poster={asset} autoPlay loop muted playsInline preload="metadata" />
+          <video className="motion-fish-video" src={leftMotionSrc} poster={asset} autoPlay loop muted playsInline preload="metadata" />
         ) : null}
       </span>
     </button>
@@ -311,7 +307,7 @@ export function AquariumVisual({ tank, onOpenTankSettings }: AquariumVisualProps
               onClick={() => handleInhabitantClick(index)}
             >
               {motion ? (
-                <video className={motionVideoClassName("inhabitant-image", motionSrc)} src={motionSrc} poster={asset} autoPlay loop muted playsInline preload="metadata" />
+                <video className="inhabitant-image" src={motionSrc} poster={asset} autoPlay loop muted playsInline preload="metadata" />
               ) : asset ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img className="inhabitant-image" src={asset} alt={item.name} />

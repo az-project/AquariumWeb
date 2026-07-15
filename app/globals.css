@@ -586,10 +586,6 @@ h2 { margin:0; font-size: 19px; letter-spacing: 0; }
 .motion-fish-video {
   display: block;
 }
-.motion-video-chroma-blend {
-  mix-blend-mode: multiply;
-  filter: saturate(1.12) contrast(1.06);
-}
 .motion-fish-fallback {
   display: none;
 }
