@@ -396,7 +396,8 @@ export function AquariumVisual({ tank, onOpenTankSettings }: AquariumVisualProps
           const pos = item.tankPosition ? { ...basePos, ...item.tankPosition } : basePos;
           const palette = PALETTES[index % PALETTES.length];
           const asset = livestockImage(item, index, type);
-          const motionSrc = motion?.right.webm || "";
+          // Safari는 VP9 WebM 알파를 합성하지 못하므로 물고기와 동일하게 브라우저별 코덱을 선택한다.
+          const motionSrc = motion && videoFormat !== null ? motion.right[videoFormat] : "";
           const style = {
             "--x": pos.x,
             "--y": pos.y,
@@ -416,7 +417,7 @@ export function AquariumVisual({ tank, onOpenTankSettings }: AquariumVisualProps
               style={style}
               onClick={() => handleInhabitantClick(index)}
             >
-              {motion ? (
+              {motionSrc ? (
                 <MotionVideo className="inhabitant-image" src={motionSrc} poster={asset} />
               ) : asset ? (
                 // eslint-disable-next-line @next/next/no-img-element
