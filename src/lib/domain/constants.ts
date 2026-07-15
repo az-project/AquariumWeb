@@ -201,6 +201,19 @@ export const livestockMotionMap: { test: RegExp; motion: LivestockMotionPair }[]
     }
   },
   {
+    test: /\uD1A0\uCE58|torch/i,
+    motion: {
+      left: {
+        webm: "assets/livestock/motion/torch-coral-cutout.mp4",
+        hevc: "assets/livestock/motion/torch-coral-cutout.mp4"
+      },
+      right: {
+        webm: "assets/livestock/motion/torch-coral-cutout.mp4",
+        hevc: "assets/livestock/motion/torch-coral-cutout.mp4"
+      }
+    }
+  },
+  {
     test: /말미잘|anemone|버블팁/i,
     motion: {
       left: {
