@@ -342,6 +342,19 @@ export const livestockMotionMap: { test: RegExp; motion: LivestockMotionPair }[]
         hevc: "assets/livestock/motion/black-molly-left.mp4"
       }
     }
+  },
+  {
+    test: /\uC81C\uBE0C\uB77C|\uB2E4\uB2C8\uC624|zebra|danio/i,
+    motion: {
+      left: {
+        webm: "assets/livestock/motion/zebra-danio-left.mp4",
+        hevc: "assets/livestock/motion/zebra-danio-left.mp4"
+      },
+      right: {
+        webm: "assets/livestock/motion/zebra-danio-left.mp4",
+        hevc: "assets/livestock/motion/zebra-danio-left.mp4"
+      }
+    }
   }
 ];
 
