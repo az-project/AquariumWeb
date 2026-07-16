@@ -165,7 +165,7 @@ export function AppModals({
             <input name="memo" placeholder="먹이 반응, 위치, 성격 등" />
           </label>
           <button className="primary-button wide" value="default" type="submit">
-            어항에 추가
+            저장
           </button>
         </form>
       </Modal>
