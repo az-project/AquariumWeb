@@ -20,8 +20,27 @@ describe("livestockMotion", () => {
     });
   });
 
+  it.each([
+    ["코리도라스", "corydoras-left.mp4"],
+    ["플래티", "platy-left.mp4"],
+    ["드워프 구라미", "dwarf-gourami-left.mp4"],
+    ["엔젤피시", "freshwater-angelfish-left.mp4"],
+    ["오토싱", "otocinclus-left.mp4"]
+  ])("담수어 %s는 하나의 왼쪽 영상을 방향에 맞춰 공유한다", (name, filename) => {
+    const motion = livestockMotion(name);
+
+    expect(motion).not.toBeNull();
+    expect(motion?.left.webm).toBe(`assets/livestock/motion/${filename}`);
+    expect(motion?.right).toEqual(motion?.left);
+  });
+
+  it("담수 엔젤피시는 플레임 엔젤 영상과 충돌하지 않는다", () => {
+    expect(livestockMotion("엔젤피시")?.left.webm).toContain("freshwater-angelfish-left.mp4");
+    expect(livestockMotion("플레임 엔젤")?.left.webm).toContain("flame-angelfish-left.webm");
+  });
+
   it("영상이 준비되지 않은 어종은 정적 이미지 폴백을 사용한다", () => {
-    expect(livestockMotion("네온 테트라")).toBeNull();
+    expect(livestockMotion("미등록 담수어")).toBeNull();
   });
 });
 

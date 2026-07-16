@@ -266,6 +266,71 @@ export const livestockMotionMap: { test: RegExp; motion: LivestockMotionPair }[]
     }
   },
   {
+    test: /코리도라스|corydoras/i,
+    motion: {
+      left: {
+        webm: "assets/livestock/motion/corydoras-left.mp4",
+        hevc: "assets/livestock/motion/corydoras-left.mp4"
+      },
+      right: {
+        webm: "assets/livestock/motion/corydoras-left.mp4",
+        hevc: "assets/livestock/motion/corydoras-left.mp4"
+      }
+    }
+  },
+  {
+    test: /플래티|platy/i,
+    motion: {
+      left: {
+        webm: "assets/livestock/motion/platy-left.mp4",
+        hevc: "assets/livestock/motion/platy-left.mp4"
+      },
+      right: {
+        webm: "assets/livestock/motion/platy-left.mp4",
+        hevc: "assets/livestock/motion/platy-left.mp4"
+      }
+    }
+  },
+  {
+    test: /드워프\s?구라미|dwarf\s?gourami/i,
+    motion: {
+      left: {
+        webm: "assets/livestock/motion/dwarf-gourami-left.mp4",
+        hevc: "assets/livestock/motion/dwarf-gourami-left.mp4"
+      },
+      right: {
+        webm: "assets/livestock/motion/dwarf-gourami-left.mp4",
+        hevc: "assets/livestock/motion/dwarf-gourami-left.mp4"
+      }
+    }
+  },
+  {
+    test: /엔젤피시|freshwater\s?angelfish|freshwater\s?angel/i,
+    motion: {
+      left: {
+        webm: "assets/livestock/motion/freshwater-angelfish-left.mp4",
+        hevc: "assets/livestock/motion/freshwater-angelfish-left.mp4"
+      },
+      right: {
+        webm: "assets/livestock/motion/freshwater-angelfish-left.mp4",
+        hevc: "assets/livestock/motion/freshwater-angelfish-left.mp4"
+      }
+    }
+  },
+  {
+    test: /오토싱|otocinclus|oto\s?cat/i,
+    motion: {
+      left: {
+        webm: "assets/livestock/motion/otocinclus-left.mp4",
+        hevc: "assets/livestock/motion/otocinclus-left.mp4"
+      },
+      right: {
+        webm: "assets/livestock/motion/otocinclus-left.mp4",
+        hevc: "assets/livestock/motion/otocinclus-left.mp4"
+      }
+    }
+  },
+  {
     test: /\uD50C\uB808\uC784|\uC5D4\uC824|flame|angel/i,
     motion: {
       left: {
