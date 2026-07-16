@@ -275,7 +275,7 @@ export function nextInvertebrateWaypoint(
   }
 
   x = clamp(x, 18, 82);
-  const y = clamp(current.y + (random() * 2 - 1) * 5, 65, 82);
+  const y = clamp(current.y + (random() * 2 - 1) * 3.5, 76, 88);
   const travel = Math.hypot(x - current.x, (y - current.y) * 0.8);
   const durationMs = Math.round(clamp(travel * (300 + random() * 80), 3600, 8200));
 

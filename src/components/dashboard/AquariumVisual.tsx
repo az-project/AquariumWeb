@@ -42,10 +42,10 @@ const MOTION_FISH_POSITIONS = [
   { x: "58%", y: "38%", scale: ".7" }
 ];
 const MOTION_INVERTEBRATE_POSITIONS = [
-  { x: "58%", y: "74%", scale: ".66" },
-  { x: "42%", y: "78%", scale: ".6" },
-  { x: "70%", y: "71%", scale: ".58" },
-  { x: "30%", y: "76%", scale: ".62" }
+  { x: "58%", y: "83%", scale: ".66" },
+  { x: "42%", y: "86%", scale: ".6" },
+  { x: "70%", y: "81%", scale: ".58" },
+  { x: "30%", y: "84%", scale: ".62" }
 ];
 const PALETTES: [string, string][] = [
   ["#ffcf68", "#ff7f73"],
@@ -263,7 +263,7 @@ function MotionFish({ asset, aquariumType, basePos, fishOrder, index, item, moti
   const initialRoute: FishWaypoint = {
     x: clamp(percentNumber(item.tankPosition?.x, basePos.x), 18, 82),
     y: kind === "invert"
-      ? clamp(percentNumber(item.tankPosition?.y, basePos.y), 65, 82)
+      ? clamp(percentNumber(item.tankPosition?.y, basePos.y), 76, 88)
       : clamp(percentNumber(item.tankPosition?.y, basePos.y), 18, 80),
     direction: fishOrder % 2 === 0 ? "right" : "left",
     segmentsRemaining: 2 + (fishOrder % 2),
