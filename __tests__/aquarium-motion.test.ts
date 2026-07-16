@@ -21,21 +21,27 @@ describe("livestockMotion", () => {
   });
 
   it.each([
-    ["코리도라스", "corydoras-left.mp4"],
-    ["플래티", "platy-left.mp4"],
-    ["드워프 구라미", "dwarf-gourami-left.mp4"],
-    ["엔젤피시", "freshwater-angelfish-left.mp4"],
-    ["오토싱", "otocinclus-left.mp4"]
-  ])("담수어 %s는 하나의 왼쪽 영상을 방향에 맞춰 공유한다", (name, filename) => {
+    ["코리도라스", "corydoras"],
+    ["플래티", "platy"],
+    ["드워프 구라미", "dwarf-gourami"],
+    ["엔젤피시", "freshwater-angelfish"],
+    ["오토싱", "otocinclus"]
+  ])("담수어 %s는 방향·코덱별 알파 영상을 반환한다", (name, stem) => {
     const motion = livestockMotion(name);
 
     expect(motion).not.toBeNull();
-    expect(motion?.left.webm).toBe(`assets/livestock/motion/${filename}`);
-    expect(motion?.right).toEqual(motion?.left);
+    expect(motion?.left).toEqual({
+      webm: `assets/livestock/motion/${stem}-left.webm`,
+      hevc: `assets/livestock/motion/${stem}-left.mov`
+    });
+    expect(motion?.right).toEqual({
+      webm: `assets/livestock/motion/${stem}-right.webm`,
+      hevc: `assets/livestock/motion/${stem}-right.mov`
+    });
   });
 
   it("담수 엔젤피시는 플레임 엔젤 영상과 충돌하지 않는다", () => {
-    expect(livestockMotion("엔젤피시")?.left.webm).toContain("freshwater-angelfish-left.mp4");
+    expect(livestockMotion("엔젤피시")?.left.webm).toContain("freshwater-angelfish-left.webm");
     expect(livestockMotion("플레임 엔젤")?.left.webm).toContain("flame-angelfish-left.webm");
   });
 

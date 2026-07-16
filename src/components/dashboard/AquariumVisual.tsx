@@ -206,7 +206,21 @@ function ChromaKeyVideo({ className, playbackRate = 1, poster, src }: { classNam
 
 function MotionVideo({ className, playbackRate = 1, poster, src }: { className: string; playbackRate?: number; poster: string; src: string }) {
   if (isMp4(src)) return <ChromaKeyVideo className={className} playbackRate={playbackRate} poster={poster} src={src} />;
-  return <video className={className} src={src} poster={poster} autoPlay loop muted playsInline preload="metadata" />;
+  return (
+    <video
+      ref={video => {
+        if (video) video.playbackRate = playbackRate;
+      }}
+      className={className}
+      src={src}
+      poster={poster}
+      autoPlay
+      loop
+      muted
+      playsInline
+      preload="metadata"
+    />
+  );
 }
 
 function sharedMotionFacing(motion: LivestockMotionPair): "left" | "right" {

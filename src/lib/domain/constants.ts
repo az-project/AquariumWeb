@@ -269,12 +269,12 @@ export const livestockMotionMap: { test: RegExp; motion: LivestockMotionPair }[]
     test: /코리도라스|corydoras/i,
     motion: {
       left: {
-        webm: "assets/livestock/motion/corydoras-left.mp4",
-        hevc: "assets/livestock/motion/corydoras-left.mp4"
+        webm: "assets/livestock/motion/corydoras-left.webm",
+        hevc: "assets/livestock/motion/corydoras-left.mov"
       },
       right: {
-        webm: "assets/livestock/motion/corydoras-left.mp4",
-        hevc: "assets/livestock/motion/corydoras-left.mp4"
+        webm: "assets/livestock/motion/corydoras-right.webm",
+        hevc: "assets/livestock/motion/corydoras-right.mov"
       }
     }
   },
@@ -282,12 +282,12 @@ export const livestockMotionMap: { test: RegExp; motion: LivestockMotionPair }[]
     test: /플래티|platy/i,
     motion: {
       left: {
-        webm: "assets/livestock/motion/platy-left.mp4",
-        hevc: "assets/livestock/motion/platy-left.mp4"
+        webm: "assets/livestock/motion/platy-left.webm",
+        hevc: "assets/livestock/motion/platy-left.mov"
       },
       right: {
-        webm: "assets/livestock/motion/platy-left.mp4",
-        hevc: "assets/livestock/motion/platy-left.mp4"
+        webm: "assets/livestock/motion/platy-right.webm",
+        hevc: "assets/livestock/motion/platy-right.mov"
       }
     }
   },
@@ -295,12 +295,12 @@ export const livestockMotionMap: { test: RegExp; motion: LivestockMotionPair }[]
     test: /드워프\s?구라미|dwarf\s?gourami/i,
     motion: {
       left: {
-        webm: "assets/livestock/motion/dwarf-gourami-left.mp4",
-        hevc: "assets/livestock/motion/dwarf-gourami-left.mp4"
+        webm: "assets/livestock/motion/dwarf-gourami-left.webm",
+        hevc: "assets/livestock/motion/dwarf-gourami-left.mov"
       },
       right: {
-        webm: "assets/livestock/motion/dwarf-gourami-left.mp4",
-        hevc: "assets/livestock/motion/dwarf-gourami-left.mp4"
+        webm: "assets/livestock/motion/dwarf-gourami-right.webm",
+        hevc: "assets/livestock/motion/dwarf-gourami-right.mov"
       }
     }
   },
@@ -308,12 +308,12 @@ export const livestockMotionMap: { test: RegExp; motion: LivestockMotionPair }[]
     test: /엔젤피시|freshwater\s?angelfish|freshwater\s?angel/i,
     motion: {
       left: {
-        webm: "assets/livestock/motion/freshwater-angelfish-left.mp4",
-        hevc: "assets/livestock/motion/freshwater-angelfish-left.mp4"
+        webm: "assets/livestock/motion/freshwater-angelfish-left.webm",
+        hevc: "assets/livestock/motion/freshwater-angelfish-left.mov"
       },
       right: {
-        webm: "assets/livestock/motion/freshwater-angelfish-left.mp4",
-        hevc: "assets/livestock/motion/freshwater-angelfish-left.mp4"
+        webm: "assets/livestock/motion/freshwater-angelfish-right.webm",
+        hevc: "assets/livestock/motion/freshwater-angelfish-right.mov"
       }
     }
   },
@@ -321,12 +321,12 @@ export const livestockMotionMap: { test: RegExp; motion: LivestockMotionPair }[]
     test: /오토싱|otocinclus|oto\s?cat/i,
     motion: {
       left: {
-        webm: "assets/livestock/motion/otocinclus-left.mp4",
-        hevc: "assets/livestock/motion/otocinclus-left.mp4"
+        webm: "assets/livestock/motion/otocinclus-left.webm",
+        hevc: "assets/livestock/motion/otocinclus-left.mov"
       },
       right: {
-        webm: "assets/livestock/motion/otocinclus-left.mp4",
-        hevc: "assets/livestock/motion/otocinclus-left.mp4"
+        webm: "assets/livestock/motion/otocinclus-right.webm",
+        hevc: "assets/livestock/motion/otocinclus-right.mov"
       }
     }
   },
@@ -360,12 +360,12 @@ export const livestockMotionMap: { test: RegExp; motion: LivestockMotionPair }[]
     test: /\uAD6C\uD53C|guppy/i,
     motion: {
       left: {
-        webm: "assets/livestock/motion/guppy-left.mp4",
-        hevc: "assets/livestock/motion/guppy-left.mp4"
+        webm: "assets/livestock/motion/guppy-left.webm",
+        hevc: "assets/livestock/motion/guppy-left.mov"
       },
       right: {
-        webm: "assets/livestock/motion/guppy-left.mp4",
-        hevc: "assets/livestock/motion/guppy-left.mp4"
+        webm: "assets/livestock/motion/guppy-right.webm",
+        hevc: "assets/livestock/motion/guppy-right.mov"
       }
     }
   },
@@ -373,12 +373,12 @@ export const livestockMotionMap: { test: RegExp; motion: LivestockMotionPair }[]
     test: /\uB124\uC628|\uD14C\uD2B8\uB77C|neon|tetra/i,
     motion: {
       left: {
-        webm: "assets/livestock/motion/neon-tetra-left.mp4",
-        hevc: "assets/livestock/motion/neon-tetra-left.mp4"
+        webm: "assets/livestock/motion/neon-tetra-left.webm",
+        hevc: "assets/livestock/motion/neon-tetra-left.mov"
       },
       right: {
-        webm: "assets/livestock/motion/neon-tetra-left.mp4",
-        hevc: "assets/livestock/motion/neon-tetra-left.mp4"
+        webm: "assets/livestock/motion/neon-tetra-right.webm",
+        hevc: "assets/livestock/motion/neon-tetra-right.mov"
       }
     }
   },
@@ -386,12 +386,12 @@ export const livestockMotionMap: { test: RegExp; motion: LivestockMotionPair }[]
     test: /\uBCA0\uD0C0|betta/i,
     motion: {
       left: {
-        webm: "assets/livestock/motion/betta-left.mp4",
-        hevc: "assets/livestock/motion/betta-left.mp4"
+        webm: "assets/livestock/motion/betta-left.webm",
+        hevc: "assets/livestock/motion/betta-left.mov"
       },
       right: {
-        webm: "assets/livestock/motion/betta-left.mp4",
-        hevc: "assets/livestock/motion/betta-left.mp4"
+        webm: "assets/livestock/motion/betta-right.webm",
+        hevc: "assets/livestock/motion/betta-right.mov"
       }
     }
   },
@@ -399,12 +399,12 @@ export const livestockMotionMap: { test: RegExp; motion: LivestockMotionPair }[]
     test: /\uBE14\uB799|\uBAB0\uB9AC|black|molly/i,
     motion: {
       left: {
-        webm: "assets/livestock/motion/black-molly-left.mp4",
-        hevc: "assets/livestock/motion/black-molly-left.mp4"
+        webm: "assets/livestock/motion/black-molly-left.webm",
+        hevc: "assets/livestock/motion/black-molly-left.mov"
       },
       right: {
-        webm: "assets/livestock/motion/black-molly-left.mp4",
-        hevc: "assets/livestock/motion/black-molly-left.mp4"
+        webm: "assets/livestock/motion/black-molly-right.webm",
+        hevc: "assets/livestock/motion/black-molly-right.mov"
       }
     }
   },
@@ -412,12 +412,12 @@ export const livestockMotionMap: { test: RegExp; motion: LivestockMotionPair }[]
     test: /\uC81C\uBE0C\uB77C|\uB2E4\uB2C8\uC624|zebra|danio/i,
     motion: {
       left: {
-        webm: "assets/livestock/motion/zebra-danio-left.mp4",
-        hevc: "assets/livestock/motion/zebra-danio-left.mp4"
+        webm: "assets/livestock/motion/zebra-danio-left.webm",
+        hevc: "assets/livestock/motion/zebra-danio-left.mov"
       },
       right: {
-        webm: "assets/livestock/motion/zebra-danio-left.mp4",
-        hevc: "assets/livestock/motion/zebra-danio-left.mp4"
+        webm: "assets/livestock/motion/zebra-danio-right.webm",
+        hevc: "assets/livestock/motion/zebra-danio-right.mov"
       }
     }
   }
