@@ -104,7 +104,7 @@ export function AppModals({
   return (
     <>
       <Modal id="taskModal" open={openModal === "taskModal"} onClose={onClose}>
-        <form method="dialog" className="modal-card" id="taskForm" onSubmit={handleTaskSubmit}>
+        <form key={`task-form-${today}`} method="dialog" className="modal-card" id="taskForm" onSubmit={handleTaskSubmit}>
           <div className="panel-heading">
             <h2>관리 일정 추가</h2>
             <button className="icon-button" type="button" aria-label="닫기" onClick={onClose}>
@@ -127,7 +127,7 @@ export function AppModals({
           </label>
           <label>
             예정일
-            <input type="date" name="due" />
+            <input type="date" name="due" defaultValue={today} />
           </label>
           <label>
             메모
