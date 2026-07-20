@@ -10,6 +10,8 @@ npm run mcp:reef-log
 
 ## MCP 클라이언트 설정 예시
 
+### 로컬 stdio
+
 ```json
 {
   "mcpServers": {
@@ -21,6 +23,31 @@ npm run mcp:reef-log
   }
 }
 ```
+
+### 운영 HTTP Stream
+
+Vercel 운영 도메인에서는 다음 엔드포인트를 사용합니다.
+
+```text
+https://aqua.avokado.co.kr/api/mcp
+```
+
+운영 환경변수에 `REEFLOG_MCP_TOKEN`을 설정한 경우, MCP 클라이언트에서 Bearer 토큰을 함께 보내야 합니다.
+
+```json
+{
+  "mcpServers": {
+    "reef-log": {
+      "url": "https://aqua.avokado.co.kr/api/mcp",
+      "headers": {
+        "Authorization": "Bearer your-mcp-token"
+      }
+    }
+  }
+}
+```
+
+클라이언트가 Streamable HTTP 타입을 요구하는 경우 URL은 동일하게 `https://aqua.avokado.co.kr/api/mcp`를 사용하면 됩니다.
 
 ## 지원 도구
 
