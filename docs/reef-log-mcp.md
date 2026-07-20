@@ -1,16 +1,62 @@
 # Reef Log MCP Server
 
-리프로그 데이터를 MCP 클라이언트에서 조회하거나 일부 항목을 추가할 수 있는 stdio MCP 서버입니다.
+리프로그 데이터를 MCP 클라이언트에서 조회하거나 일부 항목을 추가할 수 있는 MCP 서버입니다.
 
-## 실행
+## 운영 HTTP Stream 연결
+
+Vercel 운영 도메인에서는 다음 엔드포인트를 사용합니다.
+
+```text
+https://aqua.avokado.co.kr/api/mcp
+```
+
+MCP 클라이언트 설정 예시:
+
+```json
+{
+  "mcpServers": {
+    "reef-log": {
+      "url": "https://aqua.avokado.co.kr/api/mcp"
+    }
+  }
+}
+```
+
+인증은 OAuth 방식입니다.
+
+1. MCP 클라이언트가 `https://aqua.avokado.co.kr/api/mcp`에 연결합니다.
+2. 서버가 OAuth discovery 정보를 제공합니다.
+3. 클라이언트가 리프로그 로그인 페이지로 이동합니다.
+4. 사용자가 로그인합니다.
+5. 권한 승인 페이지에서 MCP 연결을 승인합니다.
+6. 클라이언트가 authorization code를 access token으로 교환합니다.
+7. 이후 MCP 요청은 OAuth Bearer access token으로 인증됩니다.
+
+OAuth endpoint:
+
+- `https://aqua.avokado.co.kr/.well-known/oauth-protected-resource`
+- `https://aqua.avokado.co.kr/.well-known/oauth-authorization-server`
+- `https://aqua.avokado.co.kr/oauth/authorize`
+- `https://aqua.avokado.co.kr/oauth/token`
+- `https://aqua.avokado.co.kr/oauth/register`
+
+운영 환경에서는 아래 값을 명시하는 것을 권장합니다.
+
+```powershell
+REEFLOG_OAUTH_ISSUER=https://aqua.avokado.co.kr
+SESSION_SECRET=replace-with-at-least-32-characters
+COOKIE_SECURE=true
+```
+
+## 로컬 stdio 연결
+
+로컬에서 stdio MCP 서버로도 실행할 수 있습니다.
 
 ```powershell
 npm run mcp:reef-log
 ```
 
-## MCP 클라이언트 설정 예시
-
-### 로컬 stdio
+MCP 클라이언트 설정 예시:
 
 ```json
 {
@@ -23,31 +69,6 @@ npm run mcp:reef-log
   }
 }
 ```
-
-### 운영 HTTP Stream
-
-Vercel 운영 도메인에서는 다음 엔드포인트를 사용합니다.
-
-```text
-https://aqua.avokado.co.kr/api/mcp
-```
-
-운영 환경변수에 `REEFLOG_MCP_TOKEN`을 설정한 경우, MCP 클라이언트에서 Bearer 토큰을 함께 보내야 합니다.
-
-```json
-{
-  "mcpServers": {
-    "reef-log": {
-      "url": "https://aqua.avokado.co.kr/api/mcp",
-      "headers": {
-        "Authorization": "Bearer your-mcp-token"
-      }
-    }
-  }
-}
-```
-
-클라이언트가 Streamable HTTP 타입을 요구하는 경우 URL은 동일하게 `https://aqua.avokado.co.kr/api/mcp`를 사용하면 됩니다.
 
 ## 지원 도구
 

@@ -1,4 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
+import { bearerTokenFromRequest, issuerFromRequest, verifyAccessToken } from "@/lib/auth/oauth";
 import { handleReefLogMcpRequest, type JsonRpcRequest } from "@/lib/mcp/reef-log";
 
 export const runtime = "nodejs";
@@ -9,18 +10,27 @@ const noStore = {
   "Access-Control-Allow-Origin": process.env.REEFLOG_MCP_ALLOW_ORIGIN || "*",
   "Access-Control-Allow-Methods": "GET,POST,OPTIONS",
   "Access-Control-Allow-Headers": "authorization,content-type,mcp-session-id",
-  "Access-Control-Expose-Headers": "mcp-session-id"
+  "Access-Control-Expose-Headers": "mcp-session-id,www-authenticate"
 };
 
-function unauthorized() {
-  return NextResponse.json({ error: "Unauthorized" }, { status: 401, headers: noStore });
+function unauthorized(request: NextRequest) {
+  const issuer = issuerFromRequest(request);
+  return NextResponse.json(
+    { error: "Unauthorized", authorization_server: issuer },
+    {
+      status: 401,
+      headers: {
+        ...noStore,
+        "WWW-Authenticate": `Bearer resource_metadata="${issuer}/.well-known/oauth-protected-resource"`
+      }
+    }
+  );
 }
 
 function isAuthorized(request: NextRequest): boolean {
-  const token = process.env.REEFLOG_MCP_TOKEN;
-  if (!token) return true;
-  const header = request.headers.get("authorization") || "";
-  return header === `Bearer ${token}`;
+  const token = bearerTokenFromRequest(request);
+  if (!token) return false;
+  return Boolean(verifyAccessToken(token));
 }
 
 function sseResponse(payloads: unknown[]) {
@@ -58,7 +68,7 @@ export async function OPTIONS() {
 }
 
 export async function GET(request: NextRequest) {
-  if (!isAuthorized(request)) return unauthorized();
+  if (!isAuthorized(request)) return unauthorized(request);
   return sseResponse([
     {
       jsonrpc: "2.0",
@@ -73,7 +83,7 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-  if (!isAuthorized(request)) return unauthorized();
+  if (!isAuthorized(request)) return unauthorized(request);
 
   let payload: JsonRpcRequest | JsonRpcRequest[];
   try {
