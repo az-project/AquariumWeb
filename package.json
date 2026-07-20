@@ -6,6 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
+    "mcp:reef-log": "node scripts/reef-log-mcp.mjs",
     "migrate:supabase": "node scripts/migrate-file-to-supabase.mjs",
     "test": "vitest run",
     "test:watch": "vitest"
