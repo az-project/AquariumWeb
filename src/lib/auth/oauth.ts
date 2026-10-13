@@ -3,6 +3,8 @@ import type { NextRequest } from "next/server";
 
 const ACCESS_TOKEN_TTL_SECONDS = 60 * 60;
 const AUTH_CODE_TTL_SECONDS = 5 * 60;
+// ponytail: 무상태 서명 토큰이라 개별 폐기 불가(SESSION_SECRET 교체 시 전체 폐기). 기기별 폐기가 필요해지면 DB 저장으로.
+const REFRESH_TOKEN_TTL_SECONDS = 90 * 24 * 60 * 60;
 const DEV_FALLBACK_SECRET = "aquarium-dev-session-secret-do-not-use-in-prod";
 
 export interface OAuthCodePayload {
@@ -23,6 +25,16 @@ export interface OAuthAccessPayload {
   scope: string;
   exp: number;
 }
+
+export interface OAuthRefreshPayload {
+  type: "refresh_token";
+  clientId: string;
+  username: string;
+  scope: string;
+  exp: number;
+}
+
+type OAuthPayload = OAuthCodePayload | OAuthAccessPayload | OAuthRefreshPayload;
 
 export interface OAuthAuthorizeParams {
   responseType: string;
@@ -47,12 +59,12 @@ function sign(value: string): string {
   return crypto.createHmac("sha256", authSecret()).update(value).digest("base64url");
 }
 
-export function issueSignedToken(payload: OAuthCodePayload | OAuthAccessPayload): string {
+export function issueSignedToken(payload: OAuthPayload): string {
   const body = base64Url(JSON.stringify(payload));
   return `${body}.${sign(body)}`;
 }
 
-export function verifySignedToken<T extends OAuthCodePayload | OAuthAccessPayload>(token: string, type: T["type"]): T | null {
+export function verifySignedToken<T extends OAuthPayload>(token: string, type: T["type"]): T | null {
   const [body, signature] = String(token || "").split(".");
   if (!body || !signature || signature !== sign(body)) return null;
   try {
@@ -81,6 +93,18 @@ export function issueAccessToken(payload: Omit<OAuthAccessPayload, "type" | "exp
     }),
     expiresIn: ACCESS_TOKEN_TTL_SECONDS
   };
+}
+
+export function issueRefreshToken(payload: Omit<OAuthRefreshPayload, "type" | "exp">): string {
+  return issueSignedToken({
+    ...payload,
+    type: "refresh_token",
+    exp: Math.floor(Date.now() / 1000) + REFRESH_TOKEN_TTL_SECONDS
+  });
+}
+
+export function verifyRefreshToken(token: string): OAuthRefreshPayload | null {
+  return verifySignedToken<OAuthRefreshPayload>(token, "refresh_token");
 }
 
 export function verifyAccessToken(token: string): OAuthAccessPayload | null {

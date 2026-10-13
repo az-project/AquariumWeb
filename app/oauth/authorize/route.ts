@@ -125,7 +125,8 @@ export async function POST(request: NextRequest) {
     const session = await getSession();
     session.username = user.username;
     await session.save();
-    return NextResponse.redirect(new URL(`/oauth/authorize?${encodedAuthorizeParams(params)}`, request.nextUrl.origin));
+    // 303이어야 브라우저가 GET으로 바꾼다. 기본값 307은 로그인 POST를 그대로 재전송해 무한 리디렉션이 된다.
+    return NextResponse.redirect(new URL(`/oauth/authorize?${encodedAuthorizeParams(params)}`, request.nextUrl.origin), 303);
   }
 
   if (action === "approve") {

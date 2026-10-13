@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
       client_id: clientId,
       client_id_issued_at: now,
       token_endpoint_auth_method: "none",
-      grant_types: ["authorization_code"],
+      grant_types: ["authorization_code", "refresh_token"],
       response_types: ["code"],
       redirect_uris: Array.isArray(body.redirect_uris) ? body.redirect_uris : [],
       client_name: body.client_name || "Reef Log MCP Client"
