@@ -82,6 +82,11 @@ describe("POST /api/quick-log", () => {
     expect((await call({ text: "인산염 0.01" }, "wrong")).status).toBe(401);
   });
 
+  it("토큰 앞뒤의 공백과 따옴표를 무시한다", async () => {
+    process.env.REEFLOG_SHORTCUT_TOKEN = ' "secret-token"\n';
+    expect((await call({ text: "인산염 0.01" }, "secret-token ")).status).toBe(200);
+  });
+
   it("문장을 저장하고 기존 값과 합친다", async () => {
     const response = await call({ text: "인산염 0.01 질산염 3.0", date: "2026-01-01" });
     const json = await response.json();
