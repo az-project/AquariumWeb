@@ -28,6 +28,17 @@ describe("parseQuickLogText", () => {
     expect(parseQuickLogText("인산염 영점영일 질산염 삼점영 온도 이십오", TODAY).values).toEqual({ po4: 0.01, no3: 3, temp: 25 });
   });
 
+  it("받아쓰기의 여러 소수점 표기를 처리한다", () => {
+    expect(parseQuickLogText("인산염 0점01 질산염 3점0", TODAY).values).toEqual({ po4: 0.01, no3: 3 });
+    expect(parseQuickLogText("인산염 0 점 01 질산염 3 . 0", TODAY).values).toEqual({ po4: 0.01, no3: 3 });
+    expect(parseQuickLogText("인산염 0,01 질산염 3", TODAY).values).toEqual({ po4: 0.01, no3: 3 });
+    expect(parseQuickLogText("인산염 영 점 영일, 질산염 삼", TODAY).values).toEqual({ po4: 0.01, no3: 3 });
+  });
+
+  it("키워드 사이에 끼어든 공백을 처리한다", () => {
+    expect(parseQuickLogText("인 산염 0.01 질산 염 3", TODAY).values).toEqual({ po4: 0.01, no3: 3 });
+  });
+
   it("날짜를 말하지 않으면 date가 없다", () => {
     expect(parseQuickLogText("인산염은 0.02", TODAY)).toEqual({ values: { po4: 0.02 } });
   });
@@ -96,7 +107,7 @@ describe("POST /api/quick-log", () => {
     const response = await call({ text: "인산염 0.01 질산염 3.0", date: "2026-01-01" });
     const json = await response.json();
     expect(response.status).toBe(200);
-    expect(json.message).toBe("2026-01-01 질산염 3, 인산염 0.01 저장했어요.");
+    expect(json.message).toBe('2026-01-01 질산염 3, 인산염 0.01 저장했어요. (들은 말: "인산염 0.01 질산염 3.0")');
     const state = JSON.parse(fs.readFileSync(path.join(tmpDir, "state.json"), "utf8"));
     expect(state.tanks[0].waterLogs).toEqual([{ date: "2026-01-01", temp: 25, po4: 0.01, no3: 3 }]);
   });

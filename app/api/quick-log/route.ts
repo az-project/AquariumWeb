@@ -93,7 +93,8 @@ export async function POST(request: NextRequest) {
     const tankId = typeof body.tankId === "string" ? body.tankId : undefined;
     const log = await mergeWaterLogValues(date, values, tankId);
     const dayLabel = date === today ? "오늘" : date;
-    return reply(200, { ok: true, message: `${dayLabel} ${describeValues(values)} 저장했어요.`, date, values, log });
+    const heard = text ? ` (들은 말: "${text}")` : "";
+    return reply(200, { ok: true, message: `${dayLabel} ${describeValues(values)} 저장했어요.${heard}`, date, values, log });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Save failed";
     return reply(500, { ok: false, message: `저장에 실패했어요. ${message}` });

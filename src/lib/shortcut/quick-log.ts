@@ -39,6 +39,8 @@ const DATE_OFFSETS: Array<[string, number]> = [
   ["오늘", 0]
 ];
 
+const KOREAN_NUMERAL = "영공일이삼사오육륙칠팔구십백점";
+
 const KEYWORD_TO_FIELD = new Map<string, WaterLogField>(
   Object.entries(FIELD_KEYWORDS).flatMap(([field, words]) => words.map(word => [word, field as WaterLogField] as const))
 );
@@ -47,7 +49,8 @@ const KEYWORD_TO_FIELD = new Map<string, WaterLogField>(
 const KEYWORD_PATTERN = new RegExp(
   [...KEYWORD_TO_FIELD.keys()]
     .sort((a, b) => b.length - a.length)
-    .map(word => word.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"))
+    // 받아쓰기가 "인 산염", "질산 염"처럼 키워드 중간에 공백을 넣는 경우도 잡는다.
+    .map(word => [...word].map(char => char.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("\\s*"))
     .join("|"),
   "g"
 );
@@ -101,8 +104,8 @@ function parseKoreanNumber(text: string): number | undefined {
 function parseSegmentValue(segment: string): number | undefined {
   const digits = /^[\s:=은는이가]*(-?\d+(?:\.\d+)?)/.exec(segment) || /(-?\d+(?:\.\d+)?)/.exec(segment);
   if (digits) return Number(digits[1]);
-  const korean = /^[\s:=]*(?:[은는가]|이(?=\s))?\s*([영공일이삼사오육륙칠팔구십백점]+)/.exec(segment);
-  return korean ? parseKoreanNumber(korean[1]) : undefined;
+  const korean = new RegExp(`^[\\s:=]*(?:[은는가]|이(?=\\s))?\\s*([${KOREAN_NUMERAL}](?:[\\s${KOREAN_NUMERAL}]*[${KOREAN_NUMERAL}])?)`).exec(segment);
+  return korean ? parseKoreanNumber(korean[1].replace(/\s+/g, "")) : undefined;
 }
 
 export function shiftIsoDate(isoDate: string, days: number): string {
@@ -112,7 +115,11 @@ export function shiftIsoDate(isoDate: string, days: number): string {
 }
 
 export function parseQuickLogText(text: string, today: string): ParsedQuickLog {
-  const normalized = text.toLowerCase().replace(/,/g, " ").replace(/(\d)\s*\.\s*(\d)/g, "$1.$2");
+  // "0점01", "0 . 01", "0,01"처럼 받아써진 소수점을 먼저 맞춘 뒤 나머지 쉼표는 구분자로 본다.
+  const normalized = text
+    .toLowerCase()
+    .replace(/(\d)\s*(?:점|\.|,)\s*(\d)/g, "$1.$2")
+    .replace(/,/g, " ");
   const result: ParsedQuickLog = { values: {} };
 
   const dateWord = DATE_OFFSETS.find(([word]) => normalized.includes(word));
@@ -125,7 +132,7 @@ export function parseQuickLogText(text: string, today: string): ParsedQuickLog {
 
   const matches = [...withoutDates.matchAll(KEYWORD_PATTERN)];
   matches.forEach((match, index) => {
-    const field = KEYWORD_TO_FIELD.get(match[0]);
+    const field = KEYWORD_TO_FIELD.get(match[0].replace(/\s+/g, ""));
     if (!field) return;
     const start = (match.index ?? 0) + match[0].length;
     const end = matches[index + 1]?.index ?? withoutDates.length;
