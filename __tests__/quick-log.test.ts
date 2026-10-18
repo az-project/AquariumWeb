@@ -87,6 +87,11 @@ describe("POST /api/quick-log", () => {
     expect((await call({ text: "인산염 0.01" }, "secret-token ")).status).toBe(200);
   });
 
+  it("환경변수에 Bearer 접두어가 들어가 있어도 인증한다", async () => {
+    process.env.REEFLOG_SHORTCUT_TOKEN = "Bearer secret-token";
+    expect((await call({ text: "인산염 0.01" })).status).toBe(200);
+  });
+
   it("문장을 저장하고 기존 값과 합친다", async () => {
     const response = await call({ text: "인산염 0.01 질산염 3.0", date: "2026-01-01" });
     const json = await response.json();

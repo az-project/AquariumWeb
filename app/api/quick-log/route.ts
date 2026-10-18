@@ -23,9 +23,9 @@ function reply(status: number, body: Record<string, unknown>) {
   return NextResponse.json(body, { status, headers: noStore });
 }
 
-// Vercel 환경변수나 단축어 헤더에 복사·붙여넣기로 섞여 들어간 공백, 따옴표를 무시한다.
+// Vercel 환경변수나 단축어 헤더에 복사·붙여넣기로 섞여 들어간 공백, 따옴표, "Bearer " 접두어를 무시한다.
 function cleanToken(value: string): string {
-  return value.trim().replace(/^["']+|["']+$/g, "").trim();
+  return value.trim().replace(/^["']+|["']+$/g, "").trim().replace(/^bearer\s+/i, "").trim();
 }
 
 function tokenMatches(token: string, expected: string): boolean {
