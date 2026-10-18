@@ -50,9 +50,17 @@ export async function POST(request: NextRequest) {
   if (!expected) {
     return reply(503, { ok: false, message: "단축어 토큰이 서버에 설정되지 않았어요." });
   }
-  const token = cleanToken(bearerTokenFromRequest(request) || request.headers.get("x-reeflog-token") || "");
+  const bearer = bearerTokenFromRequest(request);
+  const headerToken = request.headers.get("x-reeflog-token");
+  const token = cleanToken(bearer || headerToken || "");
   if (!token || !tokenMatches(token, expected)) {
-    return reply(401, { ok: false, message: "인증에 실패했어요. 단축어의 토큰을 확인해 주세요." });
+    // 토큰 값은 노출하지 않고, 어느 헤더로 왔는지와 길이만 알려 준다.
+    const source = bearer ? "authorization" : headerToken ? "x-reeflog-token" : "none";
+    return reply(401, {
+      ok: false,
+      message: `인증에 실패했어요. 받은 헤더: ${source}, 받은 토큰 길이: ${token.length}, 서버 토큰 길이: ${expected.length}`,
+      debug: { source, receivedLength: token.length, expectedLength: expected.length }
+    });
   }
 
   const raw = await request.text();
