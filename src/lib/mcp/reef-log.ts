@@ -1,5 +1,6 @@
 import { todayIso } from "@/lib/domain/constants";
 import type { PersistedState, Tank, Task, WaterLog } from "@/lib/domain/types";
+import { mergeWaterLog } from "@/lib/shortcut/quick-log";
 import { getStateStore } from "@/lib/storage";
 
 export interface JsonRpcRequest {
@@ -199,6 +200,19 @@ async function writeState(state: PersistedState): Promise<PersistedState> {
   const nextState = mirrorActiveTank(normalizeState(state));
   await getStateStore().write(nextState);
   return nextState;
+}
+
+// 같은 날짜 로그가 있으면 새로 받은 항목만 덮어쓰고 나머지 값은 유지한다.
+export async function mergeWaterLogValues(date: string, values: Partial<Omit<WaterLog, "date">>, tankId?: string): Promise<WaterLog> {
+  const state = await readState();
+  let saved: WaterLog = { date };
+  const nextState = updateTank(state, tankId, tank => {
+    const merged = mergeWaterLog(tank.waterLogs || [], date, values);
+    saved = merged.log;
+    return { ...tank, waterLogs: merged.logs };
+  });
+  await writeState(nextState);
+  return saved;
 }
 
 export async function callReefLogTool(name: string | undefined, args: Record<string, unknown> = {}) {
