@@ -35,6 +35,11 @@ describe("parseQuickLogText", () => {
     expect(parseQuickLogText("인산염 영 점 영일, 질산염 삼", TODAY).values).toEqual({ po4: 0.01, no3: 3 });
   });
 
+  it("'쩜'으로 읽은 소수점을 처리한다", () => {
+    expect(parseQuickLogText("인산염 영쩜영일 질산염 삼쩜영", TODAY).values).toEqual({ po4: 0.01, no3: 3 });
+    expect(parseQuickLogText("인산염 0쩜01 질산염 3쩜0", TODAY).values).toEqual({ po4: 0.01, no3: 3 });
+  });
+
   it("키워드 사이에 끼어든 공백을 처리한다", () => {
     expect(parseQuickLogText("인 산염 0.01 질산 염 3", TODAY).values).toEqual({ po4: 0.01, no3: 3 });
   });

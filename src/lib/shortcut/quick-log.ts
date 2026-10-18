@@ -115,10 +115,11 @@ export function shiftIsoDate(isoDate: string, days: number): string {
 }
 
 export function parseQuickLogText(text: string, today: string): ParsedQuickLog {
-  // "0점01", "0 . 01", "0,01"처럼 받아써진 소수점을 먼저 맞춘 뒤 나머지 쉼표는 구분자로 본다.
+  // "0점01", "0쩜01", "0 . 01", "0,01"처럼 받아써진 소수점을 먼저 맞춘 뒤 나머지 쉼표는 구분자로 본다.
   const normalized = text
     .toLowerCase()
-    .replace(/(\d)\s*(?:점|\.|,)\s*(\d)/g, "$1.$2")
+    .replace(/(\d)\s*(?:점|쩜|\.|,)\s*(\d)/g, "$1.$2")
+    .replace(/쩜/g, "점")
     .replace(/,/g, " ");
   const result: ParsedQuickLog = { values: {} };
 
